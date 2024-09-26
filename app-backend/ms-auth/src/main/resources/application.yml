@@ -1,0 +1,8 @@
+server:
+    port: 8081
+spring:
+  config:
+    import: optional:secrets.yml
+
+  application:
+    name: ms-auth
