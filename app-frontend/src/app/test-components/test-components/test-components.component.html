@@ -1,0 +1,213 @@
+<p>test-components works!</p>
+<style>
+    .container {
+      max-width: 1200px; 
+      margin: 0 auto; 
+      padding: 0 20px;
+      color: black;
+    }
+  
+
+    .content {
+      background-color: #f4f4f4;
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      color:black;
+    }
+  
+    .example-card {
+      max-width: 400px;
+      color: black;
+    }
+  
+    .example-header-image {
+      background-image: url("https://material.angular.io/assets/img/examples/shiba1.jpg");
+      background-size: cover;
+    }
+  </style>
+  
+  <div class="container">
+    <h2>Prueba Con Material</h2>
+  
+    <div class="content">
+      <h3>Date Picker</h3>
+      <mat-form-field>
+        <mat-label>Enter a date range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" />
+          <input matEndDate placeholder="End date" />
+        </mat-date-range-input>
+        <mat-hint>MM/DD/YYYY – MM/DD/YYYY</mat-hint>
+        <mat-datepicker-toggle
+          matIconSuffix
+          [for]="picker"
+        ></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+  
+    <div class="content">
+      <h3>Botones</h3>
+      <div class="example-label">Basic</div>
+      <div class="example-button-row">
+        <button mat-button>Basic</button>
+        <button mat-button disabled>Disabled</button>
+        <a mat-button href="https://www.google.com/" target="_blank">Link</a>
+      </div>
+      <mat-divider></mat-divider>
+      <div class="example-label">Raised</div>
+      <div class="example-button-row">
+        <button mat-raised-button>Basic</button>
+        <button mat-raised-button disabled>Disabled</button>
+        <a mat-raised-button href="https://www.google.com/" target="_blank"
+          >Link</a
+        >
+      </div>
+  
+      <div class="content">
+        <mat-card class="example-card" appearance="outlined">
+          <mat-card-header>
+            <div mat-card-avatar class="example-header-image"></div>
+            <mat-card-title>Shiba Inu</mat-card-title>
+            <mat-card-subtitle>Dog Breed</mat-card-subtitle>
+          </mat-card-header>
+          <img
+            mat-card-image
+            src="https://material.angular.io/assets/img/examples/shiba2.jpg"
+            alt="Photo of a Shiba Inu"
+          />
+          <mat-card-content>
+            <p>
+              The Shiba Inu is the smallest of the six original and distinct spitz
+              breeds of dog from Japan. A small, agile dog that copes very well
+              with mountainous terrain, the Shiba Inu was originally bred for
+              hunting.
+            </p>
+          </mat-card-content>
+          <mat-card-actions>
+            <button mat-button>LIKE</button>
+            <button mat-button>SHARE</button>
+          </mat-card-actions>
+        </mat-card>
+      </div>
+    </div>
+  </div>
+  <div class="container m-5">
+    <h2>Prueba Bulma</h2>
+    <div class="field">
+      <label class="label">Name</label>
+      <div class="control">
+        <input class="input" type="text" placeholder="Text input">
+      </div>
+    </div>
+    
+    <div class="field">
+      <label class="label">Username</label>
+      <div class="control has-icons-left has-icons-right">
+        <input class="input is-success" type="text" placeholder="Text input" value="bulma">
+        <span class="icon is-small is-left">
+          <i class="fas fa-user"></i>
+        </span>
+        <span class="icon is-small is-right">
+          <i class="fas fa-check"></i>
+        </span>
+      </div>
+      <p class="help is-success">This username is available</p>
+    </div>
+    
+    <div class="field">
+      <label class="label">Email</label>
+      <div class="control has-icons-left has-icons-right">
+        <input class="input is-danger" type="email" placeholder="Email input" value="hello@">
+        <span class="icon is-small is-left">
+          <i class="fas fa-envelope"></i>
+        </span>
+        <span class="icon is-small is-right">
+          <i class="fas fa-exclamation-triangle"></i>
+        </span>
+      </div>
+      <p class="help is-danger">This email is invalid</p>
+    </div>
+    
+    <div class="field">
+      <label class="label">Subject</label>
+      <div class="control">
+        <div class="select">
+          <select>
+            <option>Select dropdown</option>
+            <option>With options</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    
+    <div class="field">
+      <label class="label">Message</label>
+      <div class="control">
+        <textarea class="textarea" placeholder="Textarea"></textarea>
+      </div>
+    </div>
+    
+    <div class="field">
+      <div class="control">
+        <label class="checkbox">
+          <input type="checkbox">
+          I agree to the <a href="#">terms and conditions</a>
+        </label>
+      </div>
+    </div>
+    
+    <div class="field">
+      <div class="control">
+        <label class="radio">
+          <input type="radio" name="question">
+          Yes
+        </label>
+        <label class="radio">
+          <input type="radio" name="question">
+          No
+        </label>
+      </div>
+    </div>
+    
+    <div class="field is-grouped">
+      <div class="control">
+        <button class="button is-link">Submit</button>
+      </div>
+      <div class="control">
+        <button class="button is-link is-light">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <div class="container m-5">
+    <h2 class="text-center">Nuestros Productos</h2>
+    <section class="splide" aria-label="Splide Centered E-Commerce Slider">
+      <div class="splide__track">
+        <ul class="splide__list">
+          <li class="splide__slide">
+            <img src="https://via.placeholder.com/600x400?text=Producto+1" alt="Producto 1">
+            <p class="text-center">Producto 1</p>
+          </li>
+          <li class="splide__slide">
+            <img src="https://via.placeholder.com/600x400?text=Producto+2" alt="Producto 2">
+            <p class="text-center">Producto 2</p>
+          </li>
+          <li class="splide__slide">
+            <img src="https://via.placeholder.com/600x400?text=Producto+3" alt="Producto 3">
+            <p class="text-center">Producto 3</p>
+          </li>
+          <li class="splide__slide">
+            <img src="https://via.placeholder.com/600x400?text=Producto+4" alt="Producto 4">
+            <p class="text-center">Producto 4</p>
+          </li>
+          <li class="splide__slide">
+            <img src="https://via.placeholder.com/600x400?text=Producto+5" alt="Producto 5">
+            <p class="text-center">Producto 5</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </div>
+  
+  
