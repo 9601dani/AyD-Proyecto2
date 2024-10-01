@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    tools {
-        Maven Apache
-    }
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Ruta de Java 17
         MAVEN_HOME = '/opt/maven' // Ruta de Maven
