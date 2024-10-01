@@ -1,22 +1,22 @@
 pipeline {
     agent any
     tools {
-        maven 'Maven Apache' // Asegúrate de que el nombre coincida con la configuración en Jenkins
+        maven 'Maven Apache' // Maven name in Jenkins config
     }
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Ruta de Java 17
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Route of java 17
     }
     stages {
         stage('Checkout') {
             steps {
-                // Clonar el repositorio desde GitHub
+                // https for clone repo
                 git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'main', credentialsId: 'github-pat-global'
             }
         }
         stage('Build Backend') {
             steps {
                 dir('app-backend') {
-                    // Compilar el backend usando Maven
+                    // Compile using maven
                     sh 'mvn clean install'
                 }
             }
