@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Clonar el repositorio desde GitHub
-                git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'main'
+                git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'main',credentialsId: 'github-pat-global'
             }
         }
         stage('Build Backend') {
