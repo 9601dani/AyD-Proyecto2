@@ -5,11 +5,12 @@ pipeline {
     }
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Route of java 17
+        PROFILES = 'test'
     }
     stages {
         stage('Checkout') {
             steps {
-                // https for clone repo
+                // https to clone repo
                 git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'main', credentialsId: 'github-pat-global'
             }
         }
@@ -17,7 +18,10 @@ pipeline {
             steps {
                 dir('app-backend/ms-auth') {
                     // Compile using maven
-                    sh 'mvn clean install'
+                    sh '''
+                        mvn test &&
+                        mvn clean install
+                    '''
                 }
             }
         }
