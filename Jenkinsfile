@@ -15,11 +15,19 @@ pipeline {
         }
         stage('Build Backend') {
             steps {
-                dir('app-backend') {
+                dir('app-backend/ms-auth') {
                     // Compile using maven
                     sh 'mvn clean install'
                 }
             }
+            /*
+            steps {
+                dir('app-backend/ms-user') {
+                    // Compile using maven
+                    sh 'mvn clean install'
+                }
+            }
+            */
         }
     }
     post {
