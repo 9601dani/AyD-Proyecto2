@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    tools {
-        maven 'Maven 3.9.5' // Este es el nombre que se le dio en la  instalación de Maven en Jenkins
-    }
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Ruta de Java 17
     }
