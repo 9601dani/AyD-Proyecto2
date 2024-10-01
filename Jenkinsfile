@@ -13,22 +13,24 @@ pipeline {
                 git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'main', credentialsId: 'github-pat-global'
             }
         }
-        stage('Build Backend') {
+        stage('Build Backend Microservice Auth') {
             steps {
                 dir('app-backend/ms-auth') {
                     // Compile using maven
                     sh 'mvn clean install'
                 }
             }
-            /*
+        }
+        /*
+        stage('Build Backend Microservice User') {
             steps {
                 dir('app-backend/ms-user') {
                     // Compile using maven
                     sh 'mvn clean install'
                 }
             }
-            */
         }
+        */
     }
     post {
         success {
