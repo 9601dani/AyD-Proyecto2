@@ -4,19 +4,18 @@ pipeline {
         maven 'Maven Apache' // Maven name in Jenkins config
     }
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Route of java 17
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Ruta de Java 17
         PROFILES = 'test'
     }
     stages {
-        stages {
         stage('Checkout') {
             steps {
                 script {
-                    // use default 'main'
+                    // Use the 'main' branch by default if nothing else is defined
                     def branchName = env.BRANCH_NAME ?: 'main'
                     echo "Checking out branch: ${branchName}"
                     
-                    // clone correct repository
+                    // Clone the repository to the corresponding branch
                     git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: branchName, credentialsId: 'github-pat-global'
                 }
             }
@@ -24,7 +23,7 @@ pipeline {
         stage('Build Backend Microservice Auth') {
             steps {
                 dir('app-backend/ms-auth') {
-                    // Compile using maven
+                    // Build using Maven
                     sh '''
                         mvn test &&
                         mvn clean install
@@ -36,7 +35,7 @@ pipeline {
         stage('Build Backend Microservice User') {
             steps {
                 dir('app-backend/ms-user') {
-                    // Compile using maven
+                    // Build using Maven
                     sh 'mvn clean install'
                 }
             }
@@ -52,5 +51,3 @@ pipeline {
         }
     }
 }
-
-// test webhook 2
