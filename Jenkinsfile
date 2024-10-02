@@ -10,8 +10,13 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                // https to clone repo
-                git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'main', credentialsId: 'github-pat-global'
+                script {
+                    // EVN $GIT_BRANCH to detect what kind branch is used
+                    def branchName = "${env.GIT_BRANCH}" ?: 'main'
+                    echo "Checking out branch: ${branchName}"
+                    
+                    git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: branchName, credentialsId: 'github-pat-global'
+                }
             }
         }
         stage('Build Backend Microservice Auth') {
