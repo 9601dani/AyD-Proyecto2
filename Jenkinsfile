@@ -2,6 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'Maven Apache' // Maven name in Jenkins config
+        nodejs 'NodeJS' // NodeJS name in Jenkins config 
     }
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Ruta de Java 17
@@ -52,6 +53,17 @@ pipeline {
             }
         }
         */
+        stage('Build Frontend') {
+            steps {
+                dir('app-frontend') {
+                    // Install dependencies
+                    sh 'npm install'
+        
+                    // Build project
+                    sh 'npm run build -- --configuration=production'
+                }
+            }
+        }
     }
     post {
         success {
