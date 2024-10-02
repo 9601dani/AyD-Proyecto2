@@ -8,13 +8,15 @@ pipeline {
         PROFILES = 'test'
     }
     stages {
+        stages {
         stage('Checkout') {
             steps {
                 script {
-                    // EVN $GIT_BRANCH to detect what kind branch is used
-                    def branchName = "${env.BRANCH_NAME}" ?: 'main'
+                    // use default 'main'
+                    def branchName = env.BRANCH_NAME ?: 'main'
                     echo "Checking out branch: ${branchName}"
                     
+                    // clone correct repository
                     git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: branchName, credentialsId: 'github-pat-global'
                 }
             }
