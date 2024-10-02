@@ -12,7 +12,7 @@ pipeline {
             steps {
                 script {
                     // EVN $GIT_BRANCH to detect what kind branch is used
-                    def branchName = "${env.GIT_BRANCH}" ?: 'main'
+                    def branchName = "${env.BRANCH_NAME}" ?: 'main'
                     echo "Checking out branch: ${branchName}"
                     
                     git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: branchName, credentialsId: 'github-pat-global'
