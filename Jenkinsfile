@@ -2,7 +2,7 @@ pipeline {
     agent any
     tools {
         maven 'Maven Apache' // Maven name in Jenkins config
-        nodejs 'NodeJs' // NodeJS name in Jenkins config 
+        // nodejs 'NodeJs' // NodeJS name in Jenkins config 
     }
     environment {
         JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Path to Java home 17
