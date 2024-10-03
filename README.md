@@ -1,4 +1,5 @@
 # Proyecto2-Ayd1
 
-This a test to main
-Develop
+## Contributors
+- Erick Daniel Morales Xicará
+- Leví Isaac Hernández Sapón
