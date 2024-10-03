@@ -28,7 +28,7 @@ pipeline {
                 script {
                     echo "Checking out branch: ${env.BRANCH_NAME}"
                     // Clone the repository with the corresponding branch
-                    git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: env.BRANCH_NAME, credentialsId: 'github-pat-global'
+                    git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'develop', credentialsId: 'github-pat-global'
                 }
             }
         }
@@ -71,7 +71,7 @@ pipeline {
         stage('Merge PR') {
             when {
                 expression {
-                    env.CHANGE_ID != null && (env.CHANGE_TARGET == 'main' || env.CHANGE_TARGET == 'develop')
+                    env.CHANGE_ID != null && env.CHANGE_TARGET == 'develop'
                 }
             }
             steps {
