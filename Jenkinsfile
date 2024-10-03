@@ -71,7 +71,7 @@ pipeline {
         stage('Merge PR') {
             when {
                 expression {
-                    return env.CHANGE_ID != null && (env.CHANGE_TARGET == 'main' || env.CHANGE_TARGET == 'develop')
+                    env.CHANGE_ID != null && (env.CHANGE_TARGET == 'main' || env.CHANGE_TARGET == 'develop')
                 }
             }
             steps {
