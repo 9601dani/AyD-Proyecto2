@@ -71,11 +71,20 @@ pipeline {
         stage('Merge PR') {
             when {
                 expression {
-                    return env.CHANGE_ID != null && (env.CHANGE_TARGET == 'main' || env.CHANGE_TARGET == 'develop')
+                    env.CHANGE_ID != null && (env.CHANGE_TARGET == 'main' || env.CHANGE_TARGET == 'develop')
                 }
             }
             steps {
-                sh 'gh pr merge $CHANGE_ID --merge --admin'  // Executing merge
+                script {
+                    def isMergeable = sh(script: "gh pr view $CHANGE_ID --json mergeable --jq .mergeable", returnStdout: true).trim()
+
+                    if (isMergeable == 'true') {
+                        echo "PR is mergeable, proceeding to merge."
+                        sh "gh pr merge $CHANGE_ID --merge --admin"
+                    } else {
+                        error("PR is not mergeable. Merge skipped.")
+                    }
+                }
             }
         }
     }
