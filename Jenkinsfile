@@ -5,7 +5,7 @@ pipeline {
         nodejs 'NodeJs' // NodeJS name in Jenkins config 
     }
     environment {
-        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Ruta de Java 17
+        JAVA_HOME = '/usr/lib/jvm/java-17-openjdk-amd64' // Path to Java home 17
         PROFILES = 'test'
     }
     stages {
@@ -65,6 +65,17 @@ pipeline {
                     //Run unit test
                    // sh 'npm test -- --watch=false --browsers=ChromeHeadless'
                 }
+            }
+        }
+
+        stage('Merge PR') {
+            when {
+                expression {
+                    return env.CHANGE_ID != null && (env.CHANGE_TARGET == 'main' || env.CHANGE_TARGET == 'develop')
+                }
+            }
+            steps {
+                sh 'gh pr merge $CHANGE_ID --merge --admin'  // Executing merge
             }
         }
     }
