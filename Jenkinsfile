@@ -9,26 +9,26 @@ pipeline {
         PROFILES = 'test'
     }
     stages {
-        // stage('Check Branch') {
-        //     steps {
-        //         script {
-        //             def allowedBranches = ['develop', 'main']
-        //             if (!allowedBranches.contains(env.BRANCH_NAME)) {
-        //                 echo "Branch '${env.BRANCH_NAME}' is not allowed for this pipeline. Aborting."
-        //                 currentBuild.result = 'SUCCESS'
-        //                 error("Stopping pipeline as branch '${env.BRANCH_NAME}' is not allowed.")
-        //             } else {
-        //                 echo "Branch '${env.BRANCH_NAME}' is allowed. Continuing with the build."
-        //             }
-        //         }
-        //     }
-        // }
+        stage('Check Branch') {
+            steps {
+                script {
+                    def allowedBranches = ['develop', 'main']
+                    if (!allowedBranches.contains(env.BRANCH_NAME)) {
+                        echo "Branch '${env.BRANCH_NAME}' is not allowed for this pipeline. Aborting."
+                        currentBuild.result = 'SUCCESS'
+                        error("Stopping pipeline as branch '${env.BRANCH_NAME}' is not allowed.")
+                    } else {
+                        echo "Branch '${env.BRANCH_NAME}' is allowed. Continuing with the build."
+                    }
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 script {
-                    // echo "Checking out branch: ${env.BRANCH_NAME}"
+                    echo "Checking out branch: ${env.BRANCH_NAME}"
                     // Clone the repository with the corresponding branch
-                    git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: 'develop', credentialsId: 'github-pat-global'
+                    git url: 'https://github.com/9601dani/AyD-Proyecto2.git', branch: env.BRANCH_NAME, credentialsId: 'github-pat-global'
                 }
             }
         }
@@ -71,7 +71,7 @@ pipeline {
         stage('Merge PR') {
             when {
                 expression {
-                    env.CHANGE_ID != null && env.CHANGE_TARGET == 'develop'
+                    env.CHANGE_ID != null && (env.CHANGE_TARGET == 'develop' || env.CHANGE_TARGET == 'main')
                 }
             }
             steps {
