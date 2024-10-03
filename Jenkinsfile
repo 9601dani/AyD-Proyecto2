@@ -53,20 +53,20 @@ pipeline {
             }
         }
         */
-        stage('Build Frontend') {
-            steps {
-                dir('app-frontend') {
-                    // Install dependencies
-                    sh 'npm install'
+        // stage('Build Frontend') {
+        //     steps {
+        //         dir('app-frontend') {
+        //             // Install dependencies
+        //             sh 'npm install'
         
-                    // Build project
-                    sh 'npm run build -- --configuration=production'
+        //             // Build project
+        //             sh 'npm run build -- --configuration=production'
 
-                    //Run unit test
-                   // sh 'npm test -- --watch=false --browsers=ChromeHeadless'
-                }
-            }
-        }
+        //             //Run unit test
+        //            // sh 'npm test -- --watch=false --browsers=ChromeHeadless'
+        //         }
+        //     }
+        // }
 
         stage('Merge PR') {
             when {
