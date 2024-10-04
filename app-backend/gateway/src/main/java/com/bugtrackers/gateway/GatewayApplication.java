@@ -1,13 +1,13 @@
-package com.bugtrackers.ms_auth;
+package com.bugtrackers.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MsAuthApplication {
+public class GatewayApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(MsAuthApplication.class, args);
+		SpringApplication.run(GatewayApplication.class, args);
 	}
 
 }

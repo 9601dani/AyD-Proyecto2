@@ -1,0 +1,16 @@
+server:
+  port: 8080
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: gateway
+  
+  cloud:
+    gateway:
+      routes:
+        - id: auth-route
+          uri: ${AUTH_ROUTE_URI:http://localhost:8081}
+          predicates:
+            - Path=/auth/**

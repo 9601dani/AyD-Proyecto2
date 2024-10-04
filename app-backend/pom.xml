@@ -17,6 +17,7 @@
 
     <modules>
         <module>ms-auth</module>
+        <module>gateway</module>
     </modules>
 
     <properties>
