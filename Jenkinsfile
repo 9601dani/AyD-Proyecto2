@@ -70,20 +70,11 @@ pipeline {
 
         stage('Merge PR') {
             when {
-                expression {
-                    env.CHANGE_ID != null && (env.CHANGE_TARGET == 'develop' || env.CHANGE_TARGET == 'main')
-                }
+                changeRequest()
             }
             steps {
                 script {
-                    def isMergeable = sh(script: "gh pr view $CHANGE_ID --json mergeable --jq .mergeable", returnStdout: true).trim()
-
-                    if (isMergeable == 'true' || isMergeable == 'UNKNOWN_CONDITION') {
-                        echo "Proceeding with merge even if status is not clear."
-                        sh "gh pr merge $CHANGE_ID --merge --admin"
-                    } else {
-                        error("PR is not mergeable. Merge skipped.")
-                    }
+                    echo "Proceeding with merge PR."
                 }
             }
         }
