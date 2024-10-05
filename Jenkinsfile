@@ -67,17 +67,6 @@ pipeline {
         //         }
         //     }
         // }
-
-        stage('Merge PR') {
-            when {
-                changeRequest()
-            }
-            steps {
-                script {
-                    echo "Proceeding with merge PR."
-                }
-            }
-        }
     }
     post {
         success {
