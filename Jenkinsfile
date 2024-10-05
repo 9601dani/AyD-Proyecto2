@@ -9,20 +9,20 @@ pipeline {
         PROFILES = 'test'
     }
     stages {
-        stage('Check Branch') {
-            steps {
-                script {
-                    def allowedBranches = ['develop', 'main']
-                    if (!allowedBranches.contains(env.BRANCH_NAME)) {
-                        echo "Branch '${env.BRANCH_NAME}' is not allowed for this pipeline. Aborting."
-                        currentBuild.result = 'SUCCESS'
-                        error("Stopping pipeline as branch '${env.BRANCH_NAME}' is not allowed.")
-                    } else {
-                        echo "Branch '${env.BRANCH_NAME}' is allowed. Continuing with the build."
-                    }
-                }
-            }
-        }
+        // stage('Check Branch') {
+        //     steps {
+        //         script {
+        //             def allowedBranches = ['develop', 'main']
+        //             if (!allowedBranches.contains(env.BRANCH_NAME)) {
+        //                 echo "Branch '${env.BRANCH_NAME}' is not allowed for this pipeline. Aborting."
+        //                 currentBuild.result = 'SUCCESS'
+        //                 error("Stopping pipeline as branch '${env.BRANCH_NAME}' is not allowed.")
+        //             } else {
+        //                 echo "Branch '${env.BRANCH_NAME}' is allowed. Continuing with the build."
+        //             }
+        //         }
+        //     }
+        // }
         stage('Checkout') {
             steps {
                 script {
