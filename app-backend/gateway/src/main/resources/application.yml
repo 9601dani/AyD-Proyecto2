@@ -9,20 +9,20 @@ spring:
   
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - "*"
+            maxAge: 3600
       routes:
         - id: auth-route
           uri: ${AUTH_ROUTE_URI:http://localhost:8081}
           predicates:
-            - Path=/auth/**
-    globalcors:
-      corsConfigurations:
-        '[/**]':
-          allowedOrigins: "http://localhost:4200"
-          allowedMethods:
-            - GET
-            - POST
-            - PUT
-            - DELETE
-          allowedHeaders:
-            - "*"
-          maxAge: 3600        
+            - Path=/auth/**        

@@ -79,6 +79,12 @@ export class LoginComponent{
             this.registerForm.reset();
             this.isModalVisible = false;
             document.body.classList.remove("is-modal-active");
+          }, error => {
+            Swal.fire({
+              title: 'Error!',
+              text: 'No se pudo registrar al usuario.',
+              icon: 'error'
+            })
           }
         );
       }

@@ -12,7 +12,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @AllArgsConstructor
 public class AuthController {
 
-    private final AuthService _authService;
+    private final AuthService authService;
     
     
     @GetMapping("")
@@ -35,17 +34,7 @@ public class AuthController {
     @PostMapping("/register")
     @Transactional
     public ResponseEntity<AuthResponse> register(@RequestBody @Valid AuthRequest user) {
-        User user1 = this._authService.register(user);
-        AuthResponse authResponse = new AuthResponse(
-            user1.getId(),
-            user1.getEmail(),
-            user1.getUsername(),
-            user1.getAuthToken(),
-            user1.getIsActivated(),
-            user1.getIsVerified(),
-            user1.getCreatedAt()
-        );
-
+        AuthResponse authResponse = this.authService.register(user);
         return ResponseEntity.ok(authResponse);
     }
     

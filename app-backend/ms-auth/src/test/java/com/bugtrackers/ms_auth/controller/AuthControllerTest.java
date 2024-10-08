@@ -8,10 +8,12 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.bugtrackers.ms_auth.config.GsonConfig;
 import com.bugtrackers.ms_auth.dto.request.AuthRequest;
 import com.bugtrackers.ms_auth.dto.response.AuthResponse;
 import com.bugtrackers.ms_auth.models.User;
 import com.bugtrackers.ms_auth.services.AuthService;
+import com.google.gson.Gson;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -20,10 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-import java.time.LocalDateTime;
 
 @WebMvcTest(AuthController.class)
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 public class AuthControllerTest {
 
     @Autowired
@@ -45,17 +46,12 @@ public class AuthControllerTest {
 
         AuthRequest authRequest = new AuthRequest("email@example.com", "username", "password");
         User mockUser = new User("email@example.com", "username", "password");
-        when(authService.register(authRequest)).thenReturn(mockUser);
+        AuthResponse authResponse = new AuthResponse(mockUser);
+        when(authService.register(authRequest)).thenReturn(authResponse);
 
-        String expectedResponseJson = String.format(
-                "{\"id\":%d,\"email\":\"%s\",\"username\":\"%s\",\"isActivated\":%s,\"isVerified\":%s,\"createdAt\":\"%s\"}",
-                mockUser.getId(),
-                mockUser.getEmail(),
-                mockUser.getUsername(),
-                Boolean.toString(mockUser.getIsActivated()),
-                Boolean.toString(mockUser.getIsVerified()),
-                mockUser.getCreatedAt().toString() 
-        );
+        Gson gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
+        String expectedResponseJson = gson.toJson(authResponse);
+
 
         mockMvc.perform(post("/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
