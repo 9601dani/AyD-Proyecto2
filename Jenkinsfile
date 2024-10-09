@@ -93,7 +93,8 @@ pipeline {
                         mkdir -p app-backend/coverage
                         mvn jacoco:merge \
                             -Djacoco.destFile=app-backend/coverage/merged.exec \
-                            -Djacoco.dataFiles="app-backend/ms-auth/target/jacoco.exec,app-backend/gateway/target/jacoco.exec"
+                            -Djacoco.dataFile=app-backend/ms-auth/target/jacoco.exec \
+                            -Djacoco.dataFile=app-backend/gateway/target/jacoco.exec
                     '''
                 }
             }
