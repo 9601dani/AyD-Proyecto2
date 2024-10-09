@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bugtrackers.ms_auth.dto.request.AuthRequest;
+import com.bugtrackers.ms_auth.dto.request.LoginRequest;
 import com.bugtrackers.ms_auth.dto.response.AuthResponse;
 import com.bugtrackers.ms_auth.models.User;
 import com.bugtrackers.ms_auth.services.AuthService;
@@ -37,5 +38,12 @@ public class AuthController {
         AuthResponse authResponse = this.authService.register(user);
         return ResponseEntity.ok(authResponse);
     }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
+        AuthResponse response = this.authService.login(loginRequest);
+        return ResponseEntity.ok(response);
+    }
+    
     
 }

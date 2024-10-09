@@ -6,12 +6,15 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from "@angula
 import Swal from 'sweetalert2';
 import { RegisterModalComponent } from '../register-modal/register-modal.component';
 import { AuthService } from '../../../services/auth.service';
-import { response } from 'express';
+import { CookieService } from 'ngx-cookie-service';
+import { LocalStorageService } from '../../../services/local-storage.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RegisterModalComponent, MatIconModule, MatProgressSpinnerModule],
+  providers: [CookieService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
   schemas: [CUSTOM_ELEMENTS_SCHEMA],
@@ -29,7 +32,10 @@ export class LoginComponent{
   
   constructor(
     private fb: FormBuilder,
-    private _authService: AuthService
+    private _authService: AuthService,
+    private _cookieService: CookieService,
+    private _localStorageService: LocalStorageService,
+    private _router: Router
    
   ) {
     this.loginForm = this.fb.group({
@@ -123,10 +129,29 @@ export class LoginComponent{
     }
 
     const data = {
-      username: this.loginForm.get('usernameOrEmail')?.value,
+      usernameOrEmail: this.loginForm.get('usernameOrEmail')?.value,
       password: this.loginForm.get('password')?.value
     };
 
+    this._authService.login(data)
+    .subscribe({
+      next: response => {
+        this._cookieService.set('token', response.token);
+        this._localStorageService.setUserId(response.id);
+        this._localStorageService.setUsername(response.username);
+        this._router.navigate(['/home']);
+      },
+      error: error => {
+        Swal.fire({
+          title: "Error!",
+          text: error.error.message,
+          icon: "error"
+        })
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    })
   
   }
 

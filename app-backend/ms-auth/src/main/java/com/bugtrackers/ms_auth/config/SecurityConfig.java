@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder.SecretKeyFactoryAlgorithm;
 import org.springframework.security.web.SecurityFilterChain;
 
+import com.bugtrackers.ms_auth.exceptions.SettingNotFoundException;
 import com.bugtrackers.ms_auth.models.CompanySetting;
 import com.bugtrackers.ms_auth.repositories.CompanySettingRepository;
 
@@ -37,7 +38,12 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder getEncoder() {
         Optional<CompanySetting> companySetting = this.configSettingRepository.findByKeyName("secret");
-        return new Pbkdf2PasswordEncoder(companySetting.get().getKeyValue(), 1, 5, SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA256);
+
+        if(companySetting.isEmpty()) {
+            throw new SettingNotFoundException("No se encontró una configuración.");
+        }
+
+        return new Pbkdf2PasswordEncoder(companySetting.get().getKeyValue(), 1, 32, SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
     }
 
 }

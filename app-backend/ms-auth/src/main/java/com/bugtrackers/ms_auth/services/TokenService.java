@@ -31,7 +31,7 @@ public class TokenService {
         Optional<CompanySetting> zone = this.companySettingRepository.findByKeyName("zone");
 
         if(companyName.isEmpty() || jwtSecret.isEmpty() || jwtTime.isEmpty() || zone.isEmpty()) {
-            throw new SettingNotFoundException("Couldn't find a company setting");
+            throw new SettingNotFoundException("No se encontró una configuración.");
         }
 
         Algorithm algorithm = Algorithm.HMAC256(jwtSecret.get().getKeyName());

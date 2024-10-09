@@ -53,6 +53,18 @@ pipeline {
             }
         }
         */
+        // This should be built after all microservices.
+        stage('Build Backend Gateway') {
+            steps {
+                dir('app-backend/gateway') {
+                    // Build using Maven
+                    sh '''
+                        mvn test &&
+                        mvn clean install
+                    '''
+                }
+            }
+        }
         // stage('Build Frontend') {
         //     steps {
         //         dir('app-frontend') {
