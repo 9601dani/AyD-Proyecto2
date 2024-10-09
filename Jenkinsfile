@@ -84,17 +84,12 @@ pipeline {
         stage('Merge Jacoco Reports') {
             steps {
                 script {
-                    echo "Cleaning old Jacoco exec files..."
-                    sh '''
-                        rm -f app-backend/ms-auth/target/jacoco.exec app-backend/gateway/target/jacoco.exec
-                    '''
                     echo "Merging Jacoco reports from all microservices..."
                     sh '''
                         mkdir -p app-backend/coverage
                         mvn jacoco:merge \
                             -Djacoco.destFile=app-backend/coverage/merged.exec \
-                            -Djacoco.dataFile=app-backend/ms-auth/target/jacoco.exec \
-                            -Djacoco.dataFile=app-backend/gateway/target/jacoco.exec
+                            -Djacoco.dataFiles=app-backend/ms-auth/target/jacoco.exec,app-backend/gateway/target/jacoco.exec
                     '''
                 }
             }

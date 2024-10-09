@@ -33,9 +33,33 @@
                 <version>0.8.12</version>
                 <executions>
                     <execution>
+                        <id>prepare-agent</id>
                         <goals>
                             <goal>prepare-agent</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>merge</id>
+                        <goals>
+                            <goal>merge</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <directory>${project.basedir}/ms-auth/target</directory>
+                                    <includes>
+                                        <include>**/jacoco.exec</include>
+                                    </includes>
+                                </fileSet>
+                                <fileSet>
+                                    <directory>${project.basedir}/gateway/target</directory>
+                                    <includes>
+                                        <include>**/jacoco.exec</include>
+                                    </includes>
+                                </fileSet>
+                            </fileSets>
+                            <destFile>${project.basedir}/target/merged-jacoco.exec</destFile>
+                        </configuration>
                     </execution>
                     <execution>
                         <id>report</id>
@@ -44,18 +68,9 @@
                             <goal>report</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>merge</id>
-                        <goals>
-                            <goal>merge</goal>
-                        </goals>
-                    </execution>
                 </executions>
             </plugin>
         </plugins>
     </build>
-
-
-
 
 </project>
