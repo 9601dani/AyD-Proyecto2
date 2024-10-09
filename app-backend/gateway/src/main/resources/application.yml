@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8000
 
 spring:
   profiles:
@@ -23,6 +23,6 @@ spring:
             maxAge: 3600
       routes:
         - id: auth-route
-          uri: ${AUTH_ROUTE_URI:http://localhost:8081}
+          uri: ${AUTH_ROUTE_URI:http://localhost:8001}
           predicates:
             - Path=/auth/**        
