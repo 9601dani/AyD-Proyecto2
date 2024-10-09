@@ -88,10 +88,9 @@
 						</goals>
 					</execution>
 					<execution>
-						<id>report</id>
-						<phase>test</phase>
+						<id>merge</id>
 						<goals>
-							<goal>report</goal>
+							<goal>merge</goal>
 						</goals>
 					</execution>
 				</executions>
