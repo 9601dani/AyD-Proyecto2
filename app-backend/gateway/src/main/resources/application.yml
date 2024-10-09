@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: 8000
 
 spring:
   profiles:
@@ -9,8 +9,20 @@ spring:
   
   cloud:
     gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - "*"
+            maxAge: 3600
       routes:
         - id: auth-route
-          uri: ${AUTH_ROUTE_URI:http://localhost:8081}
+          uri: ${AUTH_ROUTE_URI:http://localhost:8001}
           predicates:
-            - Path=/auth/**
+            - Path=/auth/**        

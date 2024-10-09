@@ -37,8 +37,8 @@ pipeline {
                 dir('app-backend/ms-auth') {
                     // Build using Maven
                     sh '''
-                        mvn test &&
-                        mvn clean install
+                        mvn test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
                     '''
                 }
             }
@@ -53,6 +53,18 @@ pipeline {
             }
         }
         */
+        // This should be built after all microservices.
+        stage('Build Backend Gateway') {
+            steps {
+                dir('app-backend/gateway') {
+                    // Build using Maven
+                    sh '''
+                        mvn test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
         // stage('Build Frontend') {
         //     steps {
         //         dir('app-frontend') {
