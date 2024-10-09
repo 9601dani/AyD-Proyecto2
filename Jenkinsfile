@@ -37,7 +37,7 @@ pipeline {
                 dir('app-backend/ms-auth') {
                     // Build using Maven
                     sh '''
-                        mvn test &&
+                        mvn test -D spring.profiles.active=test &&
                         mvn clean install
                     '''
                 }
@@ -59,7 +59,7 @@ pipeline {
                 dir('app-backend/gateway') {
                     // Build using Maven
                     sh '''
-                        mvn test &&
+                        mvn test -D spring.profiles.active=test &&
                         mvn clean install
                     '''
                 }
