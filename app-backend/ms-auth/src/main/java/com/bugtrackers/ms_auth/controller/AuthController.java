@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtrackers.ms_auth.dto.request.AuthRequest;
 import com.bugtrackers.ms_auth.dto.request.LoginRequest;
 import com.bugtrackers.ms_auth.dto.response.AuthResponse;
-import com.bugtrackers.ms_auth.models.User;
 import com.bugtrackers.ms_auth.services.AuthService;
 
 import jakarta.transaction.Transactional;

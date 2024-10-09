@@ -38,7 +38,7 @@ pipeline {
                     // Build using Maven
                     sh '''
                         mvn test -D spring.profiles.active=test &&
-                        mvn clean install
+                        mvn clean install -D spring.profiles.active=test
                     '''
                 }
             }
@@ -60,7 +60,7 @@ pipeline {
                     // Build using Maven
                     sh '''
                         mvn test -D spring.profiles.active=test &&
-                        mvn clean install
+                        mvn clean install -D spring.profiles.active=test
                     '''
                 }
             }

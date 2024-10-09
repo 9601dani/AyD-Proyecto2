@@ -14,7 +14,6 @@ import com.bugtrackers.ms_auth.dto.request.AuthRequest;
 import com.bugtrackers.ms_auth.dto.request.LoginRequest;
 import com.bugtrackers.ms_auth.dto.response.AuthResponse;
 import com.bugtrackers.ms_auth.models.User;
-import com.bugtrackers.ms_auth.repositories.AuthRepository;
 import com.bugtrackers.ms_auth.services.AuthService;
 import com.google.gson.Gson;
 
