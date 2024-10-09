@@ -122,12 +122,6 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>merge</id>
-						<goals>
-							<goal>merge</goal>
-						</goals>
-					</execution>
 				</executions>
 			</plugin>
 		</plugins>
