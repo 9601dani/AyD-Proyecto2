@@ -98,6 +98,7 @@ pipeline {
                 }
             }
         }
+
         stage('Generate Combined Coverage Report') {
             steps {
                 script {
