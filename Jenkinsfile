@@ -105,24 +105,19 @@ pipeline {
                 }
             }
         }
-        stage('Verify Combined Coverage') {
-            steps {
-                script {
-                    def coverageReport = readFile 'app-backend/coverage/jacoco.xml'
-                    
-                    def coverage = sh(script: "xmllint --xpath 'string(//report/counter[@type=\"INSTRUCTION\"]/@covered)' app-backend/coverage/jacoco.xml", returnStdout: true).trim().toDouble()
-
-                    if (coverage < 80.0) {
-                        error("Combined coverage is below 80%! Current coverage: ${coverage}%")
-                    } else {
-                        echo "Combined coverage is sufficient: ${coverage}%"
-                    }
-                }
-            }
-        }
     }
     post {
         success {
+            script {
+                jacoco(
+                    execPattern: 'app-backend/coverage/merged.exec',
+                    classPattern: '**/target/classes',
+                    sourcePattern: '**/src/main/java',
+                    exclusionPattern: '**/target/test-classes',
+                    changeBuildStatus: true,
+                    minimumLineCoverage: '80'
+                )
+            }
             echo 'Backend build completed successfully!'
         }
         failure {
