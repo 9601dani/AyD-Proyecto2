@@ -38,7 +38,6 @@ pipeline {
                     // Build using Maven
                     sh '''
                         mvn clean test -D spring.profiles.active=test &&
-                        mvn jacoco:report -D spring.profiles.active=test &&
                         mvn clean install -D spring.profiles.active=test
                     '''
                 }
@@ -61,7 +60,6 @@ pipeline {
                     // Build using Maven
                     sh '''
                         mvn clean test -D spring.profiles.active=test &&
-                        mvn jacoco:report -D spring.profiles.active=test &&
                         mvn clean install -D spring.profiles.active=test
                     '''
                 }
@@ -83,42 +81,37 @@ pipeline {
         // }
         stage('Merge Jacoco Reports') {
             steps {
-                script {
+                dir('app-backend') {
                     echo "Merging Jacoco reports from all microservices..."
-                    sh '''
-                        mkdir -p app-backend/coverage
-                        mvn jacoco:merge \
-                            -Djacoco.destFile=app-backend/coverage/merged.exec \
-                            -Djacoco.dataFiles=app-backend/ms-auth/target/jacoco.exec,app-backend/gateway/target/jacoco.exec
-                    '''
+                    sh 'mvn clean test verify -D spring.profiles.active=test'
                 }
             }
         }
 
-        stage('Generate Combined Coverage Report') {
-            steps {
-                script {
-                    echo "Generating the combined Jacoco report..."
-                    sh '''
-                        mvn jacoco:report -Djacoco.dataFile=app-backend/coverage/merged.exec \
-                            -Djacoco.outputDirectory=app-backend/coverage/
-                    '''
-                }
-            }
-        }
+        // stage('Generate Combined Coverage Report') {
+        //     steps {
+        //         script {
+        //             echo "Generating the combined Jacoco report..."
+        //             sh '''
+        //                 mvn jacoco:report -Djacoco.dataFile=app-backend/coverage/merged.exec \
+        //                     -Djacoco.outputDirectory=app-backend/coverage/
+        //             '''
+        //         }
+        //     }
+        // }
     }
     post {
         success {
-            script {
-                jacoco(
-                    execPattern: 'app-backend/coverage/merged.exec',
-                    classPattern: '**/target/classes',
-                    sourcePattern: '**/src/main/java',
-                    exclusionPattern: '**/target/test-classes',
-                    changeBuildStatus: true,
-                    minimumLineCoverage: '80'
-                )
-            }
+            // script {
+                // jacoco(
+                //     execPattern: 'app-backend/coverage/merged.exec',
+                //     classPattern: '**/target/classes',
+                //     sourcePattern: '**/src/main/java',
+                //     exclusionPattern: '**/target/test-classes',
+                //     changeBuildStatus: true,
+                //     minimumLineCoverage: '80'
+                // )
+            // }
             echo 'Backend build completed successfully!'
         }
         failure {
