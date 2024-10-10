@@ -102,16 +102,16 @@ pipeline {
     }
     post {
         success {
-            // script {
-                // jacoco(
-                //     execPattern: 'app-backend/coverage/merged.exec',
-                //     classPattern: '**/target/classes',
-                //     sourcePattern: '**/src/main/java',
-                //     exclusionPattern: '**/target/test-classes',
-                //     changeBuildStatus: true,
-                //     minimumLineCoverage: '80'
-                // )
-            // }
+            script {
+                jacoco(
+                    execPattern: 'app-backend/report/target/jacoco.exec',
+                    classPattern: '**/target/classes',
+                    sourcePattern: '**/src/main/java',
+                    exclusionPattern: '**/target/test-classes',
+                    changeBuildStatus: true,
+                    minimumLineCoverage: '80'
+                )
+            }
             echo 'Backend build completed successfully!'
         }
         failure {
