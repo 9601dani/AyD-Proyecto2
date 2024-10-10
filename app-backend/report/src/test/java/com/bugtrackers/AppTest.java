@@ -1,20 +1,19 @@
 package com.bugtrackers;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-/**
- * Unit test for simple App.
- */
-public class AppTest 
-{
-    /**
-     * Rigorous Test :-)
-     */
+public class AppTest {
+    
     @Test
-    public void shouldAnswerWithTrue()
-    {
-        assertTrue( true );
+    void testApp() {
+        App app = new App();
+        assertNotNull(app);
+    }
+
+    @Test
+    void testMain() {
+        App.main(new String[] {});
     }
 }
