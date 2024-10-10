@@ -88,29 +88,41 @@ pipeline {
             }
         }
 
-        // stage('Generate Combined Coverage Report') {
-        //     steps {
-        //         script {
-        //             echo "Generating the combined Jacoco report..."
-        //             sh '''
-        //                 mvn jacoco:report -Djacoco.dataFile=app-backend/coverage/merged.exec \
-        //                     -Djacoco.outputDirectory=app-backend/coverage/
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('Verify tests') {
+            steps {
+                
+                dir('app-backend') {
+                    echo "cat ms-auth TESTS"
+                    sh 'cat ms-auth/target/surefire-reports/*.txt'
+                    echo "cat gateway TESTS"
+                    sh 'cat gateway/target/surefire-reports/*.txt'
+                    echo "cat report TESTS"
+                    sh 'cat report/target/surefire-reports/*.txt'
+                }
+            }
+        }
+
+        stage('Verify Jacoco Exec') {
+            steps {
+                dir('app-backend/report/target') {
+                    sh 'ls -l'
+                }
+            }
+        }
+        
     }
     post {
         success {
             script {
-                jacoco(
-                    execPattern: 'app-backend/report/target/jacoco.exec',
+                jacoco (
+                    execPattern: '**/target/*.exec',
                     classPattern: '**/target/classes',
                     sourcePattern: '**/src/main/java',
                     exclusionPattern: '**/target/test-classes',
                     changeBuildStatus: true,
                     minimumLineCoverage: '80'
                 )
+
             }
             echo 'Backend build completed successfully!'
         }
