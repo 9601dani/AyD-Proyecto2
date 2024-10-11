@@ -32,7 +32,7 @@ public class ImgController {
     public String uploadImage(@RequestParam("file") MultipartFile file) {
         try {
             String objectName = storageService.uploadImage(file);
-            return storageService.getPublicUrl(objectName);
+            return objectName;
         } catch (IOException e) {
             return "Error al subir la imagen: " + e.getMessage();
         }
@@ -42,9 +42,8 @@ public class ImgController {
     public List<String> uploadMultipleImages(@RequestParam("files") MultipartFile[] files) {
         return List.of(files).stream().map(file -> {
             try {
-                String uniqueFileName = UUID.randomUUID().toString();
                 String objectName = storageService.uploadImage(file);
-                return storageService.getPublicUrl(objectName);
+                return objectName;
             } catch (IOException e) {
                 return "Error al subir: " + file.getOriginalFilename();
             }

@@ -43,8 +43,4 @@ public class CloudService {
         Blob blob = storage.get(bucketName, objectName);
         return blob.getContent();
     }
-
-    public String getPublicUrl(String objectName) {
-        return String.format("https://storage.googleapis.com/%s/%s", bucketName, objectName);
-    }
 }
