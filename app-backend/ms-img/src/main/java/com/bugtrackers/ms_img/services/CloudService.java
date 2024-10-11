@@ -50,9 +50,4 @@ public class CloudService {
         bucket.create(objectName, file.getBytes(), file.getContentType());
         return objectName;
     }
-
-    public byte[] getImage(String objectName) {
-        Blob blob = storage.get(bucketName, objectName);
-        return blob.getContent();
-    }
 }
