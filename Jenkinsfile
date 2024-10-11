@@ -48,11 +48,25 @@ pipeline {
             steps {
                 dir('app-backend/ms-user') {
                     // Build using Maven
-                    sh 'mvn clean install'
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
                 }
             }
         }
         */
+        stage('Build Backend Microservice User') {
+            steps {
+                dir('app-backend/ms-user') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
         // This should be built after all microservices.
         stage('Build Backend Gateway') {
             steps {

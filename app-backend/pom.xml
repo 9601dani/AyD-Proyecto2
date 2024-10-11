@@ -18,6 +18,7 @@
   <modules>
     <module>ms-auth</module>
     <module>gateway</module>
+    <module>ms-user</module>
     <module>report</module>
   </modules>
       
