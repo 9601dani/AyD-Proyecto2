@@ -9,7 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.ResourceLoader;
+import com.google.common.collect.Lists;
 
+
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
@@ -25,9 +28,18 @@ public class CloudService {
             @Value("${gcp.bucket_name}") String bucketName,
             ResourceLoader resourceLoader) throws IOException {
         
-        InputStream input = resourceLoader.getResource(credentialsPath).getInputStream();
-        
-        GoogleCredentials credentials = GoogleCredentials.fromStream(input);
+       String jenkinsHome = System.getenv("JENKINS_HOME");
+        InputStream credentialsStream;
+
+        if (jenkinsHome != null) {
+            credentialsStream = new FileInputStream(credentialsPath);
+        } else {
+            credentialsStream = resourceLoader.getResource(credentialsPath).getInputStream();
+        }
+
+        GoogleCredentials credentials = GoogleCredentials.fromStream(credentialsStream)
+                .createScoped(Lists.newArrayList("https://www.googleapis.com/auth/cloud-platform"));
+
         this.storage = StorageOptions.newBuilder().setCredentials(credentials).build().getService();
         this.bucketName = bucketName;
     }
