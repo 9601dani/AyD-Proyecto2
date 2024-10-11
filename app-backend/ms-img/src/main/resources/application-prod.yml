@@ -1,0 +1,5 @@
+gcp:
+  credentials:
+    location: ${GCP_CREDENTIALS_FILE_PATH}
+  bucket_name: ${GCP_BUCKET_NAME}
+  
