@@ -23,6 +23,14 @@ pipeline {
         //         }
         //     }
         // }
+        stage('Check Environment Variables') {
+            steps {
+                script {
+                    echo "GCP_BUCKET_NAME=${env.GCP_BUCKET_NAME}"
+                    echo "GCP_CREDENTIALS_FILE_PATH=${env.GCP_CREDENTIALS_FILE_PATH}"
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 script {
