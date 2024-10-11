@@ -19,6 +19,7 @@ public interface ModuleRepository extends JpaRepository<Module, Integer> {
             JOIN user_has_role uhr ON uhr.FK_Role = r.id
             JOIN user u ON u.id = uhr.FK_User
             WHERE u.id=:id AND p.is_available = 1 AND m.is_available = 1
+            GROUP BY m.id
             """, nativeQuery = true)
     List<Module> findModulesByUserId(@Param("id") Integer id);
 }    

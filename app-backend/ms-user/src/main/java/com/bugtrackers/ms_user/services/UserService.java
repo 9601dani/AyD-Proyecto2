@@ -18,6 +18,7 @@ public class UserService {
 
     public List<ModuleResponse> getPages(Integer id) {
         List<Module> modules = this.moduleRepository.findModulesByUserId(id);
+        System.out.println(modules);
         List<ModuleResponse> moduleResponses = modules.stream().map(ModuleResponse::new).toList();
         return moduleResponses;
     }
