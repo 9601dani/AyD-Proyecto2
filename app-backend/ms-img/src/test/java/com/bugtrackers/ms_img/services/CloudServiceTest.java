@@ -1,87 +1,90 @@
 package com.bugtrackers.ms_img.services;
 
-import com.google.auth.oauth2.GoogleCredentials;
-import com.google.cloud.storage.Bucket;
-import com.google.cloud.storage.Blob;
-import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-public class CloudServiceTest {
+class CloudServiceTest {
 
-    /*@Mock
-    private Storage mockStorage;
-
-    @Mock
-    private Bucket mockBucket;
+   /*  @Mock
+    private Storage storage;
 
     @Mock
-    private Blob mockBlob;
+    private Bucket bucket;
 
     @Mock
-    private ResourceLoader mockResourceLoader;
+    private ResourceLoader resourceLoader;
 
     @Mock
-    private Resource mockResource;
+    private Blob blob;
 
-    @Mock
-    private MultipartFile mockFile;
-
-    @Mock
-    private GoogleCredentials mockGoogleCredentials;
-
+    @InjectMocks
     private CloudService cloudService;
 
-    private final String bucketName = "bucket_ayd1";
+    private final String bucketName = "test-bucket";
+    private final String credentialsPath = "classpath:credentials.json";
 
     @BeforeEach
-    public void setUp() throws IOException {
+    void setUp() throws IOException {
         MockitoAnnotations.openMocks(this);
-        when(mockGoogleCredentials.createScoped(anyList())).thenReturn(mockGoogleCredentials);
-        when(mockResourceLoader.getResource(anyString())).thenReturn(mockResource);
-        cloudService = new CloudService("bucket_ayd1", "bucket_ayd1", mockResourceLoader);
-        when(mockStorage.get(bucketName)).thenReturn(mockBucket);
+        Resource resource = mock(Resource.class);
+        InputStream inputStream = new ByteArrayInputStream("test-credentials".getBytes());
+        when(resourceLoader.getResource(credentialsPath)).thenReturn(resource);
+        when(resource.getInputStream()).thenReturn(inputStream);
+        when(storage.get(bucketName)).thenReturn(bucket);
     }
 
     @Test
-    public void testUploadImage() throws IOException {
-        byte[] fileContent = "test file content".getBytes();
-        when(mockFile.getBytes()).thenReturn(fileContent);
-        when(mockFile.getContentType()).thenReturn("image/jpeg");
-        when(mockBucket.create(anyString(), any(byte[].class), anyString())).thenReturn(mockBlob);
+    void testUploadImage() throws IOException {
+        // Arrange
+        MultipartFile mockFile = new MockMultipartFile(
+                "image.jpg", "image.jpg", "image/jpeg", "test image".getBytes());
+
+        String expectedObjectName = "images/" + UUID.randomUUID().toString();
+        when(bucket.create(anyString(), any(byte[].class), anyString())).thenAnswer(invocation -> {
+            String objectName = invocation.getArgument(0);
+            assertEquals(expectedObjectName.substring(0, 7), objectName.substring(0, 7)); // Verify folder
+            return mock(Blob.class); // Simulate Blob creation
+        });
+
+        // Act
         String objectName = cloudService.uploadImage(mockFile);
-        assertNotNull(objectName);
-        assertTrue(objectName.startsWith("images/"));
-        verify(mockBucket, times(1)).create(anyString(), eq(fileContent), eq("image/jpeg"));
+
+        // Assert
+        assertEquals(expectedObjectName.substring(0, 7), objectName.substring(0, 7)); // Check folder structure
+        verify(bucket, times(1)).create(anyString(), any(byte[].class), anyString());
     }
 
     @Test
-    public void testGetImage() {
-        byte[] blobContent = "test image content".getBytes();
-        when(mockBlob.getContent()).thenReturn(blobContent);
-        when(mockStorage.get(bucketName, "test-image.jpg")).thenReturn(mockBlob);
-        byte[] result = cloudService.getImage("test-image.jpg");
-        assertNotNull(result);
-        assertArrayEquals(blobContent, result);
-    }
+    void testGetImage() {
+        // Arrange
+        String objectName = "images/test-image.jpg";
+        byte[] expectedContent = "test image content".getBytes();
+        when(storage.get(bucketName, objectName)).thenReturn(blob);
+        when(blob.getContent()).thenReturn(expectedContent);
 
-    @Test
-    public void testGetPublicUrl() {
-        String publicUrl = cloudService.getPublicUrl("test-image.jpg");
-        String expectedUrl = String.format("https://storage.googleapis.com/%s/%s", bucketName, "test-image.jpg");
-        assertEquals(expectedUrl, publicUrl);
+        // Act
+        byte[] result = cloudService.getImage(objectName);
+
+        // Assert
+        assertEquals(expectedContent.length, result.length);
+        verify(storage, times(1)).get(bucketName, objectName);
     }*/
 }

@@ -15,39 +15,47 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.UUID;
+import java.util.Arrays;
+import java.util.List;
 
 @WebMvcTest(ImgController.class)
 public class ImgControllerTest {
 
-    /*@Autowired
+    @Autowired
     private MockMvc mockMvc;
 
     @MockBean
     private CloudService cloudService;
 
     @Test
-    public void uploadImage_shouldReturnPublicUrl() throws Exception {
+    public void uploadImage_shouldReturnObjectName() throws Exception {
         MockMultipartFile file = new MockMultipartFile(
             "file", "test-image.jpg", MediaType.IMAGE_JPEG_VALUE, "image data".getBytes()
         );
 
-        Mockito.when(cloudService.uploadImage(Mockito.any())).thenReturn("test-image.jpg");
-        Mockito.when(cloudService.getPublicUrl("test-image.jpg")).thenReturn("https://storage.googleapis.com/bucket/test-image.jpg");
+        String mockObjectName = "images/" + UUID.randomUUID();
+        Mockito.when(cloudService.uploadImage(Mockito.any())).thenReturn(mockObjectName);
 
         mockMvc.perform(multipart("/img/upload-test").file(file))
                 .andExpect(status().isOk())
-                .andExpect(content().string("https://storage.googleapis.com/bucket/test-image.jpg"));
+                .andExpect(content().string(mockObjectName));
     }
 
     @Test
-    public void uploadMultipleImages_shouldReturnListOfUrls() throws Exception {
-        MockMultipartFile file1 = new MockMultipartFile("files", "test1.jpg", MediaType.IMAGE_JPEG_VALUE, "image1 data".getBytes());
-        MockMultipartFile file2 = new MockMultipartFile("files", "test2.jpg", MediaType.IMAGE_JPEG_VALUE, "image2 data".getBytes());
+public void uploadMultipleImages_shouldReturnListOfObjectNames() throws Exception {
+    MockMultipartFile file1 = new MockMultipartFile("files", "test1.jpg", MediaType.IMAGE_JPEG_VALUE, "image1 data".getBytes());
+    MockMultipartFile file2 = new MockMultipartFile("files", "test2.jpg", MediaType.IMAGE_JPEG_VALUE, "image2 data".getBytes());
 
-        Mockito.when(cloudService.uploadImage(Mockito.any())).thenReturn("test1.jpg", "test2.jpg");
+    String objectName1 = "images/" + UUID.randomUUID();
+    String objectName2 = "images/" + UUID.randomUUID();
 
-        mockMvc.perform(multipart("/img/upload").file(file1).file(file2))
-                .andExpect(status().isOk())
-                .andExpect(content().json("[\"https://storage.googleapis.com/bucket/images/test1.jpg\", \"https://storage.googleapis.com/bucket/images/test2.jpg\"]"));
-    }*/
+    List<String> objectNames = Arrays.asList(objectName1, objectName2);
+
+    Mockito.when(cloudService.uploadImage(Mockito.any())).thenReturn(objectName1, objectName2);
+
+    mockMvc.perform(multipart("/img/upload").file(file1).file(file2))
+            .andExpect(status().isOk())
+            .andExpect(content().json("[\"" + objectName1 + "\", \"" + objectName2 + "\"]"));
+}
+
 }
