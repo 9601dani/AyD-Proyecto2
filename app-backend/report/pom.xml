@@ -40,6 +40,11 @@
     <dependency>
       <groupId>com.bugtrackers</groupId>
       <artifactId>ms-img</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.bugtrackers</groupId>
       <artifactId>ms-user</artifactId>
       <version>0.0.1-SNAPSHOT</version>
       <scope>compile</scope>
