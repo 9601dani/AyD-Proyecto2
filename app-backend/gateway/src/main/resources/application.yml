@@ -6,6 +6,13 @@ spring:
     active: dev
   application:
     name: gateway
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
   
   cloud:
     gateway:
@@ -25,4 +32,8 @@ spring:
         - id: auth-route
           uri: ${AUTH_ROUTE_URI:http://localhost:8001}
           predicates:
-            - Path=/auth/**        
+            - Path=/auth/**
+        - id: user-route
+          uri: ${USER_ROUTE_URI:http://localhost:8003}
+          predicates:
+            - Path=/user/pages/**      

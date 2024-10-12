@@ -9,11 +9,22 @@ import { AuthService } from '../../../services/auth.service';
 import { CookieService } from 'ngx-cookie-service';
 import { LocalStorageService } from '../../../services/local-storage.service';
 import { Router } from '@angular/router';
+import { NotLogoDirective } from '../../../directives/not-logo.directive';
+import { NavbarComponent } from '../navbar/navbar.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RegisterModalComponent, MatIconModule, MatProgressSpinnerModule],
+  
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    RegisterModalComponent,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    NotLogoDirective,
+    NavbarComponent
+  ],
   providers: [CookieService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
