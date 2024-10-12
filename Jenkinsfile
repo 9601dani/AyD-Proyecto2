@@ -23,6 +23,14 @@ pipeline {
         //         }
         //     }
         // }
+        stage('Check Environment Variables') {
+            steps {
+                script {
+                    echo "GCP_BUCKET_NAME=${env.GCP_BUCKET_NAME}"
+                    echo "GCP_CREDENTIALS_FILE_PATH=${env.GCP_CREDENTIALS_FILE_PATH}"
+                }
+            }
+        }
         stage('Checkout') {
             steps {
                 script {
@@ -35,6 +43,17 @@ pipeline {
         stage('Build Backend Microservice Auth') {
             steps {
                 dir('app-backend/ms-auth') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
+        stage('Build Backend Microservice Img') {
+            steps {
+                dir('app-backend/ms-img') {
                     // Build using Maven
                     sh '''
                         mvn clean test -D spring.profiles.active=test &&
