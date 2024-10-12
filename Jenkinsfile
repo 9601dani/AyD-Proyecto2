@@ -51,6 +51,17 @@ pipeline {
                 }
             }
         }
+        stage('Build Backend Microservice Img') {
+            steps {
+                dir('app-backend/ms-img') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
         /*
         stage('Build Backend Microservice User') {
             steps {

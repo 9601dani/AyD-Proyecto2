@@ -18,8 +18,8 @@
   <modules>
     <module>ms-auth</module>
     <module>gateway</module>
-    <module>report</module>
     <module>ms-img</module>
+    <module>report</module>
   </modules>
       
   <properties>

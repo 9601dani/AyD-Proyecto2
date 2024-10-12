@@ -1,7 +1,9 @@
 package com.bugtrackers.ms_img.controller;
 
-import com.bugtrackers.ms_img.services.CloudService; 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.bugtrackers.ms_img.services.CloudService;
+
+import lombok.AllArgsConstructor;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,18 +12,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/img")
+@AllArgsConstructor
 public class ImgController {
 
-    @Autowired
-    private CloudService storageService;
+    private final CloudService cloudService;
 
     @GetMapping("")
     public ResponseEntity<String> helloWorld() {
@@ -29,25 +27,18 @@ public class ImgController {
     }
 
     @PostMapping("/upload-test")
-    public String uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            String objectName = storageService.uploadImage(file);
-            return objectName;
-        } catch (IOException e) {
-            return "Error al subir la imagen: " + e.getMessage();
-        }
+    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        String objectName = cloudService.uploadImage(file);
+        return ResponseEntity.ok(objectName);
     }
 
     @PostMapping("/upload")
-    public List<String> uploadMultipleImages(@RequestParam("files") MultipartFile[] files) {
-        return List.of(files).stream().map(file -> {
-            try {
-                String objectName = storageService.uploadImage(file);
-                return objectName;
-            } catch (IOException e) {
-                return "Error al subir: " + file.getOriginalFilename();
-            }
-        }).collect(Collectors.toList());
+    public ResponseEntity<List<String>> uploadMultipleImages(@RequestParam("files") MultipartFile[] files) {
+        List<String> response = List.of(files).stream().map(file -> {
+            String objectName = cloudService.uploadImage(file);
+            return objectName;
+        }).toList();
+        return ResponseEntity.ok(response);
     }
     
     
