@@ -40,6 +40,13 @@ public class ImgController {
         }).toList();
         return ResponseEntity.ok(response);
     }
-    
+
+    @PostMapping("upload/profile")
+    public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file, @RequestParam("nameOldImage") String nameOldImage) {
+        String objectName = cloudService.uploadImage(file);
+        return ResponseEntity.ok(objectName);
+    }
+
+
     
 }

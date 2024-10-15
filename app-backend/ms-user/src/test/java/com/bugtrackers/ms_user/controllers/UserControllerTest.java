@@ -2,6 +2,7 @@ package com.bugtrackers.ms_user.controllers;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -13,10 +14,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.bugtrackers.ms_user.config.GsonConfig;
+import com.bugtrackers.ms_user.dto.request.UserAllRequest;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
+import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.models.Module;
 import com.bugtrackers.ms_user.models.Page;
 import com.bugtrackers.ms_user.services.UserService;
@@ -33,6 +37,9 @@ public class UserControllerTest {
     private List<Module> mockModules;
     Gson gson;
 
+
+    private UserAllRequest userAllRequest;
+
     @BeforeEach
     void setUp() {
         mockModules = List.of(
@@ -42,6 +49,8 @@ public class UserControllerTest {
         );
 
         gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
+
+        userAllRequest = new UserAllRequest( "nitUpdate", "imageProfileUpdate", "descriptionUpdate");
     }
 
     @Test
@@ -54,5 +63,35 @@ public class UserControllerTest {
         mockMvc.perform(get("/user/pages/1"))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void testGetProfile() throws Exception{
+
+        UserAllResponse userAllResponse = new UserAllResponse("email", "username", "nit", "imageProfile", "description");
+
+        when(userService.getById(1)).thenReturn(userAllResponse);
+
+        String expectedJson = gson.toJson(userAllResponse);
+
+        mockMvc.perform(get("/user/profile/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void testPutProfile() throws Exception{
+        
+        UserAllResponse userAllResponse = new UserAllResponse("emailUpdate", "usernameUpdate", "nitUpdate", "imageProfileUpdate", "descriptionUpdate");
+        
+        when(userService.updateProfile(1, userAllRequest)).thenReturn(userAllResponse);
+
+        String expectedJson = gson.toJson(userAllResponse);
+
+        mockMvc.perform(put("/user/profile/1")
+            .contentType(MediaType.APPLICATION_JSON) 
+            .content(gson.toJson(userAllRequest)))
+            .andExpect(status().isOk())
+            .andExpect(content().json(expectedJson)); 
     }
 }
