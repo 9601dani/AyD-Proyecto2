@@ -3,6 +3,8 @@ import { TestComponentsComponent } from './test-components/test-components/test-
 import { NgModule } from '@angular/core';
 import { HomeComponent } from './components/commons/home/home.component';
 import { LoginComponent } from './components/commons/login/login.component';
+import { NotFoundComponent } from './components/commons/not-found/not-found.component';
+import { CompanySettingsComponent } from './components/options/company-settings/company-settings.component';
 import {ProfileComponent} from "./components/user/profile/profile.component";
 
 export const routes: Routes = [
@@ -11,12 +13,13 @@ export const routes: Routes = [
     {path: 'home', component: HomeComponent},
     {path: 'test', component: TestComponentsComponent},
     {path: 'login', component: LoginComponent},
+    {path: 'options/company-settings', component: CompanySettingsComponent},
+    {path: '**', component: NotFoundComponent}
     {
       path: 'edit', children: [
         {path: 'profile', component: ProfileComponent}
       ]
     }
-
 
 ];
 

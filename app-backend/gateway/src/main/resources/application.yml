@@ -33,7 +33,11 @@ spring:
           uri: ${AUTH_ROUTE_URI:http://localhost:8001}
           predicates:
             - Path=/auth/**
+        - id: img-route
+          uri: ${IMG_ROUTE_URI:http://localhost:8002}
+          predicates:
+            - Path=/img/**
         - id: user-route
           uri: ${USER_ROUTE_URI:http://localhost:8003}
           predicates:
-            - Path=/user/**      
+            - Path=/user/**,/company-settings/**

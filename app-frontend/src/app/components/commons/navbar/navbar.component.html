@@ -1,7 +1,9 @@
 <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
     <div class="navbar-item is-clickable" routerLinkActive="router-link-active" >
-      <img [src]="logoUrl" appNotLogo alt="Logo" />
+      <span class="image" [routerLink]="['/home']">
+        <img [src]="logoUrl" appNotLogo alt="Logo" />
+      </span>
       <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
          [ngClass]="{'is-active': isActive}"
          (click)="toggleNavbar()">

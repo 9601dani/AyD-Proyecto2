@@ -22,6 +22,7 @@ public class CompanySetting {
     private Integer id;
     private String keyName;
     private String keyValue;
+    private String labelValue;
     @Column(columnDefinition = "TINYINT")
     private Boolean isRequired = false;
     @Column(columnDefinition = "TINYINT")
