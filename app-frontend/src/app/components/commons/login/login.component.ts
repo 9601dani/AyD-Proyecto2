@@ -15,7 +15,7 @@ import { NavbarComponent } from '../navbar/navbar.component';
 @Component({
   selector: 'app-login',
   standalone: true,
-  
+
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -40,14 +40,14 @@ export class LoginComponent{
   hidePassword = true;
   isLoading = false;
   isLoginMode = false;
-  
+
   constructor(
     private fb: FormBuilder,
     private _authService: AuthService,
     private _cookieService: CookieService,
     private _localStorageService: LocalStorageService,
     private _router: Router
-   
+
   ) {
     this.loginForm = this.fb.group({
       usernameOrEmail: ["", Validators.required],
@@ -102,6 +102,9 @@ export class LoginComponent{
               text: 'No se pudo registrar al usuario.',
               icon: 'error'
             })
+            this.registerForm.reset();
+            this.isLoading = false;
+            this.registerForm.markAllAsTouched();
           }
         );
       }
@@ -158,14 +161,22 @@ export class LoginComponent{
           text: error.error.message,
           icon: "error"
         })
+        this.isLoading = false;
+
+        this.loginForm.reset({
+          usernameOrEmail: '',
+          password: ''
+        });
+
+        this.loginForm.markAllAsTouched();
       },
       complete: () => {
         this.isLoading = false;
       }
     })
-  
+
   }
 
 
-  
+
 }

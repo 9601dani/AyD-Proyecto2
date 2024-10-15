@@ -1,0 +1,68 @@
+<app-navbar></app-navbar>
+
+<br><br><br>
+<div class="container">
+  <div class="box">
+    <h2 class="title is-3 has-text-centered">MI PERFIL</h2>
+
+    <!-- Foto de perfil-->
+    <div class="has-text-centered">
+      <figure class="image is-128x128 is-inline-block">
+        <img class="is-rounded" [src]="userProfileAll.image_profile" appNotProfile alt="profile image" />
+      </figure>
+      <div>
+        <button class="button is-primary mt-3" (click)="onUpdatePhoto()">Actualizar Foto</button>
+      </div>
+    </div>
+
+    <div class="columns mt-6">
+      <!-- Sección de credenciales -->
+      <div class="column">
+        <div class="box">
+          <h3 class="title is-5">CREDENCIALES</h3>
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control">
+              <input class="input" type="text" [value]="userProfileAll.email" disabled>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">Username</label>
+            <div class="control">
+              <input class="input" type="text" [value]="userProfileAll.username" disabled>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección de info personal -->
+      <div class="column">
+        <div class="box">
+          <h3 class="title is-5">MI INFORMACION</h3>
+          <form [formGroup]="profileForm">
+            <div class="field">
+              <label class="label">NIT</label>
+              <div class="control">
+                <input class="input" type="text" formControlName="nit">
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Descripción</label>
+              <div class="control">
+                <textarea class="textarea" formControlName="description"></textarea>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="has-text-centered mt-5">
+      <button class="button is-primary" [disabled]="!changesMade" (click)="saveChanges()">
+        Guardar Cambios
+      </button>
+    </div>
+  </div>
+</div>
