@@ -7,7 +7,6 @@ import Swal from 'sweetalert2';
 import { ImagePipe } from '../../../pipes/image.pipe';
 import { CompanySetting } from '../../../models/CompanySetting.model';
 import { MatIconModule } from '@angular/material/icon';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { MatTooltipModule } from '@angular/material/tooltip'; 
 import { ImgService } from '../../../services/img.service';
 
@@ -19,7 +18,6 @@ import { ImgService } from '../../../services/img.service';
 		ReactiveFormsModule,
 		ImagePipe,
 		MatIconModule,
-		FontAwesomeModule,
 		MatTooltipModule
 	],
 	templateUrl: './company-settings.component.html',
