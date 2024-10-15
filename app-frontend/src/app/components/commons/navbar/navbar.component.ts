@@ -38,9 +38,6 @@ export class NavbarComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-
-    this.disableReuseRoute();
-
     this.isLogged = this._localStorageService.getUserId() !== null;
     if (this.isLogged) {
       this.username = this._localStorageService.getUserName();
@@ -52,22 +49,11 @@ export class NavbarComponent implements OnInit {
     this.showOptions();
   }
 
-  disableReuseRoute() {
-    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
-
-		this.router.events.subscribe((event) => {
-			if (event.constructor.name === "NavigationEnd") {
-				this.router.navigated = false;
-			}
-		});
-  }
-
   getPages() {
     const id = this._localStorageService.getUserId();
     this._userService.getPages(id).subscribe({
       next: response => {
         this.modules = response;
-        console.log(this.modules);
       }
     });
   }
@@ -75,7 +61,6 @@ export class NavbarComponent implements OnInit {
   showOptions() {
     const url = this.router.url;
     this.showGuestButton = !this.notOptionsUrls.includes(url);
-    console.log(url, this.showGuestButton, this.isLogged)
   }
 
   toggleNavbar() {
@@ -92,7 +77,7 @@ export class NavbarComponent implements OnInit {
 
   logout() {
     this._localStorageService.logout();
-    this.router.navigate(['/home']);
+    this.router.navigate(['/login']);
   }
 
 }

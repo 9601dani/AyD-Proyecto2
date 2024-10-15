@@ -1,0 +1,79 @@
+<app-navbar></app-navbar>
+
+<div class="tabs is-centered">
+    <ul>
+        @for(settingType of settingTypes;track $index) {
+        <li (click)="change(settingType)" [ngClass]="{'is-active': settingType === currentTab }"><a>{{ settingType
+                }}</a></li>
+        }
+    </ul>
+</div>
+<div class="container card p-3 mx-auto m-5">
+    <div class="is-centered">
+        <h2 class="title is-2">{{currentTab}}</h2>
+        <form [formGroup]="form" (ngSubmit)="onSubmit()" class="form m-3">
+            @for(companySetting of form.controls | keyvalue: compareFn; track $index) {
+            @if(settings[$index].valueType === 'image') {
+            <div class="field m-5">
+                <label class="label">{{ settings[$index].labelValue }}</label>
+                <div class="control">
+                    <div class="file has-name is-fullwidth">
+                        <label class="file-label">
+                            <input class="file-input" type="file" name="imagen" accept="image/*"
+                                (change)="onFileSelected($event, $index, companySetting.key)" />
+                            <span class="file-cta">
+                                <span class="file-icon">
+                                    <i class="fas fa-upload"></i>
+                                </span>
+                                <span class="file-label"> Selecciona un archivo… </span>
+                            </span>
+                            <span class="file-name">{{ settings[$index].keyValue }}</span>
+                        </label>
+                    </div>
+                </div>
+                @if(form.get(companySetting.key)?.hasError('required') && form.get(companySetting.key)?.touched) {
+                <p class="help is-danger">Debes subir una imagen.</p>
+                }
+                <div class="mt-5">
+                    <label class="label">Previsualización de la imagen</label>
+                    <figure class="image is-2by1">
+                        <img class=" mx-auto"
+                            [src]="settings[$index].keyValue.includes('blob') ? settings[$index].keyValue : settings[$index].keyValue | image ">
+                    </figure>
+                    @if(settings[$index].keyValue.includes('blob')) {
+                    <button class="button is-danger mt-5" type="button"
+                        (click)="deleteImage($index, companySetting.key)">
+                        Eliminar imagen
+                    </button>
+                    }
+                </div>
+            </div>
+            } @else {
+            <div class="field m-5">
+                <div class="field">
+                    <label class="label is-flex is-align-items-center">
+                        {{ settings[$index].labelValue }}
+                        @if(settings[$index].help !== '') {
+                        <span class="icon-text has-text-info ml-2" [matTooltip]="settings[$index].help">
+                            <span class="icon">
+                                <mat-icon fontIcon="help"></mat-icon>
+                            </span>
+                            <span>Información</span>
+                        </span>
+                        }
+                    </label>
+                </div>
+
+                <div class="control">
+                    <input class="input" [formControlName]="companySetting.key" [type]="settings[$index].valueType">
+                </div>
+                @if(form.get(companySetting.key)?.hasError('required') && form.get(companySetting.key)?.touched) {
+                <p class="help is-danger">Este campo es requerido.</p>
+                }
+            </div>
+            }
+            }
+            <button type="submit" [disabled]="this.form.invalid" class="button is-primary m-3">Guardar</button>
+        </form>
+    </div>
+</div>

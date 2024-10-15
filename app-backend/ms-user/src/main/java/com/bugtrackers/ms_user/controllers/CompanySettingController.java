@@ -24,8 +24,14 @@ import lombok.AllArgsConstructor;
 public class CompanySettingController {
 
     private final CompanySettingService companySettingService;
-    
+
     @GetMapping("/{name}")
+    public ResponseEntity<CompanySettingResponse> findByKeyName(@PathVariable String name) {
+        CompanySettingResponse response = this.companySettingService.findByKeyName(name);
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/setting-type/{name}")
     public ResponseEntity<List<CompanySettingResponse>> findBySettingName(@PathVariable String name) {
         List<CompanySettingResponse> response = this.companySettingService.findBySettingName(name);
         return ResponseEntity.ok(response);
@@ -37,5 +43,12 @@ public class CompanySettingController {
         List<CompanySettingResponse> response = this.companySettingService.update(companySettingRequest);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/setting-types")
+    public ResponseEntity<List<String>> findAllSettingTypes() {
+        List<String> names = this.companySettingService.findAllSettingTypes();
+        return ResponseEntity.ok(names);
+    }
+    
 
 }

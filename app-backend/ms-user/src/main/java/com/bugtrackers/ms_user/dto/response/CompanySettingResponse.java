@@ -6,18 +6,22 @@ public record CompanySettingResponse(
     Integer id,
     String keyName,
     String keyValue,
+    String labelValue,
     Boolean isRequired,
     String valueType,
-    String settingtype
+    String settingtype,
+    String help
 ) {
     
     public CompanySettingResponse(CompanySetting companySetting) {
         this(companySetting.getId(), 
             companySetting.getKeyName(), 
             companySetting.getKeyValue(), 
+            companySetting.getLabelValue(),
             companySetting.getIsRequired(),
             companySetting.getValueType().getName(),
-            companySetting.getSettingType().getName()
+            companySetting.getSettingType().getName(),
+            companySetting.getHelp()
         );
     }
 }

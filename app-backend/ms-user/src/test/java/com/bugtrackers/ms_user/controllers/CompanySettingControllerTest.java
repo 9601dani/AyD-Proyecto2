@@ -39,12 +39,24 @@ public class CompanySettingControllerTest {
     @BeforeEach
     void setUp() {
         mockCompanySettings = List.of(
-            new CompanySetting(1, "keyName1", "keyValue1", true, true, new ValueType(1, "value"), new SettingType(1, "value")),
-            new CompanySetting( 2, "keyName2", "keyValue2", true, true, new ValueType(1, "value"), new SettingType(1, "value")),
-            new CompanySetting( 3, "keyName3", "keyValue3", true, true, new ValueType(1, "value"), new SettingType(1, "value"))
+            new CompanySetting(1, "keyName1", "keyValue1", "labelValue1", true, true, new ValueType(1, "value"), new SettingType(1, "value"), ""),
+            new CompanySetting( 2, "keyName2", "keyValue2","labelValue2", true, true, new ValueType(1, "value"), new SettingType(1, "value"), ""),
+            new CompanySetting( 3, "keyName3", "keyValue3","labelValue3", true, true, new ValueType(1, "value"), new SettingType(1, "value"), "")
         );
         gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
 
+    }
+
+    @Test
+    void shouldFindByKeyName() throws Exception {
+        CompanySettingResponse response = new CompanySettingResponse(this.mockCompanySettings.get(0));
+        when(this.companySettingService.findByKeyName("keyName1")).thenReturn(response);
+
+        String expectedJson = gson.toJson(response);
+
+        this.mockMvc.perform(get("/company-settings/keyName1"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedJson));
     }
 
 
@@ -55,7 +67,7 @@ public class CompanySettingControllerTest {
 
         String expectedJson = gson.toJson(response);
     
-        this.mockMvc.perform(get("/company-settings/value"))
+        this.mockMvc.perform(get("/company-settings/setting-type/value"))
         .andExpect(status().isOk())
         .andExpect(content().json(expectedJson));
     }
@@ -63,9 +75,9 @@ public class CompanySettingControllerTest {
     @Test
     void shouldUpdate() throws Exception {
         List<CompanySettingRequest> request = List.of(
-            new CompanySettingRequest(1, "keyName1", "keyValue1", true, "value", "value"),
-            new CompanySettingRequest(2, "keyName2", "keyValue2", true, "value", "value"),
-            new CompanySettingRequest(3, "keyName3", "keyValue3", true, "value", "value")
+            new CompanySettingRequest("keyName1", "keyValue1", "value"),
+            new CompanySettingRequest("keyName2", "keyValue2", "value"),
+            new CompanySettingRequest("keyName3", "keyValue3", "value")
         );
         List<CompanySettingResponse> response = mockCompanySettings.stream().map(CompanySettingResponse::new).toList();
         when(this.companySettingService.update(request)).thenReturn(response);
@@ -78,8 +90,18 @@ public class CompanySettingControllerTest {
         .content(requestJson))
         .andExpect(status().isOk())
         .andExpect(content().json(responseJson));
-        
+    }
 
+    @Test
+    void shouldFindAllSettingTypes() throws Exception {
+        List<String> settingTypes = List.of("name1", "name2", "name3");
 
+        when(this.companySettingService.findAllSettingTypes()).thenReturn(settingTypes);
+
+        String expectedJson = gson.toJson(settingTypes);
+
+        this.mockMvc.perform(get("/company-settings/setting-types"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(expectedJson));
     }
 }

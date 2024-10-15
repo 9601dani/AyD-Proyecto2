@@ -21,11 +21,15 @@ import com.bugtrackers.ms_user.models.CompanySetting;
 import com.bugtrackers.ms_user.models.SettingType;
 import com.bugtrackers.ms_user.models.ValueType;
 import com.bugtrackers.ms_user.repositories.CompanySettingRepository;
+import com.bugtrackers.ms_user.repositories.SettingTypeRepository;
 
 public class CompanySettingServiceTest {
 
     @Mock
     private CompanySettingRepository companySettingRepository;
+
+    @Mock
+    private SettingTypeRepository settingTypeRepository;
 
     @InjectMocks
     private CompanySettingService companySettingService;
@@ -38,15 +42,38 @@ public class CompanySettingServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockCompanySettings = List.of(
-            new CompanySetting(1, "keyName1", "keyValue1", true, true, new ValueType(1, "value"), new SettingType(1, "value")),
-            new CompanySetting( 2, "keyName2", "keyValue2", true, true, new ValueType(1, "value"), new SettingType(1, "value")),
-            new CompanySetting( 3, "keyName3", "keyValue3", true, true, new ValueType(1, "value"), new SettingType(1, "value"))
+            new CompanySetting(1, "keyName1", "keyValue1", "labelValue1", true, true, new ValueType(1, "value"), new SettingType(1, "value"),""),
+            new CompanySetting( 2, "keyName2", "keyValue2", "labelValue2", true, true, new ValueType(1, "value"), new SettingType(1, "value"), ""),
+            new CompanySetting( 3, "keyName3", "keyValue3", "labelValue3", true, true, new ValueType(1, "value"), new SettingType(1, "value"), "")
         );
         request = List.of(
-            new CompanySettingRequest(1, "keyName1", "keyValue1", true, "value", "value"),
-            new CompanySettingRequest(2, "keyName2", "keyValue2", true, "value", "value"),
-            new CompanySettingRequest(3, "keyName3", "keyValue3", true, "value", "value")
+            new CompanySettingRequest("keyName1", "keyValue1", "value"),
+            new CompanySettingRequest("keyName2", "keyValue2", "value"),
+            new CompanySettingRequest("keyName3", "keyValue3", "value")
         );
+    }
+
+    @Test
+    void shouldFindByKeyName() {
+        CompanySettingResponse response = new CompanySettingResponse(mockCompanySettings.get(0));
+        when(this.companySettingRepository.findByKeyName("keyName1")).thenReturn(Optional.of(mockCompanySettings.get(0)));
+
+        CompanySettingResponse result = this.companySettingService.findByKeyName("keyName1");
+        assertNotNull(result);
+        assertEquals(result, response);
+    }
+
+    @Test
+    void shouldThrowCompanyNotFoundException() {
+        when(this.companySettingRepository.findByKeyName("keyName1")).thenReturn(Optional.empty());
+        Exception exception = assertThrows(CompanySettingNotFoundException.class, () -> {
+            this.companySettingService.findByKeyName("keyName1");
+        });
+
+        String expectedMessage = "No se encontró la configuración.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
     }
 
     @Test
@@ -91,8 +118,21 @@ public class CompanySettingServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
 
+    @Test
+    void shouldReturnSettingsArray() {
+        List<SettingType> mocks = List.of(
+            new SettingType(1, "name1"),
+            new SettingType(2, "name2"),
+            new SettingType(3, "name3")
+        );
+        List<String> response = mocks.stream().map(SettingType::getName).toList();
+        when(this.settingTypeRepository.findAll()).thenReturn(mocks);
 
+        List<String> result = this.companySettingService.findAllSettingTypes();
+        assertNotNull(result);
+        assertEquals(response, result);
     }
 
 
