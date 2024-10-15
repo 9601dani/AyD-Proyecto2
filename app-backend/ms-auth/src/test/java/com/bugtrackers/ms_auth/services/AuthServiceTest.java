@@ -23,8 +23,15 @@ import com.bugtrackers.ms_auth.dto.response.AuthResponse;
 import com.bugtrackers.ms_auth.exceptions.UserNotAllowedException;
 import com.bugtrackers.ms_auth.exceptions.UserNotCreatedException;
 import com.bugtrackers.ms_auth.exceptions.UserNotFoundException;
+import com.bugtrackers.ms_auth.models.Role;
 import com.bugtrackers.ms_auth.models.User;
+import com.bugtrackers.ms_auth.models.UserInformation;
+import com.bugtrackers.ms_auth.models.UserRole;
 import com.bugtrackers.ms_auth.repositories.AuthRepository;
+import com.bugtrackers.ms_auth.repositories.UserHasRoleRepository;
+import com.bugtrackers.ms_auth.repositories.UserInformationRepository;
+
+import java.util.Set;
 
 public class AuthServiceTest {
     
@@ -36,6 +43,12 @@ public class AuthServiceTest {
 
     @Mock
     private TokenService tokenService;
+
+    @Mock
+    private UserHasRoleRepository userHasRoleRepository;
+
+    @Mock
+    private UserInformationRepository userInformationRepository;
 
     @InjectMocks
     private AuthService authService;
@@ -49,7 +62,8 @@ public class AuthServiceTest {
     void setUp() {
         MockitoAnnotations.openMocks(this);
         authRequest = new AuthRequest("email@example.com", "username", "password");
-        mockUser = new User(1,"email@example.com", "username", "password", "token", true, true,LocalDateTime.now());
+        mockUser = new User(1,"email@example.com", "username", "password", "token", true, true,LocalDateTime.now(),
+        Set.of(new Role(2, "name", "description", LocalDateTime.now(), Set.of())));
         authResponse = new AuthResponse(mockUser);
     }
 
@@ -57,12 +71,25 @@ public class AuthServiceTest {
     void shouldRegisterNewUser() {
 
         User mockUserSaved = new User("email@example.com", "username", "password");
+        Role role = new Role();
+        role.setId(1);
+        role.setName("name");
+        role.setDescription("description");
+        role.setCreatedAt(LocalDateTime.now());
+
+        UserRole userRole = new UserRole();
+        userRole.setRole(role);
+        userRole.setUser(mockUserSaved);
         
+        UserInformation userInformation = new UserInformation();
+        userInformation.setUser(mockUserSaved);
 
         when(authRepository.findByUsername("username")).thenReturn(Optional.empty());
         when(authRepository.findByEmail("email@example.com")).thenReturn(Optional.empty());
         when(authRepository.save(any(User.class))).thenReturn(mockUserSaved);
         when(passwordEncoder.encode("password")).thenReturn("encoded_password");
+        when(userHasRoleRepository.save(userRole)).thenReturn(userRole);
+        when(userInformationRepository.save(userInformation)).thenReturn(userInformation);
 
         AuthResponse response = authService.register(authRequest);
 
