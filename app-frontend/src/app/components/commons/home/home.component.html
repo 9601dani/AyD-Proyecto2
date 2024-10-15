@@ -1,2 +1,52 @@
 <app-navbar></app-navbar>
-<p>home works!</p>
+
+<div class="container">
+  <!-- Sección de Nuestros Servicios -->
+  <section class="section">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="box has-text-centered">
+          <h2 class="title">Nuestros Servicios</h2>
+
+          <!-- Carrusel Splide -->
+          <div id="service-slider" class="splide" aria-label="Nuestros Servicios">
+            <div class="splide__track">
+              <ul class="splide__list">
+                <li *ngFor="let image of serviceImages" class="splide__slide">
+                  <img [src]="image.url" [alt]="image.alt" class="carousel-image">
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sección de Comentarios, Dirección y Horario -->
+  <section class="section">
+    <div class="columns">
+      <!-- Comentarios -->
+      <div class="column is-half">
+        <div class="box">
+          <h3 class="title is-5">Comentarios:</h3>
+          <div class="content">
+            <!-- Aquí puedes agregar la lógica para mostrar los comentarios -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Dirección y Horario -->
+      <div class="column">
+        <div class="box">
+          <h3 class="title is-5">Dirección:</h3>
+          <p> <!-- Dirección aquí --> </p>
+
+          <h3 class="title is-5">Horario:</h3>
+          <p> <!-- Horario aquí --> </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

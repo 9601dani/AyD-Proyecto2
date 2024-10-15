@@ -72,7 +72,7 @@ export class NavbarComponent implements OnInit {
   }
 
   myAccount() {
-
+    this.router.navigate(['/edit/profile']);
   }
 
   logout() {
