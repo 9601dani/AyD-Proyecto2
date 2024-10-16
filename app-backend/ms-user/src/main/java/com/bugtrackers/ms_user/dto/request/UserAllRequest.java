@@ -1,6 +1,5 @@
 package com.bugtrackers.ms_user.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 public record UserAllRequest(
     String nit,
     String imageProfile,

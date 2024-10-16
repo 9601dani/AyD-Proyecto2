@@ -1,6 +1,5 @@
 package com.bugtrackers.ms_user.controllers;
 
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
@@ -11,7 +10,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bugtrackers.ms_user.dto.request.RequestString;
-import com.bugtrackers.ms_user.dto.response.ResponseString;
 import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.models.UserInformation;
 import org.junit.jupiter.api.BeforeEach;
@@ -107,7 +105,7 @@ public class UserControllerTest {
 
         when(userService.getInfo(1)).thenReturn(userInformation.getImageProfile());
 
-        String expectedResponse = "{\"message\":\"imageProfile\"}";
+        String expectedResponse = "{\"path\":\"imageProfile\"}";
 
         mockMvc.perform(get("/user/info/1"))
                 .andExpect(status().isOk())
@@ -125,11 +123,13 @@ public class UserControllerTest {
 
         when(userService.updateImageProfile(id, pathImg)).thenReturn(1);
 
+        String expectedJson = "{\"path\":\"" + pathImg + "\"}";
+
         mockMvc.perform(put("/user/profile/img/{id}", id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andExpect(status().isOk())
-                .andExpect(content().json("{\"message\":\"" + pathImg + "\"}"));
+                .andExpect(content().json(expectedJson));
     }
 
 

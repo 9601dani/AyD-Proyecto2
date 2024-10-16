@@ -1,6 +1,5 @@
 package com.bugtrackers.ms_img.services;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -75,7 +74,6 @@ public class CloudServiceTest {
     @Test
     void shouldUploadNewProfile() throws IOException {
         String nameOldImage = "images/oldImage.jpg";
-        String objectName = "images/" + UUID.randomUUID().toString();
         byte[] fileBytes = "file-content".getBytes();
         String contentType = "image/jpeg";
 
@@ -100,7 +98,6 @@ public class CloudServiceTest {
 
     @Test
     void shouldUploadNewProfileNull() throws IOException {
-        String objectName = "images/" + UUID.randomUUID().toString();
         byte[] fileBytes = "file-content".getBytes();
         String contentType = "image/jpeg";
 
@@ -121,7 +118,6 @@ public class CloudServiceTest {
 
     @Test
     void shouldThrowFileNotCreated() throws IOException {
-        String objectName = "images/" + UUID.randomUUID().toString();
         byte[] fileBytes = "file-content".getBytes();
         String contentType = "image/jpeg";
 
@@ -180,7 +176,6 @@ public class CloudServiceTest {
     @Test
     void shouldDeleteOldImageIfExistsInUploadProfileImage() throws IOException {
         String nameOldImage = "images/oldImage.jpg";
-        String objectName = "images/" + UUID.randomUUID().toString();
         byte[] fileBytes = "file-content".getBytes();
         String contentType = "image/jpeg";
 
@@ -228,7 +223,6 @@ public class CloudServiceTest {
 
     @Test
     void shouldCreateNewProfileImage() throws IOException {
-        String objectName = "images/" + UUID.randomUUID().toString();
         byte[] fileBytes = "file-content".getBytes();
         String contentType = "image/jpeg";
 
