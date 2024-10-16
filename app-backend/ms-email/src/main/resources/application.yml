@@ -1,0 +1,15 @@
+server:
+  port: 8004
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: ms-email
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
