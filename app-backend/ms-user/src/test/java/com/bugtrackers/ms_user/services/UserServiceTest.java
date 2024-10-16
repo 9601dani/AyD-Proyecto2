@@ -3,7 +3,7 @@ package com.bugtrackers.ms_user.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -145,6 +145,69 @@ public class UserServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void getInfoTest(){
+        when(userInformationRepository.findByUserId(1)).thenReturn(Optional.of(userInformation));
+
+        String userInformationTest = userService.getInfo(1);
+
+        assertEquals(userInformation.getImageProfile(), userInformationTest);
+    }
+
+    @Test
+    void getInfoException(){
+        when(userInformationRepository.findByUserId(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(UserNotFoundException.class,()->{
+            userService.getInfo(1);
+        });
+
+        String expectedMessage = "La informacion del usuario no se encontro!";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void updateImageProfileTest() {
+        when(userInformationRepository.findByUserId(1)).thenReturn(Optional.of(userInformation));
+
+        String newImagePath = "imageProfileUpdate";
+
+        doAnswer(invocation -> {
+            userInformation.setImageProfile(newImagePath);
+            return null;
+        }).when(userInformationRepository).updateImageProfile(1, newImagePath);
+
+        Integer userId = userService.updateImageProfile(1, newImagePath);
+
+        verify(userInformationRepository).updateImageProfile(1, newImagePath);
+
+        assertEquals(1, userId);
+        assertEquals(newImagePath, userInformation.getImageProfile());
+    }
+
+
+    @Test
+    void updateImageProfile_UserNotFound() {
+        when(userInformationRepository.findByUserId(1)).thenReturn(Optional.empty());
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> {
+            userService.updateImageProfile(1, "imageProfileUpdate");
+        });
+        assertEquals("La información del usuario no se encontró para el ID: 1", exception.getMessage());
+        verify(userInformationRepository, never()).updateImageProfile(anyInt(), anyString());
+    }
+
+    @Test
+    void updateImageProfile_ThrowsRuntimeException() {
+        when(userInformationRepository.findByUserId(1)).thenReturn(Optional.of(userInformation));
+        doThrow(new RuntimeException("Database error")).when(userInformationRepository).updateImageProfile(1, "new-image.jpg");
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            userService.updateImageProfile(1, "new-image.jpg");
+        });
+        assertEquals("Error updating image for user ID: 1", exception.getMessage());
     }
 
 

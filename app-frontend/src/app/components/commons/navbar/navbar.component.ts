@@ -7,6 +7,8 @@ import { NotProfileDirective } from '../../../directives/not-profile.directive';
 import { UserService } from '../../../services/user.service';
 import { Observable } from 'rxjs';
 import { Module } from '../../../models/Module.model';
+import Swal from 'sweetalert2';
+import { ImagePipe } from '../../../pipes/image.pipe';
 
 @Component({
   selector: 'app-navbar',
@@ -15,7 +17,8 @@ import { Module } from '../../../models/Module.model';
     CommonModule,
     RouterLink,
     NotLogoDirective,
-    NotProfileDirective
+    NotProfileDirective,
+    ImagePipe
   ],
   templateUrl: './navbar.component.html',
   styleUrl: './navbar.component.scss'
@@ -43,6 +46,7 @@ export class NavbarComponent implements OnInit {
       this.username = this._localStorageService.getUserName();
       this.showGuestButton = false;
       this.getPages();
+      this.setUserPhoto();
       return;
     }
 
@@ -56,6 +60,27 @@ export class NavbarComponent implements OnInit {
         this.modules = response;
       }
     });
+  }
+
+  setUserPhoto() {
+    const id = this._localStorageService.getUserId();
+    this.userPhoto = this._localStorageService.getUserPhoto();
+
+    if(!this.userPhoto) {
+      this._userService.getUserInfo(id).subscribe({
+        next: (response: any) => {
+          this.userPhoto = response.path;
+          this._localStorageService.setUserPhoto(this.userPhoto);
+        },
+        error: error => {
+          Swal.fire({
+            title: "Error!",
+            text: error.error.message,
+            icon: 'error'
+          })
+        }
+      })
+    }
   }
 
   showOptions() {

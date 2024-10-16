@@ -2,6 +2,7 @@ package com.bugtrackers.ms_user.services;
 
 import java.util.List;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import com.bugtrackers.ms_user.dto.request.UserAllRequest;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class UserService {
     
     private final ModuleRepository moduleRepository;
@@ -85,5 +87,31 @@ public class UserService {
         );
 
     }
+
+    public String getInfo(Integer id) {
+        Optional<UserInformation> optional = this.userInformationRepository.findByUserId(id);
+
+        if (optional.isEmpty()) {
+            throw new UserNotFoundException("La informacion del usuario no se encontro!");
+        }
+
+        return optional.get().getImageProfile();
+    }
+
+    public Integer updateImageProfile(Integer id, String pathImg) {
+        Optional<UserInformation> userInfo = userInformationRepository.findByUserId(id);
+        if (userInfo.isEmpty()) {
+            throw new UserNotFoundException("La información del usuario no se encontró para el ID: " + id);
+        }
+
+        try {
+            userInformationRepository.updateImageProfile(id, pathImg);
+        } catch (Exception e) {
+            throw new RuntimeException("Error updating image for user ID: " + id, e);
+        }
+
+        return id;
+    }
+
 
 }

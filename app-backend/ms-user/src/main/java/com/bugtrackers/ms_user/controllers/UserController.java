@@ -1,14 +1,16 @@
 package com.bugtrackers.ms_user.controllers;
 
+import com.bugtrackers.ms_user.dto.request.RequestString;
 import com.bugtrackers.ms_user.dto.request.UserAllRequest;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.services.UserService;
-import org.springframework.http.HttpStatus;
 
 import lombok.AllArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,5 +39,25 @@ public class UserController {
         UserAllResponse userAllResponse = this.userService.updateProfile(id, userAllRequest);
         return ResponseEntity.ok(userAllResponse);
     }
-    
+
+    @GetMapping("/info/{id}")
+    public ResponseEntity<Map<String, String>> getInfo(@PathVariable Integer id) {
+        String pathImage = this.userService.getInfo(id);
+        Map<String, String> map = new HashMap<>();
+        map.put("path", pathImage);
+        return ResponseEntity.ok(map);
+    }
+
+
+
+    @PutMapping("/profile/img/{id}")
+    public ResponseEntity<Map<String, String>> updateImageProfile(@PathVariable Integer id, @RequestBody RequestString imageUpdateRequest) {
+        String pathImage = imageUpdateRequest.getMessage();
+        this.userService.updateImageProfile(id, pathImage);
+        Map<String, String> map = new HashMap<>();
+        map.put("path", pathImage);
+        return ResponseEntity.ok(map);
+    }
+
+
 }
