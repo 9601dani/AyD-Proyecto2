@@ -1,5 +1,6 @@
 package com.bugtrackers.ms_img.controller;
 
+import com.bugtrackers.ms_img.dto.response.ResponseString;
 import com.bugtrackers.ms_img.services.CloudService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,5 +57,28 @@ public class ImgControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("[\"" + filename + "\"]"));
     }
+
+    @Test
+    void shouldUploadProfileImage() throws Exception {
+        ResponseString responseString = new ResponseString("test-name");
+        String oldFilename = "old-test-name";
+
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "test-image.png", "image/png", "some-image-content".getBytes());
+
+        when(cloudService.uploadProfileImage(multipartFile, oldFilename)).thenReturn(responseString.getMessage());
+
+        mockMvc.perform(multipart("/img/upload/profile")
+                        .file(multipartFile)
+                        .param("nameOldImage", oldFilename)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"" + responseString.getMessage() + "\"}"));
+    }
+
+
 
 }

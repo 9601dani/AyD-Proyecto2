@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Module } from '../models/Module.model';
 import { CompanySetting } from '../models/CompanySetting.model';
-import {UserAllResponse} from "../interfaces/interfaces";
+import {ResponseString, UserAllResponse} from "../interfaces/interfaces";
 
 @Injectable({
   providedIn: 'root'
@@ -38,4 +38,14 @@ export class UserService {
   updateProfile(id: number, user: UserAllResponse): Observable<UserAllResponse> {
     return this.http.put<UserAllResponse>(`${this.apiUser}/profile/${id}`, user);
   }
+
+  getUserInfo(userId: number): Observable<ResponseString> {
+    return this.http.get<ResponseString>(`${this.apiUser}/info/${userId}`);
+  }
+
+  updateImgUserInformation(id: number, img: ResponseString): Observable<ResponseString> {
+    return this.http.put<ResponseString>(`${this.apiUser}/profile/img/${id}`, img);
+  }
+  
+  
 }

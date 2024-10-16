@@ -72,4 +72,12 @@ export class LocalStorageService {
     this.clear();
     this._cookieService.delete('token');
   }
+
+  setPhoto(photo: string): void {
+    this.setItem(this.USER_PHOTO, photo);
+  }
+
+  getPhoto(): string {
+    return this.getItem(this.USER_PHOTO);
+  }
 }

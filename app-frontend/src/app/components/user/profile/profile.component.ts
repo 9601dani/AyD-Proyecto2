@@ -1,8 +1,8 @@
-import {Component, Inject, OnInit, PLATFORM_ID} from '@angular/core';
+import {Component, Inject, OnInit, PLATFORM_ID, ViewChild} from '@angular/core';
 import {NavbarComponent} from "../../commons/navbar/navbar.component";
-import {User, UserAllResponse, UserProfile} from "../../../interfaces/interfaces";
+import {ResponseString, User, UserAllResponse, UserProfile} from "../../../interfaces/interfaces";
 import {HttpClient} from "@angular/common/http";
-import {CommonModule, isPlatformBrowser} from "@angular/common";
+import {CommonModule, isPlatformBrowser, JsonPipe} from "@angular/common";
 import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
@@ -11,6 +11,9 @@ import {MatInputModule} from "@angular/material/input";
 import {NotProfileDirective} from "../../../directives/not-profile.directive";
 import {UserService} from "../../../services/user.service";
 import Swal from "sweetalert2";
+import { LocalStorageService } from '../../../services/local-storage.service';
+import { ImgService } from '../../../services/img.service';
+import { ImagePipe } from '../../../pipes/image.pipe';
 
 @Component({
   selector: 'app-profile',
@@ -23,7 +26,8 @@ import Swal from "sweetalert2";
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    NotProfileDirective
+    NotProfileDirective,
+    ImagePipe
 
   ],
   templateUrl: './profile.component.html',
@@ -42,9 +46,18 @@ export class ProfileComponent implements OnInit{
   profileForm!: FormGroup;
   changesMade=false;
 
+  selectedFile: File | null = null;
+  selectedPreviewImage: string | null = null;
+  errorMessage: string = '';
+
+  
+  @ViewChild('fileInput') fileInput: any;
+
   constructor(
     private fb: FormBuilder,
     private _userService: UserService,
+    private _localStorageService: LocalStorageService,
+    private _imgService: ImgService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -89,7 +102,7 @@ export class ProfileComponent implements OnInit{
               icon: 'error'
             });
           }
-        );
+        );  
       }
     }
   }
@@ -97,9 +110,56 @@ export class ProfileComponent implements OnInit{
     return JSON.stringify(initialValues) === JSON.stringify(currentValues);
   }
 
-  onUpdatePhoto(): void {
-    alert('Actualizar foto de perfil no implementado');
+  triggerFileInput() {
+    this.fileInput.nativeElement.click();
   }
+
+  onFileSelected(event: any): void {
+    const file: File = event.target.files[0];
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+
+    if (file && allowedTypes.includes(file.type)) {
+      this.selectedFile = file;
+      this.errorMessage = '';
+
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.selectedPreviewImage = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      this.selectedFile = null;
+      this.selectedPreviewImage = null;
+      this.errorMessage = 'Solo se permiten imágenes con formato .jpg, .jpeg o .png';
+    }
+  }
+
+  onUpload(): void {
+    if (this.selectedFile) {
+      const formData = new FormData();
+      formData.append('file', this.selectedFile, this.selectedFile.name);
+  
+      const oldImage = this._localStorageService.getItem(this._localStorageService.USER_PHOTO);
+      
+      this._imgService.updateImgProfile(oldImage, this.selectedFile).subscribe(
+        (res: ResponseString) => {
+          const imagePath = res.message; 
+          
+          this.updateProfileImgUser(imagePath);
+          this.selectedPreviewImage = null;
+        },
+        (err) => {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se ha podido actualizar la imagen de perfil',
+            icon: 'error'
+          });
+          console.log(err);
+        }
+      );
+    }
+  }
+  
 
   saveChanges(): void {
     if (this.profileForm.valid) {
@@ -140,4 +200,33 @@ export class ProfileComponent implements OnInit{
       );
     }
   }
+
+updateProfileImgUser(img: string): void {
+
+  const path = { message: img };
+
+  this._userService.updateImgUserInformation(parseInt(localStorage.getItem('user_id')!), path).subscribe({
+    next: (res: ResponseString) => {
+
+      this._localStorageService.setItem(this._localStorageService.USER_PHOTO, res.message);
+
+      Swal.fire({
+        title: 'Imagen de perfil actualizada',
+        text: 'La imagen de perfil se ha actualizado correctamente',
+        icon: 'success'
+      });
+    },
+    error: (err) => {
+      console.error('Error actualizando la imagen de perfil:', err);
+
+      Swal.fire({
+        title: 'Error',
+        text: 'No se ha podido actualizar la imagen de perfil',
+        icon: 'error'
+      });
+    }
+  });
+}
+
+  
 }

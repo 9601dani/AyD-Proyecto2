@@ -8,12 +8,35 @@
     <!-- Foto de perfil-->
     <div class="has-text-centered">
       <figure class="image is-128x128 is-inline-block">
-        <img class="is-rounded" [src]="userProfileAll.image_profile" appNotProfile alt="profile image" />
+        <img class="is-rounded" [src]="userProfileAll.image_profile | image" appNotProfile alt="profile image" />
       </figure>
+      
+      <input 
+        type="file" 
+        accept=".jpg, .jpeg, .png" 
+        (change)="onFileSelected($event)" 
+        style="display: none" 
+        #fileInput />
+
       <div>
-        <button class="button is-primary mt-3" (click)="onUpdatePhoto()">Actualizar Foto</button>
+        <button class="button is-primary mt-3" (click)="triggerFileInput()">Seleccionar Imagen</button>
       </div>
+    
+      <div *ngIf="selectedPreviewImage" class="preview-container">
+        <figure class="image is-64x64">
+          <img [src]="selectedPreviewImage" alt="Imagen seleccionada" />
+        </figure>
+        <p>Vista previa de la imagen seleccionada</p>
+      </div>
+    
+      <div *ngIf="selectedFile">
+        <button (click)="onUpload()" class="button is-success mt-3">Actualizar Foto</button>
+      </div>
+
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
+    
+    
 
     <div class="columns mt-6">
       <!-- Sección de credenciales -->

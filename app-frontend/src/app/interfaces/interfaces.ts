@@ -18,3 +18,11 @@ export interface UserAllResponse {
   image_profile: string;
   description: string;
 }
+
+export interface ResponseString {
+  message: string;
+}
+
+export interface RequestString {
+  message: string;
+}

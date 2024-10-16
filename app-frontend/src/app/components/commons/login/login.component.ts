@@ -11,6 +11,8 @@ import { LocalStorageService } from '../../../services/local-storage.service';
 import { Router } from '@angular/router';
 import { NotLogoDirective } from '../../../directives/not-logo.directive';
 import { NavbarComponent } from '../navbar/navbar.component';
+import { UserService } from '../../../services/user.service';
+import { ResponseString } from '../../../interfaces/interfaces';
 
 @Component({
   selector: 'app-login',
@@ -46,7 +48,8 @@ export class LoginComponent{
     private _authService: AuthService,
     private _cookieService: CookieService,
     private _localStorageService: LocalStorageService,
-    private _router: Router
+    private _router: Router,
+    private _userService: UserService
 
   ) {
     this.loginForm = this.fb.group({
@@ -153,6 +156,7 @@ export class LoginComponent{
         this._cookieService.set('token', response.token);
         this._localStorageService.setUserId(response.id);
         this._localStorageService.setUsername(response.username);
+        this.setImgProfile();
         this._router.navigate(['/home']);
       },
       error: error => {
@@ -176,6 +180,21 @@ export class LoginComponent{
     })
 
   }
+
+  setImgProfile() {
+    this._userService.getUserInfo(this._localStorageService.getUserId()).subscribe({
+      next: (response: ResponseString) => {
+        console.log('Imagen de perfil:', response.message);
+        this._localStorageService.setPhoto(response.message); 
+      },
+      error: (err) => {
+        console.error('Error obteniendo la imagen de perfil:', err); 
+      }
+    });
+  }
+  
+  
+  
 
 
 

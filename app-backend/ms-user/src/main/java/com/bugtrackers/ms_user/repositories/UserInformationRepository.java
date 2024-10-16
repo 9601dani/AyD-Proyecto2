@@ -17,4 +17,10 @@ public interface UserInformationRepository extends JpaRepository<UserInformation
             """, nativeQuery = true)
     Optional<UserInformation> findByUserId(@Param("id")Integer id);
 
+
+    @Query (value = """
+            UPDATE user_information SET image_profile = :image WHERE FK_User = :id
+            """, nativeQuery = true)
+    void updateImageProfile(@Param("id")Integer id, @Param("image")String image);
+
 }
