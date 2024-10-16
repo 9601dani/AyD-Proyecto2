@@ -1,15 +1,12 @@
 package com.bugtrackers.ms_img.controller;
 
+import com.bugtrackers.ms_img.dto.response.ResponseString;
 import com.bugtrackers.ms_img.services.CloudService;
 
 import lombok.AllArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -41,12 +38,12 @@ public class ImgController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("upload/profile")
-    public ResponseEntity<String> uploadProfileImage(@RequestParam("file") MultipartFile file, @RequestParam("nameOldImage") String nameOldImage) {
-        String objectName = cloudService.uploadImage(file);
-        return ResponseEntity.ok(objectName);
+    @PutMapping("/upload/profile")
+    public ResponseEntity<ResponseString> uploadProfileImage(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("nameOldImage") String nameOldImage) {
+        String new_image_path = cloudService.uploadProfileImage(file, nameOldImage);
+        return ResponseEntity.ok(new ResponseString(new_image_path));
     }
-
-
     
 }

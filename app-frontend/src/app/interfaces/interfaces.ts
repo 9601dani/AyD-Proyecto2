@@ -15,6 +15,14 @@ export interface UserAllResponse {
   email: string;
   username: string;
   nit: string;
-  image_profile: string;
+  imageProfile: string;
   description: string;
+}
+
+export interface ResponseString {
+  message: string;
+}
+
+export interface RequestString {
+  message: string;
 }

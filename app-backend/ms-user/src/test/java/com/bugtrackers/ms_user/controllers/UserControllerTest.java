@@ -9,6 +9,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.bugtrackers.ms_user.dto.request.RequestString;
+import com.bugtrackers.ms_user.models.User;
+import com.bugtrackers.ms_user.models.UserInformation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,4 +97,41 @@ public class UserControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().json(expectedJson)); 
     }
+
+    @Test
+    void testGetInfo() throws Exception {
+        User user = new User("email", "username", "password");
+        UserInformation userInformation = new UserInformation("nit", "imageProfile", "description", user);
+
+        when(userService.getInfo(1)).thenReturn(userInformation.getImageProfile());
+
+        String expectedResponse = "{\"path\":\"imageProfile\"}";
+
+        mockMvc.perform(get("/user/info/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedResponse));  // Verificamos el JSON de respuesta
+    }
+
+    @Test
+    void shouldUpdateImageProfile() throws Exception {
+        int id = 1;
+        String pathImg = "pathImg";
+        RequestString requestString = new RequestString(pathImg);
+
+        Gson gson = new Gson();
+        String requestJson = gson.toJson(requestString);
+
+        when(userService.updateImageProfile(id, pathImg)).thenReturn(1);
+
+        String expectedJson = "{\"path\":\"" + pathImg + "\"}";
+
+        mockMvc.perform(put("/user/profile/img/{id}", id)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+
+
 }
