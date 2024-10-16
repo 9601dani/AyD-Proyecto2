@@ -39,12 +39,12 @@ export class UserService {
     return this.http.put<UserAllResponse>(`${this.apiUser}/profile/${id}`, user);
   }
 
-  getUserInfo(userId: number): Observable<ResponseString> {
-    return this.http.get<ResponseString>(`${this.apiUser}/info/${userId}`);
+  getUserInfo(userId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUser}/info/${userId}`);
   }
 
-  updateImgUserInformation(id: number, img: ResponseString): Observable<ResponseString> {
-    return this.http.put<ResponseString>(`${this.apiUser}/profile/img/${id}`, img);
+  updateImgUserInformation(id: number, img: ResponseString): Observable<any> {
+    return this.http.put<any>(`${this.apiUser}/profile/img/${id}`, img);
   }
   
   

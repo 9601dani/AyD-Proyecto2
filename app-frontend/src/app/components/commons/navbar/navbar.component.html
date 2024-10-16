@@ -39,7 +39,7 @@
         <div class="navbar-item has-dropdown is-hoverable mr-3">
           <a class="navbar-link">
             <figure class="image is-32x32 is-align-content-center">
-              <img class="is-rounded" [src]="userPhoto" appNotProfile alt="profile image" />
+              <img class="is-rounded" [src]="userPhoto | image" appNotProfile alt="profile image" />
             </figure>
             {{ username }}
           </a>

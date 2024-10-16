@@ -40,7 +40,7 @@ export class ProfileComponent implements OnInit{
     username: '',
     nit: '',
     description: '',
-    image_profile: ''
+    imageProfile: ''
   };
   initialValues: any;
   profileForm!: FormGroup;
@@ -87,12 +87,13 @@ export class ProfileComponent implements OnInit{
       }else{
         this._userService.getMyProfile(parseInt(user_id)).subscribe(
           (res: UserAllResponse) => {
+            console.log(res);
             this.userProfileAll = res;
             this.initialValues = this.profileForm.value;
             this.profileForm.patchValue({
               nit: this.userProfileAll.nit,
               description: this.userProfileAll.description,
-              image_profile: this.userProfileAll.image_profile
+              image_profile: this.userProfileAll.imageProfile
             });
           },
           (err) => {
@@ -206,9 +207,9 @@ updateProfileImgUser(img: string): void {
   const path = { message: img };
 
   this._userService.updateImgUserInformation(parseInt(localStorage.getItem('user_id')!), path).subscribe({
-    next: (res: ResponseString) => {
+    next: (res: any) => {
 
-      this._localStorageService.setItem(this._localStorageService.USER_PHOTO, res.message);
+      this._localStorageService.setUserPhoto(res);
 
       Swal.fire({
         title: 'Imagen de perfil actualizada',
