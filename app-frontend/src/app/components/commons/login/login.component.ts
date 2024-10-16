@@ -184,7 +184,6 @@ export class LoginComponent{
   setImgProfile() {
     this._userService.getUserInfo(this._localStorageService.getUserId()).subscribe({
       next: (response: any) => {
-        console.log('Imagen de perfil:', response);
         this._localStorageService.setUserPhoto(response.path); 
       },
       error: (err) => {

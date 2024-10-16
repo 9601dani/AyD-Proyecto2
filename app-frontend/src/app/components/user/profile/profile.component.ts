@@ -76,16 +76,16 @@ export class ProfileComponent implements OnInit{
 
   getUserProfile(): void {
     if (isPlatformBrowser(this.platformId)) {
-      const user_id = localStorage.getItem('user_id');
-      if(user_id == null) {
+      const user_id = this._localStorageService.getUserId();
+      if(user_id === null) {
         Swal.fire({
           title: 'Error',
           text: 'No se ha podido obtener el usuario',
           icon: 'error'
         });
         return;
-      }else{
-        this._userService.getMyProfile(parseInt(user_id)).subscribe(
+      } else {
+        this._userService.getMyProfile(user_id).subscribe(
           (res: UserAllResponse) => {
             console.log(res);
             this.userProfileAll = res;
@@ -140,7 +140,7 @@ export class ProfileComponent implements OnInit{
       const formData = new FormData();
       formData.append('file', this.selectedFile, this.selectedFile.name);
   
-      const oldImage = this._localStorageService.getItem(this._localStorageService.USER_PHOTO);
+      const oldImage = this._localStorageService.getUserPhoto();
       
       this._imgService.updateImgProfile(oldImage, this.selectedFile).subscribe(
         (res: ResponseString) => {
@@ -181,7 +181,7 @@ export class ProfileComponent implements OnInit{
         });
         return;
       }
-      this._userService.updateProfile(parseInt(localStorage.getItem('user_id')!), profileData).subscribe(
+      this._userService.updateProfile(this._localStorageService.getUserId(), profileData).subscribe(
         (res: UserAllResponse) => {
           this.userProfileAll = res;
           this.initialValues = this.profileForm.value;
@@ -206,10 +206,10 @@ updateProfileImgUser(img: string): void {
 
   const path = { message: img };
 
-  this._userService.updateImgUserInformation(parseInt(localStorage.getItem('user_id')!), path).subscribe({
+  this._userService.updateImgUserInformation(this._localStorageService.getUserId(), path).subscribe({
     next: (res: any) => {
 
-      this._localStorageService.setUserPhoto(res);
+      this._localStorageService.setUserPhoto(res.path);
 
       Swal.fire({
         title: 'Imagen de perfil actualizada',
