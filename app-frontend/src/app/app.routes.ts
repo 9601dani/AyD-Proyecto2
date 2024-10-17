@@ -6,6 +6,8 @@ import { LoginComponent } from './components/commons/login/login.component';
 import { NotFoundComponent } from './components/commons/not-found/not-found.component';
 import { CompanySettingsComponent } from './components/options/company-settings/company-settings.component';
 import { ProfileComponent } from "./components/user/profile/profile.component";
+import { AddServiceComponent } from './components/admin/add-service/add-service.component';
+import { ViewServiceComponent } from './components/admin/view-service/view-service.component';
 
 export const routes: Routes = [
 
@@ -23,6 +25,12 @@ export const routes: Routes = [
       { path: 'profile', component: ProfileComponent }
     ]
   },
+  {path: 'services', children:[
+    {path: 'add-service', component: AddServiceComponent},
+    { path: 'edit-service/:id', component: AddServiceComponent },
+    {path: 'show-services', component: ViewServiceComponent}
+  ]},
+
   { path: '**', component: NotFoundComponent }
 
 ];

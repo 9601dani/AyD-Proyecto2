@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Module } from '../models/Module.model';
 import { CompanySetting } from '../models/CompanySetting.model';
-import {ResponseString, UserAllResponse} from "../interfaces/interfaces";
+import {ResponseString, Service, UserAllResponse} from "../interfaces/interfaces";
+import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,9 +12,10 @@ import {ResponseString, UserAllResponse} from "../interfaces/interfaces";
 export class UserService {
 
   readonly apiUser = "http://localhost:8000/user";
+  readonly apiServices = "http://localhost:8000/services";
   readonly apiCompanySettings = "http://localhost:8000/company-settings";
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private _localStorage: LocalStorageService) { }
 
   getPages(id: number): Observable<Module[]> {
     return this.http.get<Module[]>(`${this.apiUser}/pages/${id}`);
@@ -36,6 +38,7 @@ export class UserService {
   }
 
   updateProfile(id: number, user: UserAllResponse): Observable<UserAllResponse> {
+    user.imageProfile = this._localStorage.getUserPhoto();
     return this.http.put<UserAllResponse>(`${this.apiUser}/profile/${id}`, user);
   }
 
@@ -47,5 +50,23 @@ export class UserService {
     return this.http.put<any>(`${this.apiUser}/profile/img/${id}`, img);
   }
   
+
+  /**Routes for services CRU */
+
+  getServiceById(id: number): Observable<Service> {
+    return this.http.get<Service>(`${this.apiServices}/${id}`);
+  }
+
+  getAllServices(): Observable<Service[]> {
+    return this.http.get<Service[]>(`${this.apiServices}`);
+  }
+
+  createService(service: Service): Observable<Service> {
+    return this.http.post<Service>(`${this.apiServices}`, service);
+  }
+
+  updateService(id: number, service: Service): Observable<Service> {
+    return this.http.put<Service>(`${this.apiServices}/${id}`, service);
+  }
   
 }

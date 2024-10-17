@@ -1,0 +1,146 @@
+<app-navbar></app-navbar>
+
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <h1 class="title has-text-centered">{{ isEditMode ? 'Editar Servicio' : 'Añadir Servicio' }}</h1>
+        <p class="subtitle has-text-centered">
+          Por favor, rellene el formulario {{ isEditMode ? 'para actualizar el servicio' : 'para añadir un nuevo servicio' }}. Los campos marcados con <span class="required">*</span> son obligatorios.
+        </p>
+
+        <form [formGroup]="service_form" (ngSubmit)="onSubmit()">
+          <div class="field">
+            <label class="label">
+              Nombre <span class="required">*</span>
+            </label>
+            <div class="control">
+              <input
+                class="input"
+                formControlName="name"
+                type="text"
+                placeholder="Nombre del servicio"
+                required
+              />
+            </div>
+            <p
+              *ngIf="
+                service_form.get('name')?.invalid &&
+                service_form.get('name')?.touched
+              "
+              class="help is-danger"
+            >
+              Nombre es obligatorio y debe tener menos de 100 caracteres.
+            </p>
+            <br />
+          </div>
+
+          <div class="field">
+            <label class="label">Descripción</label>
+            <div class="control">
+              <textarea
+                class="textarea"
+                formControlName="description"
+                placeholder="Descripción del servicio"
+              ></textarea>
+            </div>
+            <br />
+          </div>
+
+          <div class="field">
+            <label class="label">
+              Precio <span class="required">*</span>
+            </label>
+            <div class="control">
+              <input
+                class="input"
+                formControlName="price"
+                type="number"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required
+              />
+            </div>
+            <p
+              *ngIf="
+                service_form.get('price')?.invalid &&
+                service_form.get('price')?.touched
+              "
+              class="help is-danger"
+            >
+              El precio es obligatorio y debe ser mayor que 0.00 .
+            </p>
+            <br />
+          </div>
+
+          <div class="field">
+            <label class="label">Información de Página</label>
+            <div class="control">
+              <textarea
+                class="textarea"
+                formControlName="pageInformation"
+                placeholder="Información adicional del servicio"
+              ></textarea>
+            </div>
+            <br />
+          </div>
+
+          <div class="field">
+            <label class="label">
+              Tiempo Aproximado (en minutos) <span class="required">*</span>
+            </label>
+            <div class="control">
+              <input
+                class="input"
+                formControlName="timeAprox"
+                type="number"
+                min="1"
+                placeholder="Ej: 30"
+                required
+              />
+            </div>
+            <p
+              *ngIf="
+                service_form.get('timeAprox')?.invalid &&
+                service_form.get('timeAprox')?.touched
+              "
+              class="help is-danger"
+            >
+              El tiempo aproximado es obligatorio y debe ser mayor a 0 minutos.
+            </p>
+            <br />
+          </div>
+
+          <div class="field">
+            <label class="label">Disponibilidad</label>
+            <div class="control">
+              <div class="select">
+                <select formControlName="isAvailable">
+                  <option [value]="true">Disponible</option>
+                  <option [value]="false">No Disponible</option>
+                </select>
+              </div>
+            </div>
+          </div>          
+          <br /><br />
+
+          <div class="field is-grouped is-grouped-centered">
+            <div class="control">
+              <button *ngIf="!isEditMode" class="button is-primary" type="submit" [disabled]="service_form.invalid">
+                Guardar Cambios
+              </button>
+              <button *ngIf="isEditMode" class="button is-primary" type="submit" [disabled]="service_form.invalid">
+                Actualizar Servicio
+              </button>
+            </div>
+            <div class="control">
+              <button class="button is-light" type="button" (click)="onCancel()">Cancelar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
