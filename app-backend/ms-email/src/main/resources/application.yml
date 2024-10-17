@@ -13,3 +13,14 @@ spring:
       idle-timeout: 60000
       max-lifetime: 1800000
       connection-timeout: 30000
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    protocol: smtp
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
