@@ -26,3 +26,14 @@ export interface ResponseString {
 export interface RequestString {
   message: string;
 }
+
+
+export interface Service{
+  id:number;
+  name:string;
+  description:string;
+  price:number;
+  pageInformation:string;
+  timeAprox:number;
+  isAvailable:number;
+}
