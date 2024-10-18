@@ -53,7 +53,7 @@ public class UserControllerTest {
 
         gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
 
-        userAllRequest = new UserAllRequest( "nitUpdate", "imageProfileUpdate", "descriptionUpdate");
+        userAllRequest = new UserAllRequest( "nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
     }
 
     @Test
@@ -71,7 +71,7 @@ public class UserControllerTest {
     @Test
     void testGetProfile() throws Exception{
 
-        UserAllResponse userAllResponse = new UserAllResponse("email", "username", "nit", "imageProfile", "description");
+        UserAllResponse userAllResponse = new UserAllResponse("email", "username", "nit", "imageProfile", "description", "dpi", "tel");
 
         when(userService.getById(1)).thenReturn(userAllResponse);
 
@@ -85,7 +85,7 @@ public class UserControllerTest {
     @Test
     void testPutProfile() throws Exception{
         
-        UserAllResponse userAllResponse = new UserAllResponse("emailUpdate", "usernameUpdate", "nitUpdate", "imageProfileUpdate", "descriptionUpdate");
+        UserAllResponse userAllResponse = new UserAllResponse("emailUpdate", "usernameUpdate", "nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
         
         when(userService.updateProfile(1, userAllRequest)).thenReturn(userAllResponse);
 
@@ -101,7 +101,7 @@ public class UserControllerTest {
     @Test
     void testGetInfo() throws Exception {
         User user = new User("email", "username", "password");
-        UserInformation userInformation = new UserInformation("nit", "imageProfile", "description", user);
+        UserInformation userInformation = new UserInformation("nit", "imageProfile", "description", user, "dpi", "tel");
 
         when(userService.getInfo(1)).thenReturn(userInformation.getImageProfile());
 

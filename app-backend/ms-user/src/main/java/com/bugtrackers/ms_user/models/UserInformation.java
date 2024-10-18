@@ -20,15 +20,22 @@ public class UserInformation {
     private String nit;
     private String imageProfile;
     private String description;
+    private String dpi;
+    private String phoneNumber;
 
     @OneToOne
     @JoinColumn(name = "FK_User")
     private User user;
 
-    public UserInformation(String nit, String imageProfile, String description, User user) {
+
+
+    public UserInformation(String nit, String imageProfile, String description, User user, String dpi, String phoneNumber) {
         this.nit = nit;
         this.imageProfile = imageProfile;
         this.description = description;
         this.user = user;
+        this.dpi = dpi;
+        this.phoneNumber = phoneNumber;
+
     }
 }

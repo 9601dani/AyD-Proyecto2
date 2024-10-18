@@ -54,7 +54,7 @@ public class UserServiceTest {
             ))
         );
         user = new User("email", "username", "password");
-        userInformation = new UserInformation("nit", "imageProfile", "description", user);
+        userInformation = new UserInformation("nit", "imageProfile", "description", user, "dpi", "tel");
     }
 
     @Test
@@ -72,7 +72,7 @@ public class UserServiceTest {
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         
-        UserAllResponse userAllResponse = new UserAllResponse(user.getEmail(), user.getUsername(), userInformation.getNit(), userInformation.getImageProfile(), userInformation.getDescription());
+        UserAllResponse userAllResponse = new UserAllResponse(user.getEmail(), user.getUsername(), userInformation.getNit(), userInformation.getImageProfile(), userInformation.getDescription(), userInformation.getDpi(), userInformation.getPhoneNumber());
 
         UserAllResponse userAllResponseTest = userService.getById(1);
 
@@ -102,9 +102,9 @@ public class UserServiceTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(userInformationRepository.findByUserId(1)).thenReturn(Optional.of(userInformation));
 
-        UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate");
+        UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
         
-        UserAllResponse userAllResponseExpected = new UserAllResponse(user.getEmail(), user.getUsername(), userAllRequest.getNit(), userAllRequest.getImageProfile(), userAllRequest.getDescription());
+        UserAllResponse userAllResponseExpected = new UserAllResponse(user.getEmail(), user.getUsername(), userAllRequest.getNit(), userAllRequest.getImageProfile(), userAllRequest.getDescription(), userAllRequest.getDpi(), userAllRequest.getTel());
         
 
         UserAllResponse userAllResponseActual = userService.updateProfile(1, userAllRequest);
@@ -115,7 +115,7 @@ public class UserServiceTest {
     @Test
     void updateProfileException1(){
         when(userRepository.findById(1)).thenReturn(Optional.empty());
-        UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate");
+        UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
 
 
         Exception exception = assertThrows(UserNotFoundException.class, () -> {
@@ -135,7 +135,7 @@ public class UserServiceTest {
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         when(userInformationRepository.findByUserId(1)).thenReturn(Optional.empty());
 
-        UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate");
+        UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
 
         Exception exception = assertThrows((UserNotFoundException.class),()->{
             userService.updateProfile(1, userAllRequest);

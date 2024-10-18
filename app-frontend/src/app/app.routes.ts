@@ -8,6 +8,7 @@ import { CompanySettingsComponent } from './components/options/company-settings/
 import { ProfileComponent } from "./components/user/profile/profile.component";
 import { AddServiceComponent } from './components/admin/add-service/add-service.component';
 import { ViewServiceComponent } from './components/admin/view-service/view-service.component';
+import { AddEmployeeComponent } from './components/admin/add-employee/add-employee.component';
 
 export const routes: Routes = [
 
@@ -30,7 +31,13 @@ export const routes: Routes = [
     { path: 'edit-service/:id', component: AddServiceComponent },
     {path: 'show-services', component: ViewServiceComponent}
   ]},
-
+  {
+    path: 'employees', children: [
+      {
+        path: 'add-employee', component: AddEmployeeComponent
+      }
+    ]
+  },
   { path: '**', component: NotFoundComponent }
 
 ];
