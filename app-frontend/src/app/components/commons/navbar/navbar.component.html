@@ -1,29 +1,30 @@
 <nav class="navbar is-primary" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <div class="navbar-item is-clickable" routerLinkActive="router-link-active" >
+    <div class="navbar-item is-clickable" routerLinkActive="router-link-active">
       <span class="image" [routerLink]="['/home']">
         <img [src]="logoUrl" appNotLogo alt="Logo" />
       </span>
-      <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false"
-         [ngClass]="{'is-active': isActive}"
-         (click)="toggleNavbar()">
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-        <span aria-hidden="true"></span>
-      </a>
     </div>
+    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" [ngClass]="{'is-active': isActive}"
+      (click)="toggleNavbar()">
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+      <span aria-hidden="true"></span>
+    </a>
   </div>
 
-  <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isActive}">
-    @if(isLogged) {
+  @if(showButtons) {
+    <div id="navbarBasicExample" class="navbar-menu" [ngClass]="{'is-active': isActive}">
+      @if(isLogged) {
       <div class="navbar-start">
         <ng-container *ngFor="let module of modules">
           <div class="navbar-item has-dropdown" [ngClass]="{'is-active': activeModule === module.name}">
             <a class="navbar-link" (click)="toggleSubmenu(module.name)">
               {{ module.name }}
               <span class="icon">
-                <i [ngClass]="{'fa-angle-down': activeModule !== module.name, 'fa-angle-up': activeModule === module.name}" class="fas"></i>
+                <i [ngClass]="{'fa-angle-down': activeModule !== module.name, 'fa-angle-up': activeModule === module.name}"
+                  class="fas"></i>
               </span>
             </a>
             <div class="navbar-dropdown" *ngIf="activeModule === module.name">
@@ -50,7 +51,7 @@
           </div>
         </div>
       </div>
-    } @else if(showGuestButton) {
+      } @else {
       <div class="navbar-start">
         <div class="navbar-item">
   
@@ -64,6 +65,7 @@
           <a class="button is-light" href="/login">Ingreso/Registro</a>
         </div>
       </div>
-    }
-  </div>
+      }
+    </div>
+  }
 </nav>

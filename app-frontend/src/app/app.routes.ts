@@ -6,6 +6,8 @@ import { LoginComponent } from './components/commons/login/login.component';
 import { NotFoundComponent } from './components/commons/not-found/not-found.component';
 import { CompanySettingsComponent } from './components/options/company-settings/company-settings.component';
 import { ProfileComponent } from "./components/user/profile/profile.component";
+import { VerificationEmailComponent } from './components/commons/verification-email/verification-email.component';
+import { Verification2faComponent } from './components/commons/verification2fa/verification2fa.component';
 
 export const routes: Routes = [
 
@@ -13,6 +15,8 @@ export const routes: Routes = [
   { path: 'home', component: HomeComponent },
   { path: 'test', component: TestComponentsComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'verify-email/:token', component: VerificationEmailComponent },
+  { path: 'verify-2fa', component: Verification2faComponent },
   {
     path: 'options', children: [
       { path: 'company-settings', component: CompanySettingsComponent }
