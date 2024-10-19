@@ -41,3 +41,7 @@ spring:
           uri: ${USER_ROUTE_URI:http://localhost:8003}
           predicates:
             - Path=/user/**,/company-settings/**
+        - id: email-route
+          uri: ${EMAIL_ROUTE_URI:http://localhost:8004}
+          predicates:
+            - Path=/email/**

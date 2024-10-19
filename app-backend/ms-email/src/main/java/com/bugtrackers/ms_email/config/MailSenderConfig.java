@@ -28,15 +28,6 @@ public class MailSenderConfig {
     @Value("${spring.mail.protocol}")
     private String protocol;
 
-    @Value("${spring.mail.properties.mail.smtp.auth}")
-    private String smtpAuth;
-
-    @Value("${spring.mail.properties.mail.smtp.starttls.enable}")
-    private String starttlsEnable;
-
-    @Value("${spring.mail.properties.mail.smtp.starttls.required}")
-    private String starttlsRequired;
-
     private final CompanySettingRepository companySettingRepository;
 
     @Bean
@@ -61,9 +52,9 @@ public class MailSenderConfig {
         javaMailSender.setPassword(gmailPassword.getKeyValue());
 
         Properties properties = javaMailSender.getJavaMailProperties();
-        properties.put("mail.smtp.auth", smtpAuth);
-        properties.put("mail.smtp.starttls.enable", starttlsEnable);
-        properties.put("mail.smtp.starttls.required", starttlsRequired);
+        properties.put("mail.smtp.auth", true);
+        properties.put("mail.smtp.starttls.enable", true);
+        properties.put("mail.smtp.starttls.required", true);
 
         return javaMailSender;
     }

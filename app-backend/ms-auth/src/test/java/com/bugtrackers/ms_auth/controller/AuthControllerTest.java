@@ -20,6 +20,7 @@ import com.google.gson.Gson;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -83,6 +84,16 @@ public class AuthControllerTest {
                 .content(authRequestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedResponseJson));
+    }
+
+    @Test
+    void shouldVerifyUser() throws Exception {
+        String token = "token";
+        when(this.authService.verifyEmail(token)).thenReturn("Usuario verificado exitosamente!");
+
+        this.mockMvc.perform(put("/auth/verify-email/token"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\": \"Usuario verificado exitosamente!\"}"));
     }
 	
 }

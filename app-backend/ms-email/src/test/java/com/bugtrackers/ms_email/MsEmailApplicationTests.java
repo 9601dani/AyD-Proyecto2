@@ -10,4 +10,9 @@ class MsEmailApplicationTests {
 	void contextLoads() {
 	}
 
+	@Test
+	void testMain() {
+		MsEmailApplication.main(new String[] {});
+	}
+
 }
