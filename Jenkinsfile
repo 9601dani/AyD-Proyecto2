@@ -86,6 +86,18 @@ pipeline {
                 }
             }
         }
+
+        stage('Build Backend Microservice Email') {
+            steps {
+                dir('app-backend/ms-email') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
         // This should be built after all microservices.
         stage('Build Backend Gateway') {
             steps {

@@ -72,7 +72,7 @@ public class UserServiceTest {
 
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
         
-        UserAllResponse userAllResponse = new UserAllResponse(user.getEmail(), user.getUsername(), userInformation.getNit(), userInformation.getImageProfile(), userInformation.getDescription(), userInformation.getDpi(), userInformation.getPhoneNumber());
+        UserAllResponse userAllResponse = new UserAllResponse(user.getEmail(), user.getUsername(), userInformation.getNit(), userInformation.getImageProfile(), userInformation.getDescription(), userInformation.getDpi(), userInformation.getPhoneNumber(), false);
 
         UserAllResponse userAllResponseTest = userService.getById(1);
 
@@ -104,7 +104,7 @@ public class UserServiceTest {
 
         UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
         
-        UserAllResponse userAllResponseExpected = new UserAllResponse(user.getEmail(), user.getUsername(), userAllRequest.getNit(), userAllRequest.getImageProfile(), userAllRequest.getDescription(), userAllRequest.getDpi(), userAllRequest.getPhoneNumber());
+        UserAllResponse userAllResponseExpected = new UserAllResponse(user.getEmail(), user.getUsername(), userAllRequest.getNit(), userAllRequest.getImageProfile(), userAllRequest.getDescription(), userAllRequest.getDpi(), userAllRequest.getPhoneNumber(), false);
         
 
         UserAllResponse userAllResponseActual = userService.updateProfile(1, userAllRequest);
@@ -210,6 +210,39 @@ public class UserServiceTest {
         assertEquals("Error updating image for user ID: 1", exception.getMessage());
     }
 
+
+    @Test
+    void shouldSet2faTrue() {
+        when(this.userRepository.findById(1)).thenReturn(Optional.of(user));
+
+        String expectedMessage = "2FA actualizada exitosamente!";
+        String actualMessage = this.userService.set2fa(1);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldSet2faFalse() {
+        user.setIs2FA(true);
+        when(this.userRepository.findById(1)).thenReturn(Optional.of(user));
+
+        String expectedMessage = "2FA actualizada exitosamente!";
+        String actualMessage = this.userService.set2fa(1);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSet2faByUser() {
+        when(this.userRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            this.userService.set2fa(1);
+        });
+
+        String expectedMessage = "Usuario no encontrado.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 
 
 }

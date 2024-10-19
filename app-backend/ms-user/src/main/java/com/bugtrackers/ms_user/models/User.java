@@ -40,6 +40,9 @@ public class User {
     @Column(columnDefinition = "TINYINT")
     private Boolean isVerified = false;
 
+    @Column(name = "is_2FA", columnDefinition = "TINYINT")
+    private Boolean is2FA = false;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToOne(mappedBy = "user")

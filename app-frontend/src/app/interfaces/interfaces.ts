@@ -19,6 +19,7 @@ export interface UserAllResponse {
   description: string;
   dpi: string;
   phoneNumber: string;
+  is2FA: boolean
 }
 
 export interface ResponseString {

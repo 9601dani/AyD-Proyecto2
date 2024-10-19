@@ -70,34 +70,16 @@
         
         <!--SEGURIDAD-->
         <div class="box">
-          <h3 class="title is-5">SEGURIDAD</h3>
-          <form [formGroup]="authForm">
-            <div class="field is-grouped">
-              <p class="control">
-                <button 
-                  type="button" 
-                  class="button" 
-                  [ngClass]="{'is-primary': authForm.get('twoFactorAuth')?.value === true}"
-                  [disabled]="authForm.get('twoFactorAuth')?.value === true"
-                  (click)="setTwoFactorAuth(true)">
-                  Sí
-                </button>
-              </p>
-        
-              <p class="control">
-                <button 
-                  type="button" 
-                  class="button" 
-                  [ngClass]="{'is-danger': authForm.get('twoFactorAuth')?.value === false}"
-                  [disabled]="authForm.get('twoFactorAuth')?.value === false" 
-                  (click)="setTwoFactorAuth(false)">
-                  No
-                </button>
-              </p>
+          <h5 class="title is-5">SEGURIDAD</h5>
+          <form [formGroup]="authForm" (ngSubmit)="set2fa()">
+            <h6 class="subtitle is-6">¿Desea habilitar la autenticación en dos pasos?</h6>
+            <div class="buttons has-addons">
+              <button [disabled]="this.userProfileAll.is2FA" class="button is-success" [ngClass]="{'is-active': this.userProfileAll.is2FA}">Sí</button>
+              <button [disabled]="!this.userProfileAll.is2FA" class="button is-warning" [ngClass]="{'is-active': !this.userProfileAll.is2FA}">No</button>
             </div>
           </form>
           <br>
-          <p class="help is-info">Seleccione "Sí" para activar la autenticación en dos pasos, o "No" para desactivarla.</p>
+          <p class="help is-info">Habilitar esta opción permitirá que su cuenta se encuentre protegida.</p>
         </div>
       </div>
 

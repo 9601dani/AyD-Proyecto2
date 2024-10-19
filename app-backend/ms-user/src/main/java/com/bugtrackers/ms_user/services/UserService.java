@@ -52,7 +52,8 @@ public class UserService {
             userInformation.getImageProfile(),
             userInformation.getDescription(),
             userInformation.getDpi(),
-            userInformation.getPhoneNumber()
+            userInformation.getPhoneNumber(),
+            user.getIs2FA()
         );
     }
 
@@ -89,7 +90,8 @@ public class UserService {
             userInformation.getImageProfile(),
             userInformation.getDescription(),
             userInformation.getDpi(),
-            userInformation.getPhoneNumber()
+            userInformation.getPhoneNumber(),
+            user.getIs2FA()
         );
 
     }
@@ -117,6 +119,19 @@ public class UserService {
         }
 
         return id;
+    }
+
+    public String set2fa(Integer id) {
+        Optional<User> uOptional = this.userRepository.findById(id);
+
+        if(uOptional.isEmpty()) {
+            throw new UserNotFoundException("Usuario no encontrado.");
+        }
+
+        User user = uOptional.get();
+        user.setIs2FA(!user.getIs2FA());
+        this.userRepository.save(user);
+        return "2FA actualizada exitosamente!";
     }
 
 

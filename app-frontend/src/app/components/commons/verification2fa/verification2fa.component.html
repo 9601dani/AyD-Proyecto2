@@ -1,0 +1,23 @@
+<app-navbar></app-navbar>
+<section class="section">
+    <div class="columns is-centered">
+      <div class="column is-half">
+        <div class="card">
+          <div class="card-content">
+            <div class="content has-text-centered">
+              <h2 class="title is-3">Ingrese su Código de Verificación</h2>
+              <p class="subtitle is-6 mt-5">Introduce el código de 6 dígitos que te hemos enviado.</p>
+            </div>
+  
+            <div class="field">
+                <input [formControl]="code" class="input is-large" type="text"/>
+            </div>
+  
+            <div class="has-text-centered mt-5">
+              <button [disabled]="this.code.invalid" class="button is-primary is-medium" (click)="verifyCode()">Verificar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>

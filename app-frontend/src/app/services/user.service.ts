@@ -68,5 +68,9 @@ export class UserService {
   updateService(id: number, service: Service): Observable<Service> {
     return this.http.put<Service>(`${this.apiServices}/${id}`, service);
   }
+
+  set2fa(id: number): Observable<any> {
+    return this.http.put(`${this.apiUser}/set-2fa/${id}`, null);
+  }
   
 }

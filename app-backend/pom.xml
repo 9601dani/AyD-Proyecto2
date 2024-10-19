@@ -20,6 +20,7 @@
     <module>gateway</module>
     <module>ms-img</module>
     <module>ms-user</module>
+    <module>ms-email</module>
     <module>report</module>
   </modules>
       

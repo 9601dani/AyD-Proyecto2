@@ -17,4 +17,16 @@ export class AuthService {
   login(user: any): Observable<any> {
     return this.http.post(`${this.apiAuth}/login`, user);
   }
+
+  verifyEmail(token: string): Observable<any> {
+    return this.http.put(`${this.apiAuth}/verify-email/${token}`, null);
+  }
+
+  sendEmailVerification(data: any): Observable<any> {
+    return this.http.put(`${this.apiAuth}/send-email/${data}`, null);
+  }
+
+  verify2fa(id: number, code: string): Observable<any> {
+    return this.http.put(`${this.apiAuth}/verify-2FA/${id}/${code}`, null);
+  }
 }
