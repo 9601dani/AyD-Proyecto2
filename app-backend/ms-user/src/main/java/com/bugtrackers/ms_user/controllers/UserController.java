@@ -1,7 +1,9 @@
 package com.bugtrackers.ms_user.controllers;
 
+import com.bugtrackers.ms_user.dto.request.CreateEmployeeRequest;
 import com.bugtrackers.ms_user.dto.request.RequestString;
 import com.bugtrackers.ms_user.dto.request.UserAllRequest;
+import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.models.Service;
@@ -59,6 +61,12 @@ public class UserController {
         return ResponseEntity.ok(map);
     }
 
+
+    @PostMapping("/add/employee")
+    public CreateEmployeeResponse addEmployee(@RequestBody CreateEmployeeRequest createEmployeeRequest) {
+        //return this.userService.addEmployee(createEmployeeRequest);
+        return null;
+    }
 
 
 }

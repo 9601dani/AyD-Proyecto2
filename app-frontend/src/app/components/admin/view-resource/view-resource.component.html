@@ -1,0 +1,23 @@
+<app-navbar></app-navbar>
+
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Lista de Recursos</h1>
+    <p class="subtitle has-text-centered">Aquí puedes ver los recursos disponibles y editarlos.</p>
+
+    <div class="columns is-multiline is-centered">
+      <div *ngFor="let resource of resources" class="column is-3">
+        <div class="box">
+          <h2 class="title is-5">{{ resource.name }}</h2>
+          <p><strong>Atributos:</strong></p>
+          <ul>
+            <li *ngFor="let attribute of resource.attributes">{{ attribute.name }}: {{ attribute.description }}</li>
+          </ul>
+          <button class="button is-primary is-fullwidth mt-4" (click)="editResource(resource.id)">
+            Editar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

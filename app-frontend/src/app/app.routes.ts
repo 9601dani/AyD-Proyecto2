@@ -9,6 +9,8 @@ import { ProfileComponent } from "./components/user/profile/profile.component";
 import { AddServiceComponent } from './components/admin/add-service/add-service.component';
 import { ViewServiceComponent } from './components/admin/view-service/view-service.component';
 import { AddEmployeeComponent } from './components/admin/add-employee/add-employee.component';
+import { AddResourceComponent } from './components/admin/add-resource/add-resource.component';
+import { ViewResourceComponent } from './components/admin/view-resource/view-resource.component';
 
 export const routes: Routes = [
 
@@ -35,6 +37,19 @@ export const routes: Routes = [
     path: 'employees', children: [
       {
         path: 'add-employee', component: AddEmployeeComponent
+      }
+    ]
+  },
+  {
+    path: 'resources', children: [
+      {
+        path: 'add-resource', component: AddResourceComponent
+      },
+      {
+        path: 'show-resources', component: ViewResourceComponent
+      },
+      {
+        path: 'add-resource/:id', component: AddResourceComponent
       }
     ]
   },
