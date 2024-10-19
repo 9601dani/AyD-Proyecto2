@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.bugtrackers.ms_auth.dto.request.AuthRequest;
 import com.bugtrackers.ms_auth.dto.request.LoginRequest;
 import com.bugtrackers.ms_auth.dto.response.AuthResponse;
+import com.bugtrackers.ms_auth.exceptions.EmailVerificationExpiredException;
 import com.bugtrackers.ms_auth.services.AuthService;
 
 import jakarta.transaction.Transactional;
@@ -50,7 +51,7 @@ public class AuthController {
     }
 
     @PutMapping("verify-email/{token}")
-    @Transactional
+    @Transactional(dontRollbackOn = EmailVerificationExpiredException.class)
     public ResponseEntity<HashMap<String, String>> verifyEmail(@PathVariable String token) {
         String message = this.authService.verifyEmail(token);
         HashMap<String, String> response = new HashMap<>();
@@ -58,10 +59,10 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("send-email/{id}")
+    @PutMapping("send-email/{emailOrUsername}")
     @Transactional
-    public ResponseEntity<HashMap<String, String>> sendEmailVerification(@PathVariable Integer id) {
-        String message = this.authService.sendEmailVerification(id);
+    public ResponseEntity<HashMap<String, String>> sendEmailVerification(@PathVariable String emailOrUsername) {
+        String message = this.authService.reSendEmailVerification(emailOrUsername);
         HashMap<String, String> response = new HashMap<>();
         response.put("message", message);
         return ResponseEntity.ok(response);
@@ -70,6 +71,14 @@ public class AuthController {
     @PostMapping("send-2FA/{id}")
     public ResponseEntity<HashMap<String, String>> send2FA(@PathVariable Integer id) {
         String message = this.authService.send2FA(id);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("verify-2FA/{id}/{code}")
+    public ResponseEntity<HashMap<String, String>> verify2FA(@PathVariable Integer id, @PathVariable String code) {
+        String message = this.authService.verify2FA(id, code);
         HashMap<String, String> response = new HashMap<>();
         response.put("message", message);
         return ResponseEntity.ok(response);

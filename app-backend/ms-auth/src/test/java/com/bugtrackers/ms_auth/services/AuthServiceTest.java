@@ -34,6 +34,7 @@ import com.bugtrackers.ms_auth.models.CompanySetting;
 import com.bugtrackers.ms_auth.models.EmailVerification;
 import com.bugtrackers.ms_auth.models.Role;
 import com.bugtrackers.ms_auth.models.User;
+import com.bugtrackers.ms_auth.models.User2FA;
 import com.bugtrackers.ms_auth.models.UserInformation;
 import com.bugtrackers.ms_auth.models.UserRole;
 import com.bugtrackers.ms_auth.repositories.AuthRepository;
@@ -48,7 +49,7 @@ import java.util.HashMap;
 
 @TestPropertySource(properties = "website.url=https://testurl.com/verify-email")
 public class AuthServiceTest {
-    
+
     @Mock
     private AuthRepository authRepository;
 
@@ -86,13 +87,15 @@ public class AuthServiceTest {
 
     @BeforeEach
     void setUp() {
-        
+
         MockitoAnnotations.openMocks(this);
         ReflectionTestUtils.setField(authService, "website", "http://localhost:4200");
         authRequest = new AuthRequest("email@example.com", "username", "password");
-        mockUser = new User(1,"email@example.com", "username", "password", "token", true, true, true,LocalDateTime.now(),
-        Set.of(new Role(2, "name", "description", LocalDateTime.now(), Set.of())));
+        mockUser = new User(1, "email@example.com", "username", "password", "token", true, true, true,
+                LocalDateTime.now(),
+                Set.of(new Role(2, "name", "description", LocalDateTime.now(), Set.of())));
         authResponse = new AuthResponse(mockUser);
+        loginRequest = new LoginRequest("username", "password");
     }
 
     @Test
@@ -117,7 +120,7 @@ public class AuthServiceTest {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         userRole.setUser(mockUserSaved);
-        
+
         UserInformation userInformation = new UserInformation();
         userInformation.setUser(mockUserSaved);
 
@@ -127,7 +130,8 @@ public class AuthServiceTest {
         when(passwordEncoder.encode("password")).thenReturn("encoded_password");
         when(userHasRoleRepository.save(userRole)).thenReturn(userRole);
         when(userInformationRepository.save(userInformation)).thenReturn(userInformation);
-        when(companySettingRepository.findByKeyName("email_verification_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("email_verification_template"))
+                .thenReturn(Optional.of(companySetting));
         when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
         when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
         when(passwordEncoder.encode("email@example.com")).thenReturn("encoded_email");
@@ -193,7 +197,7 @@ public class AuthServiceTest {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         userRole.setUser(mockUserSaved);
-        
+
         UserInformation userInformation = new UserInformation();
         userInformation.setUser(mockUserSaved);
         when(authRepository.findByUsername("username")).thenReturn(Optional.empty());
@@ -242,7 +246,7 @@ public class AuthServiceTest {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         userRole.setUser(mockUserSaved);
-        
+
         UserInformation userInformation = new UserInformation();
         userInformation.setUser(mockUserSaved);
         when(authRepository.findByUsername("username")).thenReturn(Optional.empty());
@@ -251,7 +255,8 @@ public class AuthServiceTest {
         when(passwordEncoder.encode("password")).thenReturn("encoded_password");
         when(userHasRoleRepository.save(userRole)).thenReturn(userRole);
         when(userInformationRepository.save(userInformation)).thenReturn(userInformation);
-        when(companySettingRepository.findByKeyName("email_verification_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("email_verification_template"))
+                .thenReturn(Optional.of(companySetting));
         when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.empty());
         when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
         when(passwordEncoder.encode("email@example.com")).thenReturn("encoded_email");
@@ -291,7 +296,7 @@ public class AuthServiceTest {
         UserRole userRole = new UserRole();
         userRole.setRole(role);
         userRole.setUser(mockUserSaved);
-        
+
         UserInformation userInformation = new UserInformation();
         userInformation.setUser(mockUserSaved);
         when(authRepository.findByUsername("username")).thenReturn(Optional.empty());
@@ -300,7 +305,8 @@ public class AuthServiceTest {
         when(passwordEncoder.encode("password")).thenReturn("encoded_password");
         when(userHasRoleRepository.save(userRole)).thenReturn(userRole);
         when(userInformationRepository.save(userInformation)).thenReturn(userInformation);
-        when(companySettingRepository.findByKeyName("email_verification_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("email_verification_template"))
+                .thenReturn(Optional.of(companySetting));
         when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
         when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.empty());
         when(passwordEncoder.encode("email@example.com")).thenReturn("encoded_email");
@@ -341,13 +347,14 @@ public class AuthServiceTest {
         assertTrue(response.isVerified());
     }
 
-    @Test 
+    @Test
     void shouldFindUserByEmail() {
+        mockUser.setIs2FA(false);
         CompanySetting companySetting = new CompanySetting();
         companySetting.setKeyName("name");
         companySetting.setKeyValue("value");
         when(authRepository.findByUsernameOrEmail("email@example.com", "email@example.com"))
-            .thenReturn(Optional.of(mockUser));
+                .thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
         when(companySettingRepository.findByKeyName("email_2FA_template")).thenReturn(Optional.of(companySetting));
         when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
@@ -363,16 +370,15 @@ public class AuthServiceTest {
         assertTrue(response.isActivated());
         assertTrue(response.isVerified());
     }
-    
+
     @Test
     void shouldNotFindUserByEmail() {
         when(authRepository.findByUsernameOrEmail("email@example.com", "email@example.com"))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
 
         loginRequest = new LoginRequest("email@example.com", "password");
 
-        
         Exception exception = assertThrows(UserNotFoundException.class, () -> {
             authService.login(loginRequest);
         });
@@ -386,12 +392,11 @@ public class AuthServiceTest {
     @Test
     void shouldNotBeCorrectPassword() {
         when(authRepository.findByUsernameOrEmail("email@example.com", "email@example.com"))
-            .thenReturn(Optional.of(mockUser));
+                .thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches("password", "password")).thenReturn(false);
 
         loginRequest = new LoginRequest("email@example.com", "password");
 
-        
         Exception exception = assertThrows(UserNotAllowedException.class, () -> {
             authService.login(loginRequest);
         });
@@ -406,12 +411,11 @@ public class AuthServiceTest {
     void shouldFindUserNotActivated() {
         mockUser.setIsActivated(false);
         when(authRepository.findByUsernameOrEmail("email@example.com", "email@example.com"))
-            .thenReturn(Optional.of(mockUser));
+                .thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
 
         loginRequest = new LoginRequest("email@example.com", "password");
 
-        
         Exception exception = assertThrows(UserNotAllowedException.class, () -> {
             authService.login(loginRequest);
         });
@@ -426,12 +430,11 @@ public class AuthServiceTest {
     void shouldFindUserNotVerified() {
         mockUser.setIsVerified(false);
         when(authRepository.findByUsernameOrEmail("email@example.com", "email@example.com"))
-            .thenReturn(Optional.of(mockUser));
+                .thenReturn(Optional.of(mockUser));
         when(passwordEncoder.matches("password", "password")).thenReturn(true);
 
         loginRequest = new LoginRequest("email@example.com", "password");
 
-        
         Exception exception = assertThrows(UserNotVerifiedException.class, () -> {
             authService.login(loginRequest);
         });
@@ -450,8 +453,8 @@ public class AuthServiceTest {
         emailVerification.setExpiredAt(LocalDateTime.now().plusHours(1));
 
         when(this.emailVerificationRepository.findByTokenAndIsAvailable("token", true))
-            .thenReturn(Optional.of(emailVerification));
-        
+                .thenReturn(Optional.of(emailVerification));
+
         when(this.authRepository.findByEmail("email@example.com")).thenReturn(Optional.of(mockUser));
 
         String expectedMessage = "Usuario verificado exitosamente!";
@@ -463,7 +466,7 @@ public class AuthServiceTest {
     @Test
     void shouldNotFindEmailVerification() {
         when(this.emailVerificationRepository.findByTokenAndIsAvailable("token", true))
-            .thenReturn(Optional.empty());
+                .thenReturn(Optional.empty());
 
         Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
             this.authService.verifyEmail("token");
@@ -484,7 +487,7 @@ public class AuthServiceTest {
         emailVerification.setExpiredAt(LocalDateTime.now().minusHours(3));
 
         when(this.emailVerificationRepository.findByTokenAndIsAvailable("token", true))
-            .thenReturn(Optional.of(emailVerification));
+                .thenReturn(Optional.of(emailVerification));
 
         Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
             this.authService.verifyEmail("token");
@@ -504,11 +507,11 @@ public class AuthServiceTest {
         emailVerification.setExpiredAt(LocalDateTime.now().plusHours(3));
 
         when(this.emailVerificationRepository.findByTokenAndIsAvailable("token", true))
-            .thenReturn(Optional.of(emailVerification));
-        
+                .thenReturn(Optional.of(emailVerification));
+
         when(this.authRepository.findByEmail("email@example.com")).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(UserNotFoundException.class,  () -> {
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
             this.authService.verifyEmail("token");
         });
 
@@ -518,6 +521,202 @@ public class AuthServiceTest {
         assertEquals(expectedMessage, actualMessage);
     }
 
+    @Test
+    void shouldNotFind2FATemplate() {
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_2FA_template")).thenReturn(Optional.empty());
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
 
+        Exception exception = assertThrows(SettingNotFoundException.class, () -> {
+            this.authService.login(loginRequest);
+        });
 
+        String expectedMessage = "No se encontró la plantilla.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSend2FAByCompanyName() {
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_2FA_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(SettingNotFoundException.class, () -> {
+            this.authService.login(loginRequest);
+        });
+
+        String expectedMessage = "No se encontró una configuración de la empresa.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSend2FAByCompanyLogo() {
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_2FA_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.empty());
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
+
+        Exception exception = assertThrows(SettingNotFoundException.class, () -> {
+            this.authService.login(loginRequest);
+        });
+
+        String expectedMessage = "No se encontró una configuración de la empresa.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSend2FAByCompanyLogoAndName() {
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_2FA_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.empty());
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(SettingNotFoundException.class, () -> {
+            this.authService.login(loginRequest);
+        });
+
+        String expectedMessage = "No se encontró una configuración de la empresa.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldSendEmailVerification() {
+        when(this.authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_verification_template"))
+                .thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
+        when(passwordEncoder.encode(any(String.class))).thenReturn("tokenencoded");
+
+        String expectedMessage = "Correo enviado exitosamente!";
+        String actualMessage = this.authService.reSendEmailVerification("username");
+        assertNotNull(actualMessage);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSendEmailVerificationById() {
+        when(this.authRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            this.authService.reSendEmailVerification("username");
+        });
+
+        String expectedMessage = "Usuario no encontrado.";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldSend2FA() {
+        when(this.authRepository.findById(1)).thenReturn(Optional.of(mockUser));
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_2FA_template")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
+
+        String expectedMessage = "Correo enviado exitosamente!";
+        String actualMessage = this.authService.send2FA(1);
+        assertNotNull(actualMessage);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSend2FAById() {
+        when(this.authRepository.findById(1)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            this.authService.send2FA(1);
+        });
+
+        String expectedMessage = "Usuario no encontrado.";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldVerify2FA() {
+        User2FA user2fa = new User2FA();
+        user2fa.setId(1);
+        user2fa.setSecretKey("secret");
+        user2fa.setExpiredAt(LocalDateTime.now().plusHours(1));
+
+        when(this.user2faRepository.findByUserIdAndSecretKeyAndIsAvailable(1, "secret", true))
+                .thenReturn(Optional.of(user2fa));
+
+        String expectedMessage = "Usuario autenticado exitosamente!";
+        String actualMessage = this.authService.verify2FA(1, "secret");
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotVerify2FAByUser2FANotFound() {
+        when(this.user2faRepository.findByUserIdAndSecretKeyAndIsAvailable(1, "secret", true))
+                .thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
+            this.authService.verify2FA(1, "secret");
+        });
+
+        String expectedMessage = "El token ya no se encuentra disponible.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotVerify2FAByEmailExpired() {
+        User2FA user2fa = new User2FA();
+        user2fa.setId(1);
+        user2fa.setSecretKey("secret");
+        user2fa.setExpiredAt(LocalDateTime.now().minusHours(1));
+
+        when(this.user2faRepository.findByUserIdAndSecretKeyAndIsAvailable(1, "secret", true))
+                .thenReturn(Optional.of(user2fa));
+
+        Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
+            this.authService.verify2FA(1, "secret");
+        });
+
+        String expectedMessage = "El token ya no se encuentra disponible.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
 }

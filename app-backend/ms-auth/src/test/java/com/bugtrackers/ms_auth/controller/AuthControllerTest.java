@@ -95,5 +95,31 @@ public class AuthControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().json("{\"message\": \"Usuario verificado exitosamente!\"}"));
     }
+
+    @Test
+    void shouldSendEmailVerification() throws Exception {
+        when(this.authService.reSendEmailVerification("username")).thenReturn("Correo enviado exitosamente!");
+
+        this.mockMvc.perform(put("/auth/send-email/username"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\": \"Correo enviado exitosamente!\"}"));
+    }
+
+    @Test
+    void shouldSend2FA() throws Exception {
+        when(this.authService.send2FA(1)).thenReturn("Correo enviado exitosamente!");
+
+        this.mockMvc.perform(post("/auth/send-2FA/1"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\": \"Correo enviado exitosamente!\"}"));
+    }
+
+    @Test
+    void shouldVerify2FA() throws Exception {
+        when(this.authService.verify2FA(1, "code")).thenReturn("Usuario autenticado exitosamente!");
+        this.mockMvc.perform(put("/auth/verify-2FA/1/code"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\": \"Usuario autenticado exitosamente!\"}"));
+    }
 	
 }

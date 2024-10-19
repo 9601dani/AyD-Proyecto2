@@ -41,7 +41,8 @@ export class ProfileComponent implements OnInit{
     description: '',
     imageProfile: '',
     dpi: '',        
-    phoneNumber: '' 
+    phoneNumber: '',
+    is2FA: false
   };
   initialValues: any;
   profileForm!: FormGroup;
@@ -261,21 +262,38 @@ export class ProfileComponent implements OnInit{
     });
   }
 
-  setTwoFactorAuth(value: boolean): void {
-    if (this.authForm.get('twoFactorAuth')?.value !== value) {
-      this.authForm.patchValue({
-        twoFactorAuth: value
-      });
+  set2fa() {
+    const id = this._localStorageService.getUserId();
 
-      const userId = this._localStorageService.getUserId();
-      if (userId !== null) {
-       Swal.fire({
-          title: 'Manda el valor: ' + value,
-          text: 'El valor se ha actualizado correctamente',
-          icon: 'success'
-        });
-      }
+    if(id === null) {
+      Swal.fire({
+        title: 'Error',
+        text: 'No se ha podido obtener el usuario',
+        icon: 'error'
+      });
+      return;
     }
+
+    this._userService.set2fa(id).subscribe({
+      next: response => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: 'Se han actualizado sus preferencias.',
+          icon: 'success',
+          confirmButtonText: 'Ok!'
+        })
+
+      },
+      error: err => {
+        Swal.fire({
+          title: 'Error!',
+          text: 'Ocurrió un problema al actualizar las preferencias, intentelo más tarde.',
+          icon: 'error',
+          confirmButtonText: 'Ok!'
+        })
+      }
+    })
+
   }
   
 }

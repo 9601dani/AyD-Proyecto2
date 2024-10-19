@@ -47,7 +47,6 @@ export class NavbarComponent implements OnInit {
       this.showButtons = true;
       this.getPages();
       this.setUserPhoto();
-      return;
     }
 
     this.showOptions();

@@ -231,15 +231,14 @@ public class AuthService {
     }
 
 
-    public String sendEmailVerification(Integer id) {
-        Optional<User> uOptional = this.authRepository.findById(id);
+    public String reSendEmailVerification(String emailOrUsername) {
+        Optional<User> uOptional = this.authRepository.findByUsernameOrEmail(emailOrUsername, emailOrUsername);
 
         if(uOptional.isEmpty()) {
             throw new UserNotFoundException("Usuario no encontrado.");
         }
 
-        User user = uOptional.get();
-        String email = user.getEmail();
+        String email = uOptional.get().getEmail();
         sendEmailVerification(email);
 
         return "Correo enviado exitosamente!";
@@ -255,6 +254,26 @@ public class AuthService {
         send2FAEmail(uOptional.get());
 
         return "Correo enviado exitosamente!";
+    }
+
+    public String verify2FA(Integer id, String code) {
+        Optional<User2FA> uOptional = this.user2FARepository.findByUserIdAndSecretKeyAndIsAvailable(id, code, true);
+        if(uOptional.isEmpty()) {
+            throw new EmailVerificationExpiredException("El token ya no se encuentra disponible.");
+        }
+
+        User2FA user2fa = uOptional.get();
+
+        if(LocalDateTime.now().isAfter(user2fa.getExpiredAt())) {
+            user2fa.setIsAvailable(false);
+            this.user2FARepository.save(user2fa);
+            throw new EmailVerificationExpiredException("El token ya no se encuentra disponible.");
+        }
+
+        user2fa.setIsAvailable(false);
+        this.user2FARepository.save(user2fa);
+
+        return "Usuario autenticado exitosamente!";
     }
 
 }
