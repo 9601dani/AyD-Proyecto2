@@ -17,6 +17,8 @@ export interface UserAllResponse {
   nit: string;
   imageProfile: string;
   description: string;
+  dpi: string;
+  phoneNumber: string;
 }
 
 export interface ResponseString {

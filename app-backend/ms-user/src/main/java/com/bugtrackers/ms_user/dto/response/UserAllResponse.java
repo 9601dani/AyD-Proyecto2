@@ -5,6 +5,8 @@ public record UserAllResponse(
     String username,
     String nit,
     String imageProfile,
-    String description
+    String description,
+    String dpi,
+    String phoneNumber
 ) {
 }

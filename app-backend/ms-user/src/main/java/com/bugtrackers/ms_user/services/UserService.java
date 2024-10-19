@@ -50,7 +50,9 @@ public class UserService {
             user.getUsername(),
             userInformation.getNit(),
             userInformation.getImageProfile(),
-            userInformation.getDescription()
+            userInformation.getDescription(),
+            userInformation.getDpi(),
+            userInformation.getPhoneNumber()
         );
     }
 
@@ -75,6 +77,8 @@ public class UserService {
         userInformation.setNit(userAllRequest.getNit());
         userInformation.setImageProfile(userAllRequest.getImageProfile());
         userInformation.setDescription(userAllRequest.getDescription());
+        userInformation.setDpi(userAllRequest.getDpi());
+        userInformation.setPhoneNumber(userAllRequest.getPhoneNumber());
         
         this.userInformationRepository.save(userInformation);
 
@@ -83,7 +87,9 @@ public class UserService {
             user.getUsername(),
             userInformation.getNit(),
             userInformation.getImageProfile(),
-            userInformation.getDescription()
+            userInformation.getDescription(),
+            userInformation.getDpi(),
+            userInformation.getPhoneNumber()
         );
 
     }
