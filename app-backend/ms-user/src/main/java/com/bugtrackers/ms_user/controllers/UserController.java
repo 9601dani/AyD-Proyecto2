@@ -4,6 +4,8 @@ import com.bugtrackers.ms_user.dto.request.RequestString;
 import com.bugtrackers.ms_user.dto.request.UserAllRequest;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
+import com.bugtrackers.ms_user.models.Service;
+import com.bugtrackers.ms_user.services.ServiceService;
 import com.bugtrackers.ms_user.services.UserService;
 
 import lombok.AllArgsConstructor;
@@ -48,8 +50,6 @@ public class UserController {
         return ResponseEntity.ok(map);
     }
 
-
-
     @PutMapping("/profile/img/{id}")
     public ResponseEntity<Map<String, String>> updateImageProfile(@PathVariable Integer id, @RequestBody RequestString imageUpdateRequest) {
         String pathImage = imageUpdateRequest.getMessage();
@@ -58,6 +58,7 @@ public class UserController {
         map.put("path", pathImage);
         return ResponseEntity.ok(map);
     }
+
 
 
 }

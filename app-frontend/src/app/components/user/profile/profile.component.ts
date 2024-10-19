@@ -1,9 +1,8 @@
 import {Component, Inject, OnInit, PLATFORM_ID, ViewChild} from '@angular/core';
 import {NavbarComponent} from "../../commons/navbar/navbar.component";
-import {ResponseString, User, UserAllResponse, UserProfile} from "../../../interfaces/interfaces";
-import {HttpClient} from "@angular/common/http";
-import {CommonModule, isPlatformBrowser, JsonPipe} from "@angular/common";
-import {FormBuilder, FormGroup, FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {ResponseString, UserAllResponse} from "../../../interfaces/interfaces";
+import {CommonModule, isPlatformBrowser} from "@angular/common";
+import {FormBuilder, FormGroup, ReactiveFormsModule, Validators} from '@angular/forms';
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonModule} from "@angular/material/button";
 import {MatFormFieldModule} from "@angular/material/form-field";
@@ -40,10 +39,13 @@ export class ProfileComponent implements OnInit{
     username: '',
     nit: '',
     description: '',
-    imageProfile: ''
+    imageProfile: '',
+    dpi: '',        
+    phoneNumber: '' 
   };
   initialValues: any;
   profileForm!: FormGroup;
+  authForm!: FormGroup;
   changesMade=false;
 
   selectedFile: File | null = null;
@@ -61,17 +63,23 @@ export class ProfileComponent implements OnInit{
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
-
   ngOnInit() {
     this.getUserProfile();
     this.profileForm = this.fb.group({
-      nit: [''],
-      description: ['']
+      nit: ['', Validators.required],           
+      description: ['', Validators.required],    
+      phoneNumber: ['', [Validators.required, Validators.pattern(/^[0-9]{8}$/)]],
+      dpi: ['', [Validators.required, Validators.pattern(/^[0-9]{13}$/)]] 
+    });
+
+    this.authForm = this.fb.group({
+      twoFactorAuth: [false]  
     });
 
     this.profileForm.valueChanges.subscribe(() => {
       this.changesMade = !this.areValuesEqual(this.initialValues, this.profileForm.value);
     });
+    
   }
 
   getUserProfile(): void {
@@ -87,12 +95,13 @@ export class ProfileComponent implements OnInit{
       } else {
         this._userService.getMyProfile(user_id).subscribe(
           (res: UserAllResponse) => {
-            console.log(res);
             this.userProfileAll = res;
             this.initialValues = this.profileForm.value;
             this.profileForm.patchValue({
               nit: this.userProfileAll.nit,
               description: this.userProfileAll.description,
+              phoneNumber: this.userProfileAll.phoneNumber, 
+              dpi: this.userProfileAll.dpi,                 
               image_profile: this.userProfileAll.imageProfile
             });
           },
@@ -107,6 +116,7 @@ export class ProfileComponent implements OnInit{
       }
     }
   }
+
   areValuesEqual(initialValues: any, currentValues: any): boolean {
     return JSON.stringify(initialValues) === JSON.stringify(currentValues);
   }
@@ -147,6 +157,7 @@ export class ProfileComponent implements OnInit{
           const imagePath = res.message; 
           
           this.updateProfileImgUser(imagePath);
+          this.selectedFile = null;
           this.selectedPreviewImage = null;
         },
         (err) => {
@@ -160,7 +171,6 @@ export class ProfileComponent implements OnInit{
       );
     }
   }
-  
 
   saveChanges(): void {
     if (this.profileForm.valid) {
@@ -177,6 +187,22 @@ export class ProfileComponent implements OnInit{
         Swal.fire({
           title: 'Error',
           text: 'El campo descripción no puede estar vacío',
+          icon: 'error'
+        });
+        return;
+      }
+      if(profileData.phoneNumber == null || profileData.phoneNumber == '') {
+        Swal.fire({
+          title: 'Error',
+          text: 'El campo Teléfono no puede estar vacío',
+          icon: 'error'
+        });
+        return;
+      }
+      if(profileData.dpi == null || profileData.dpi == '') {
+        Swal.fire({
+          title: 'Error',
+          text: 'El campo DPI no puede estar vacío',
           icon: 'error'
         });
         return;
@@ -199,35 +225,57 @@ export class ProfileComponent implements OnInit{
           });
         }
       );
-    }
-  }
-
-updateProfileImgUser(img: string): void {
-
-  const path = { message: img };
-
-  this._userService.updateImgUserInformation(this._localStorageService.getUserId(), path).subscribe({
-    next: (res: any) => {
-
-      this._localStorageService.setUserPhoto(res.path);
-
-      Swal.fire({
-        title: 'Imagen de perfil actualizada',
-        text: 'La imagen de perfil se ha actualizado correctamente',
-        icon: 'success'
-      });
-    },
-    error: (err) => {
-      console.error('Error actualizando la imagen de perfil:', err);
-
+    } else {
       Swal.fire({
         title: 'Error',
-        text: 'No se ha podido actualizar la imagen de perfil',
+        text: 'Por favor, complete los campos vacios',
         icon: 'error'
       });
     }
-  });
-}
+  }
 
+  updateProfileImgUser(img: string): void {
+
+    const path = { message: img };
+
+    this._userService.updateImgUserInformation(this._localStorageService.getUserId(), path).subscribe({
+      next: (res: any) => {
+
+        this._localStorageService.setUserPhoto(res.path);
+
+        Swal.fire({
+          title: 'Imagen de perfil actualizada',
+          text: 'La imagen de perfil se ha actualizado correctamente',
+          icon: 'success'
+        });
+      },
+      error: (err) => {
+        console.error('Error actualizando la imagen de perfil:', err);
+
+        Swal.fire({
+          title: 'Error',
+          text: 'No se ha podido actualizar la imagen de perfil',
+          icon: 'error'
+        });
+      }
+    });
+  }
+
+  setTwoFactorAuth(value: boolean): void {
+    if (this.authForm.get('twoFactorAuth')?.value !== value) {
+      this.authForm.patchValue({
+        twoFactorAuth: value
+      });
+
+      const userId = this._localStorageService.getUserId();
+      if (userId !== null) {
+       Swal.fire({
+          title: 'Manda el valor: ' + value,
+          text: 'El valor se ha actualizado correctamente',
+          icon: 'success'
+        });
+      }
+    }
+  }
   
 }

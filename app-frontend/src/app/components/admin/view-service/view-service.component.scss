@@ -1,0 +1,13 @@
+.card {
+    margin-bottom: 1.5rem;
+    transition: transform 0.2s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+  }
+  
+  .icon {
+    margin-right: 5px;
+  }
+  

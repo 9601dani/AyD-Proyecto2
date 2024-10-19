@@ -18,6 +18,8 @@
         #fileInput />
 
       <div>
+        <br>
+        <br>
         <button class="button is-primary mt-3" (click)="triggerFileInput()">Seleccionar Imagen</button>
       </div>
     
@@ -35,30 +37,70 @@
       <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
     </div>
     
-    
-
     <div class="columns mt-6">
-      <!-- Sección de credenciales -->
       <div class="column">
         <div class="box">
           <h3 class="title is-5">CREDENCIALES</h3>
           <div class="field">
             <label class="label">Email</label>
-            <div class="control">
-              <input class="input" type="text" [value]="userProfileAll.email" disabled>
+            <div class="control has-icons-left">
+              <input 
+                class="input is-static" 
+                type="text" 
+                [value]="userProfileAll.email" 
+                readonly 
+                style="background-color: #f0f0f0; border-color: #e0e0e0;">
             </div>
           </div>
-
+          
           <div class="field">
             <label class="label">Username</label>
-            <div class="control">
-              <input class="input" type="text" [value]="userProfileAll.username" disabled>
+            <div class="control has-icons-left">
+              <input 
+                class="input is-static" 
+                type="text" 
+                [value]="userProfileAll.username" 
+                readonly 
+                style="background-color: #f0f0f0; border-color: #e0e0e0;">
             </div>
           </div>
+          
+        </div>
+        <br>
+        
+        <!--SEGURIDAD-->
+        <div class="box">
+          <h3 class="title is-5">SEGURIDAD</h3>
+          <form [formGroup]="authForm">
+            <div class="field is-grouped">
+              <p class="control">
+                <button 
+                  type="button" 
+                  class="button" 
+                  [ngClass]="{'is-primary': authForm.get('twoFactorAuth')?.value === true}"
+                  [disabled]="authForm.get('twoFactorAuth')?.value === true"
+                  (click)="setTwoFactorAuth(true)">
+                  Sí
+                </button>
+              </p>
+        
+              <p class="control">
+                <button 
+                  type="button" 
+                  class="button" 
+                  [ngClass]="{'is-danger': authForm.get('twoFactorAuth')?.value === false}"
+                  [disabled]="authForm.get('twoFactorAuth')?.value === false" 
+                  (click)="setTwoFactorAuth(false)">
+                  No
+                </button>
+              </p>
+            </div>
+          </form>
+          <br>
+          <p class="help is-info">Seleccione "Sí" para activar la autenticación en dos pasos, o "No" para desactivarla.</p>
         </div>
       </div>
 
-      <!-- Sección de info personal -->
       <div class="column">
         <div class="box">
           <h3 class="title is-5">MI INFORMACION</h3>
@@ -68,13 +110,49 @@
               <div class="control">
                 <input class="input" type="text" formControlName="nit">
               </div>
+              <p class="help is-danger" *ngIf="profileForm.get('nit')?.touched && profileForm.get('nit')?.hasError('required')">
+                El campo NIT no puede estar vacío.
+              </p>
             </div>
 
             <div class="field">
+              <br>
+              <label class="label">DPI</label>
+              <div class="control">
+                <input class="input" type="text" formControlName="dpi">
+              </div>
+              <br>
+              <p class="help is-danger" *ngIf="profileForm.get('dpi')?.touched && profileForm.get('dpi')?.hasError('required')">
+                El campo DPI no puede estar vacío.
+              </p>
+              <p class="help is-danger" *ngIf="profileForm.get('dpi')?.touched && profileForm.get('dpi')?.hasError('pattern')">
+                El DPI debe tener exactamente 13 dígitos.
+              </p>
+            </div>
+
+            <div class="field">
+              <br>
+              <label class="label">Teléfono</label>
+              <div class="control">
+                <input class="input" type="text" formControlName="phoneNumber">
+              </div>
+              <p class="help is-danger" *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.hasError('required')">
+                El campo Teléfono no puede estar vacío.
+              </p>
+              <p class="help is-danger" *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.hasError('pattern')">
+                El número de teléfono debe tener exactamente 8 dígitos.
+              </p>
+            </div>
+
+            <div class="field">
+              <br>
               <label class="label">Descripción</label>
               <div class="control">
                 <textarea class="textarea" formControlName="description"></textarea>
               </div>
+              <p class="help is-danger" *ngIf="profileForm.get('description')?.touched && profileForm.get('description')?.hasError('required')">
+                El campo Descripción no puede estar vacío.
+              </p>
             </div>
           </form>
         </div>
@@ -82,7 +160,11 @@
     </div>
 
     <div class="has-text-centered mt-5">
-      <button class="button is-primary" [disabled]="!changesMade" (click)="saveChanges()">
+      <button 
+        class="button is-primary" 
+        [disabled]="!profileForm.touched || profileForm.invalid || !changesMade" 
+        (click)="saveChanges()"
+      >
         Guardar Cambios
       </button>
     </div>
