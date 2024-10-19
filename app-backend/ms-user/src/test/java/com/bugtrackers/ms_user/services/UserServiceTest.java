@@ -104,7 +104,7 @@ public class UserServiceTest {
 
         UserAllRequest userAllRequest = new UserAllRequest("nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
         
-        UserAllResponse userAllResponseExpected = new UserAllResponse(user.getEmail(), user.getUsername(), userAllRequest.getNit(), userAllRequest.getImageProfile(), userAllRequest.getDescription(), userAllRequest.getDpi(), userAllRequest.getTel());
+        UserAllResponse userAllResponseExpected = new UserAllResponse(user.getEmail(), user.getUsername(), userAllRequest.getNit(), userAllRequest.getImageProfile(), userAllRequest.getDescription(), userAllRequest.getDpi(), userAllRequest.getPhoneNumber());
         
 
         UserAllResponse userAllResponseActual = userService.updateProfile(1, userAllRequest);
