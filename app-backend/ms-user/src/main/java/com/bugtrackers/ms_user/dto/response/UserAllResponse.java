@@ -7,6 +7,7 @@ public record UserAllResponse(
     String imageProfile,
     String description,
     String dpi,
-    String phoneNumber
+    String phoneNumber,
+    Boolean is2FA
 ) {
 }

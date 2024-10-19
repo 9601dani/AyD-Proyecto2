@@ -71,7 +71,7 @@ public class UserControllerTest {
     @Test
     void testGetProfile() throws Exception{
 
-        UserAllResponse userAllResponse = new UserAllResponse("email", "username", "nit", "imageProfile", "description", "dpi", "tel");
+        UserAllResponse userAllResponse = new UserAllResponse("email", "username", "nit", "imageProfile", "description", "dpi", "tel", true);
 
         when(userService.getById(1)).thenReturn(userAllResponse);
 
@@ -85,7 +85,7 @@ public class UserControllerTest {
     @Test
     void testPutProfile() throws Exception{
         
-        UserAllResponse userAllResponse = new UserAllResponse("emailUpdate", "usernameUpdate", "nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
+        UserAllResponse userAllResponse = new UserAllResponse("emailUpdate", "usernameUpdate", "nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel", true);
         
         when(userService.updateProfile(1, userAllRequest)).thenReturn(userAllResponse);
 
@@ -130,6 +130,15 @@ public class UserControllerTest {
                         .content(requestJson))
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void shouldSet2fa() throws Exception {
+        when(this.userService.set2fa(1)).thenReturn("2FA actualizada exitosamente!");
+
+        this.mockMvc.perform(put("/user/set-2fa/1"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\": \"2FA actualizada exitosamente!\"}"));
     }
 
 

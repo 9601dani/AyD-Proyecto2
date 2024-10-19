@@ -6,8 +6,6 @@ import com.bugtrackers.ms_user.dto.request.UserAllRequest;
 import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
-import com.bugtrackers.ms_user.models.Service;
-import com.bugtrackers.ms_user.services.ServiceService;
 import com.bugtrackers.ms_user.services.UserService;
 
 import lombok.AllArgsConstructor;
@@ -18,6 +16,10 @@ import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/user")
@@ -59,6 +61,14 @@ public class UserController {
         Map<String, String> map = new HashMap<>();
         map.put("path", pathImage);
         return ResponseEntity.ok(map);
+    }
+
+    @PutMapping("/set-2fa/{id}")
+    public ResponseEntity<HashMap<String, String>> set2fa(@PathVariable Integer id) {
+        String message = this.userService.set2fa(id);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return ResponseEntity.ok(response);
     }
 
 

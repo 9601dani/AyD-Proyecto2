@@ -27,13 +27,13 @@ export class NavbarComponent implements OnInit {
 
   isLogged: boolean = false;
   isActive: boolean = false;
-  showGuestButton: boolean = true;
+  showButtons: boolean = true;
   activeModule: any;
   modules: any[] = [];
   logoUrl = "";
   userPhoto = "";
   username = "";
-  notOptionsUrls = ['/login'];
+  notOptionsUrls = ['login', 'verify-2fa', 'verify-email'];
   constructor(
     private _localStorageService: LocalStorageService,
     private router: Router,
@@ -44,10 +44,9 @@ export class NavbarComponent implements OnInit {
     this.isLogged = this._localStorageService.getUserId() !== null;
     if (this.isLogged) {
       this.username = this._localStorageService.getUserName();
-      this.showGuestButton = false;
+      this.showButtons = true;
       this.getPages();
       this.setUserPhoto();
-      return;
     }
 
     this.showOptions();
@@ -84,8 +83,8 @@ export class NavbarComponent implements OnInit {
   }
 
   showOptions() {
-    const url = this.router.url;
-    this.showGuestButton = !this.notOptionsUrls.includes(url);
+    const url = this.router.url.split("/")[1];
+    this.showButtons = !this.notOptionsUrls.includes(url);
   }
 
   toggleNavbar() {

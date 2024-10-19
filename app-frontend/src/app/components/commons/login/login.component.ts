@@ -145,9 +145,11 @@ export class LoginComponent{
       return;
     }
 
+    const { usernameOrEmail, password } = this.loginForm.value;
+
     const data = {
-      usernameOrEmail: this.loginForm.get('usernameOrEmail')?.value,
-      password: this.loginForm.get('password')?.value
+      usernameOrEmail,
+      password
     };
 
     this._authService.login(data)
@@ -157,14 +159,50 @@ export class LoginComponent{
         this._localStorageService.setUserId(response.id);
         this._localStorageService.setUsername(response.username);
         this.setImgProfile();
+
+        if(response.is2FA) {
+          this._router.navigate(['/verify-2fa']);
+          return;
+        }
         this._router.navigate(['/home']);
       },
       error: error => {
-        Swal.fire({
-          title: "Error!",
-          text: error.error.message,
-          icon: "error"
-        })
+        if(error.error.status === 401) {
+          Swal.fire({
+            title: 'Error',
+            text: 'Usuario no verificado',
+            icon: 'error',
+            confirmButtonText: 'Reenviar verificación'
+          }).then((result) => {
+            if (result.isConfirmed) {
+
+              this._authService.sendEmailVerification(usernameOrEmail).subscribe({
+                next: (res: any) => {
+                  Swal.fire({
+                    title: 'Correo de verificación reenviado',
+                    text: 'Por favor, verifica tu correo para poder acceder',
+                    icon: 'success',
+                    confirmButtonText: 'Ok'
+                  });
+                },
+                error: (err: any) => {
+                  Swal.fire({
+                    title: 'Error',
+                    text: 'No se pudo reenviar el correo de verificación' + err.error.message,
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                  });
+                }
+              });
+            }
+          });
+        } else {
+          Swal.fire({
+            title: "Error!",
+            text: error.error.message,
+            icon: "error"
+          })
+        }
         this.isLoading = false;
 
         this.loginForm.reset({
