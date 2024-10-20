@@ -282,6 +282,11 @@ export class ProfileComponent implements OnInit{
           icon: 'success',
           confirmButtonText: 'Ok!'
         })
+      
+        this.userProfileAll.is2FA = !this.userProfileAll.is2FA;
+        this.authForm.patchValue({
+          twoFactorAuth: this.userProfileAll.is2FA
+        });
 
       },
       error: err => {

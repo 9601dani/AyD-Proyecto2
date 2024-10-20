@@ -13,6 +13,7 @@ import { ViewServiceComponent } from './components/admin/view-service/view-servi
 import { AddEmployeeComponent } from './components/admin/add-employee/add-employee.component';
 import { AddResourceComponent } from './components/admin/add-resource/add-resource.component';
 import { ViewResourceComponent } from './components/admin/view-resource/view-resource.component';
+import { ViewEmployeeComponent } from './components/admin/view-employee/view-employee.component';
 
 export const routes: Routes = [
 
@@ -41,6 +42,9 @@ export const routes: Routes = [
     path: 'employees', children: [
       {
         path: 'add-employee', component: AddEmployeeComponent
+      },
+      {
+        path: 'show-employee', component: ViewEmployeeComponent
       }
     ]
   },

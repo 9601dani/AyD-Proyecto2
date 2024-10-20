@@ -1,12 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { NavbarComponent } from '../../commons/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import Swal from 'sweetalert2';
+import { Employee, Roles } from '../../../interfaces/interfaces';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-add-employee',
@@ -26,16 +28,13 @@ import Swal from 'sweetalert2';
 export class AddEmployeeComponent implements OnInit {
   employeeForm!: FormGroup;
 
-  roles: Array<{id: number, name: string}> = [
-    { id: 1, name: 'Administrador' },
-    { id: 2, name: 'Empleado' }
-  ];
-
+  roles: Roles[] = [];
   showPassword = false;
   showConfirmPassword = false;
 
   constructor(
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private _userService: UserService
   ) {}
 
   ngOnInit() {
@@ -48,12 +47,29 @@ export class AddEmployeeComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(6)]],
       confirmPassword: ['', Validators.required],
       role: [1, Validators.required] 
-    });
-    this.roles = this.loadRoles();
+    }, { validator: this.passwordMatchValidator });
+
+    this.loadRoles();
+  }
+
+  // Validador personalizado para verificar que las contraseñas coincidan
+  passwordMatchValidator(control: AbstractControl): { [key: string]: boolean } | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { passwordMismatch: true };
+    }
+    return null;
   }
 
   loadRoles() {
-    return this.roles;
+    this._userService.getAllRoles().subscribe(
+      (data: Roles[]) => {
+        if (data) {
+          this.roles = data;
+        }
+      }
+    );
   }
 
   togglePasswordVisibility(): void {
@@ -66,12 +82,27 @@ export class AddEmployeeComponent implements OnInit {
 
   onSubmit() {
     if (this.employeeForm.valid) {
-      console.log(this.employeeForm.value)
-      Swal.fire({
-        title: 'Registro exitoso',
-        text: 'El empleado ha sido registrado correctamente.',
-        icon: 'success'
-      });
+      this._userService.createEmployee(this.employeeForm.value).subscribe(
+        (data: Employee) => {
+          if (data) {
+            console
+            Swal.fire({
+              title: 'Empleado creado',
+              text: 'El empleado ha sido creado exitosamente.',
+              icon: 'success'
+            });
+            this.employeeForm.reset();
+          }
+        },
+        (error: any) => {
+          Swal.fire({
+            title: 'Error',
+            text: 'Ha ocurrido un error al intentar crear el empleado. Favor revisa el usuario y correo electronico.',
+            icon: 'error'
+          });
+        }
+      );
+      
     } else {
       Swal.fire({
         title: 'Error',
@@ -102,7 +133,7 @@ export class AddEmployeeComponent implements OnInit {
     const date = new Date(`${year}-${month}-${day}`);
     return !isNaN(date.getTime()) && day.length === 2 && month.length === 2 && year.length === 4;
   }
-  
+
   formatDate(date: string): string {
     const d = new Date(date);
     const day = ('0' + d.getDate()).slice(-2);
@@ -110,5 +141,4 @@ export class AddEmployeeComponent implements OnInit {
     const year = d.getFullYear();
     return `${day}/${month}/${year}`;
   }
-  
 }

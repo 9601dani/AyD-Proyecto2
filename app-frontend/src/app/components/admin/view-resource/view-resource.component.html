@@ -7,12 +7,14 @@
 
     <div class="columns is-multiline is-centered">
       <div *ngFor="let resource of resources" class="column is-3">
-        <div class="box">
+        <div class="box resource-box">
           <h2 class="title is-5">{{ resource.name }}</h2>
           <p><strong>Atributos:</strong></p>
-          <ul>
-            <li *ngFor="let attribute of resource.attributes">{{ attribute.name }}: {{ attribute.description }}</li>
-          </ul>
+          <div class="attributes-list">
+            <ul>
+              <li *ngFor="let attribute of resource.attributes">{{ attribute.name }}: {{ attribute.description }}</li>
+            </ul>
+          </div>
           <button class="button is-primary is-fullwidth mt-4" (click)="editResource(resource.id)">
             Editar
           </button>

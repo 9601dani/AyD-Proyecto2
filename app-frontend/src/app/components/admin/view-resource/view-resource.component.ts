@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { NavbarComponent } from '../../commons/navbar/navbar.component';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-view-resource',
@@ -17,7 +18,8 @@ export class ViewResourceComponent {
   resources: Array<{ id: number, name: string, attributes: Array<{ name: string, description: string }> }> = [];
 
   constructor(
-    private router: Router
+    private router: Router,
+    private _userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -25,24 +27,15 @@ export class ViewResourceComponent {
   }
 
   loadResources(): void {
-    this.resources = [
-      {
-        id: 1,
-        name: 'Cancha de Futbol 5',
-        attributes: [
-          { name: 'Tamaño', description: '50 x 30 metros' },
-          { name: 'Material', description: 'Césped Artificial' }
-        ]
+    this._userService.getAllResources().subscribe(
+      (response) => {
+        this.resources = response;
       },
-      {
-        id: 2,
-        name: 'Cancha de Basket',
-        attributes: [
-          { name: 'Altura de Aro', description: '3.05 metros' },
-          { name: 'Material', description: 'Parquet de Madera' }
-        ]
+      (error) => {
+        console.error(error);
       }
-    ];
+    );
+    
   }
 
   editResource(id: number): void {

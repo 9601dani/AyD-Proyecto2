@@ -102,7 +102,7 @@ export class LoginComponent{
           }, error => {
             Swal.fire({
               title: 'Error!',
-              text: 'No se pudo registrar al usuario.',
+              text: 'No se pudo registrar al usuario.'+ error.error.message,
               icon: 'error'
             })
             this.registerForm.reset();

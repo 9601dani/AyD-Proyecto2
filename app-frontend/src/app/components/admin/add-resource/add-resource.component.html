@@ -38,8 +38,9 @@
                   <select multiple size="5" [formControl]="selectedAttributesControl">
                     <option *ngFor="let attr of filteredAttributes" [value]="attr.id">{{ attr.name }}: {{ attr.description }}</option>
                   </select>
+                </div><div class="control mt-4">
+                  <button class="button is-primary" (click)="addSelectedAttributes()" type="button">Añadir Atributos</button>
                 </div>
-                <button class="button is-primary mt-3" (click)="addSelectedAttributes()" type="button">Añadir Atributos</button>
               </div>
             </div>
 

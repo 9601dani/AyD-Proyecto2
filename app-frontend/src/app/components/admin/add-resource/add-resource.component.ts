@@ -4,6 +4,8 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } 
 import { ActivatedRoute } from '@angular/router'; 
 import Swal from 'sweetalert2';
 import { NavbarComponent } from '../../commons/navbar/navbar.component';
+import { UserService } from '../../../services/user.service';
+import { Attribute, Resources } from '../../../interfaces/interfaces';
 
 @Component({
   selector: 'app-add-resource',
@@ -26,19 +28,17 @@ export class AddResourceComponent implements OnInit {
   resourceId: number | null = null; 
 
   attributes: Array<{ id: number, name: string, description: string }> = [
-    { id: 1, name: 'Número de Jugadores', description: '7 jugadores' },
-    { id: 2, name: 'Número de Jugadores', description: '11 jugadores' },
-    { id: 3, name: 'Material', description: 'Madera' },
-    { id: 4, name: 'Resistencia', description: 'Alta' },
-    { id: 5, name: 'Peso', description: '10 kg' }
+    { id: 1, name: 'Número de Jugadores', description: '7 jugadores' }
   ];
+
 
   filteredAttributes: Array<{ id: number, name: string, description: string }> = [...this.attributes];
   addedAttributes: Array<{ id: number, name: string, description: string }> = [];
 
   constructor(
     private fb: FormBuilder,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private _userService: UserService   
   ) { }
 
   ngOnInit(): void {
@@ -55,6 +55,8 @@ export class AddResourceComponent implements OnInit {
       }
     });
 
+    this.getAllAttributes();
+
     this.attributeSearch.valueChanges.subscribe(value => {
       if (!value) {
         this.filteredAttributes = [...this.attributes];
@@ -66,51 +68,76 @@ export class AddResourceComponent implements OnInit {
     });
   }
 
-  loadResource(id: number): void {
-    const resource = {
-      id: id,
-      name: 'Cancha de Futbol 5',
-      attributes: [
-        { id: 1, name: 'Tamaño', description: '50 x 30 metros' },
-        { id: 2, name: 'Material', description: 'Césped Artificial' }
-      ]
-    };
+  getAllAttributes() {
+    this._userService.getAllAttributes().subscribe((data: any) => {
+      this.attributes = data;
+      this.filteredAttributes = data;
+    });
 
-    this.resourceForm.patchValue({ name: resource.name });
-    this.addedAttributes = resource.attributes;
+  }
+
+  loadResource(id: number): void {
+    this._userService.getResourceById(id).subscribe((data: Resources) =>{
+      if (data) {
+        this.resourceForm.get('name')?.setValue(data.name);
+        this.addedAttributes = data.attributes;
+        this.resourceForm.patchValue({ name: data.name });
+        this.addedAttributes = data.attributes;
+      }
+    })
+
   }
 
   onSubmit(): void {
     if (this.resourceForm.valid && this.addedAttributes.length > 0) {
-      const resourceData = {
+      const resourceData: Resources = {
+        id:1,
         name: this.resourceForm.get('name')?.value,
-        attributes: this.addedAttributes.map(attr => ({ name: attr.name, description: attr.description }))
+        attributes: this.addedAttributes.map(attr => ({ id:attr.id, name: attr.name, description: attr.description }))
       };
 
-      if (this.isEditMode) {
-        Swal.fire({
-          title: 'Recurso Actualizado',
-          text: 'El recurso ha sido actualizado exitosamente',
-          icon: 'success',
-          confirmButtonText: 'Aceptar'
+      if (this.isEditMode && this.resourceId) {
+        this._userService.updateResource(this.resourceId, resourceData).subscribe((data: Resources) => {
+          if(data){
+            Swal.fire({
+              title: 'Recurso Actualizado',
+              text: 'El recurso ha sido actualizado exitosamente',
+              icon: 'success',
+              confirmButtonText: 'Aceptar'
+            });
+            console.log('Recurso Actualizado:', resourceData);
+          }
         });
-        console.log('Recurso Actualizado:', resourceData);
       } else {
-        Swal.fire({
-          title: 'Recurso Guardado',
-          text: 'El recurso ha sido guardado exitosamente',
-          icon: 'success',
-          confirmButtonText: 'Aceptar'
+        this._userService.createResource(resourceData).subscribe((data: Resources) => {
+          if(data){
+            Swal.fire({
+              title: 'Recurso Creado',
+              text: 'El recurso ha sido creado exitosamente',
+              icon: 'success',
+              confirmButtonText: 'Aceptar'
+            });
+            this.resourceForm.reset();
+            this.addedAttributes = [];
+          }
+        },(error: any) => {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo guardar el recurso ',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+          });
         });
-        console.log('Recurso Guardado:', resourceData);
       }
     } else {
-      Swal.fire({
-        title: 'Error',
-        text: 'Por favor, llene todos los campos, recuerda que debes agregar al menos un atributo',
-        icon: 'error',
-        confirmButtonText: 'Aceptar'
-      });
+      if(this.addedAttributes.length === 0){
+        Swal.fire({
+          title: 'Error',
+          text: 'Por favor, agrega al menos un atributo',
+          icon: 'error',
+          confirmButtonText: 'Aceptar'
+        });
+      }
     }
   }
 
@@ -131,7 +158,6 @@ export class AddResourceComponent implements OnInit {
   }
 
   addNewAttribute(): void {
-    console.log("CLICK")
     if(this.newAttributeNameControl.invalid || this.newAttributeDescriptionControl.invalid 
       || this.newAttributeNameControl.value === '' || this.newAttributeDescriptionControl.value === '')
     {
@@ -146,12 +172,31 @@ export class AddResourceComponent implements OnInit {
       const newAttrName = this.newAttributeNameControl.value;
       const newAttrDescription = this.newAttributeDescriptionControl.value;
       if (newAttrName && newAttrDescription) {
+
         const newAttr = { id: this.attributes.length + 1, name: newAttrName, description: newAttrDescription };
-        this.attributes.push(newAttr);
-        this.filteredAttributes.push(newAttr);
-        this.addedAttributes.push(newAttr);
-        this.newAttributeNameControl.setValue('');
-        this.newAttributeDescriptionControl.setValue('');
+
+        this._userService.createAttribute(newAttr).subscribe((data: any) => {
+          if(data){
+            this.attributes.push(data);
+            this.filteredAttributes = this.attributes;
+            this.newAttributeNameControl.setValue('');
+            this.newAttributeDescriptionControl.setValue('');
+            Swal.fire({
+              title: 'Atributo Creado',
+              text: 'El atributo ha sido creado exitosamente',
+              icon: 'success',
+              confirmButtonText: 'Aceptar'
+            });
+          }
+        },(error: any) => {
+          Swal.fire({
+            title: 'Error',
+            text: 'No se pudo guardar el atributo ',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+          });
+        });
+        
       }
     }
   }
@@ -159,5 +204,6 @@ export class AddResourceComponent implements OnInit {
   onCancel(): void {
     this.resourceForm.reset();
     this.addedAttributes = [];
+
   }
 }

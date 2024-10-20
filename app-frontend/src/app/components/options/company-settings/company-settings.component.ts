@@ -31,6 +31,9 @@ export class CompanySettingsComponent implements OnInit {
 	form!: FormGroup;
 	settings: CompanySetting[] = [];
 	originalImages: any[] = [];
+	
+	hidePassword: boolean[] = [];
+
 	constructor(
 		private _userService: UserService,
 		private _imgService: ImgService
@@ -76,6 +79,9 @@ export class CompanySettingsComponent implements OnInit {
 		this.getCompanySettings(this.currentTab);
 	}
 
+	togglePasswordVisibility(index: number) {
+		this.hidePassword[index] = !this.hidePassword[index];
+	  }
 	onSubmit() {
 		if (this.form.invalid) {
 			Swal.fire({
