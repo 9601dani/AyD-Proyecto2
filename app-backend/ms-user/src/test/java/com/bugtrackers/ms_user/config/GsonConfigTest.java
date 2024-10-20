@@ -23,7 +23,7 @@ public class GsonConfigTest {
     void testCreateGsonWithLocalDateTimeAdapter() {
         LocalDateTime dateTime = LocalDateTime.of(2024, 10, 8, 12, 30);
 
-        gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
+        gson = GsonConfig.createGsonWithAdapter();
         String json = gson.toJson(dateTime);
         
         LocalDateTime deserializedDateTime = gson.fromJson(json, LocalDateTime.class);

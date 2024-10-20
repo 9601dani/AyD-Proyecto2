@@ -15,10 +15,6 @@ public record CreateEmployeeRequest(
         @NotBlank Integer role
         ) {
 
-        @Override
-        public String toString() {
-                return String.format("CreateEmployeeRequest[firstName='%s', lastName='%s', dateOfBirth='%s', email='%s', username='%s', password='%s', role='%s']", firstName, lastName, dateOfBirth, email, username, password, role);
-        }
 
 
 }

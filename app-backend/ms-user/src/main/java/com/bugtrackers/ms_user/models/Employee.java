@@ -30,10 +30,5 @@ public class Employee {
     @JoinColumn(name = "FK_User")
     private User user;
 
-    public Employee(String firstName, String lastName, LocalDate dateOfBirth) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.dateOfBirth = dateOfBirth;
-    }
 
 }

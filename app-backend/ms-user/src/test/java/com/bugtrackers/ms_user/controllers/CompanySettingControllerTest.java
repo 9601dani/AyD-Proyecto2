@@ -43,7 +43,7 @@ public class CompanySettingControllerTest {
             new CompanySetting( 2, "keyName2", "keyValue2","labelValue2", true, true, new ValueType(1, "value"), new SettingType(1, "value"), ""),
             new CompanySetting( 3, "keyName3", "keyValue3","labelValue3", true, true, new ValueType(1, "value"), new SettingType(1, "value"), "")
         );
-        gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
+        gson = GsonConfig.createGsonWithAdapter();
 
     }
 
