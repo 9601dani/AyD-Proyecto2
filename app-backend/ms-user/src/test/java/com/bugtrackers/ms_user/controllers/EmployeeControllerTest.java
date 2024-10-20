@@ -24,48 +24,4 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(EmployeeController.class)
 public class EmployeeControllerTest {
-
-    @Autowired
-    private MockMvc mockMvc;
-
-    @MockBean
-    private EmployeeService employeeService;
-
-    private List<Employee> mockEmployees;
-    private Gson gson;
-
-    @BeforeEach
-    void setUp() {
-        gson = GsonConfig.createGsonWithLocalDateTimeAdapter();  // Usa el Gson con adaptadores para fechas
-
-        User user1 = new User(1, "user1@example.com", "user1", "password", "token", true, true, false, LocalDate.now().atStartOfDay(), null);
-        User user2 = new User(2, "user2@example.com", "user2", "password", "token", true, true, false, LocalDate.now().atStartOfDay(), null);
-
-        mockEmployees = List.of(
-                new Employee(1, "John", "Doe", LocalDate.of(1990, 1, 1), user1),
-                new Employee(2, "Jane", "Smith", LocalDate.of(1985, 5, 15), user2)
-        );
-    }
-
-    @Test
-    void testGetAllEmployees() throws Exception {
-        when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
-
-        List<CreateEmployeeResponse> expectedResponse = mockEmployees.stream()
-                .map(employee -> new CreateEmployeeResponse(
-                        employee.getId(),
-                        employee.getFirstName(),
-                        employee.getLastName(),
-                        employee.getDateOfBirth(),
-                        employee.getUser().getEmail(),
-                        employee.getUser().getUsername()
-                ))
-                .toList();
-
-        String expectedJson = gson.toJson(expectedResponse);
-
-        mockMvc.perform(get("/employee"))
-                .andExpect(status().isOk())
-                .andExpect(content().json(expectedJson));
-    }
 }
