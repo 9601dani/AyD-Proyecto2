@@ -39,7 +39,7 @@ public class ServicesControllerTest {
 
     @BeforeEach
     void setUp() {
-        gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
+        gson = GsonConfig.createGsonWithAdapter();
         mockServices = List.of(
             new Service(1,"name", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now()),
             new Service(2,"name2", "description2", new BigDecimal(2.0), "pageInformation2", 2, false,LocalDateTime.now())

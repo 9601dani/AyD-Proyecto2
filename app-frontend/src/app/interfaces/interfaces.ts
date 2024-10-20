@@ -40,3 +40,32 @@ export interface Service{
   timeAprox:number;
   isAvailable:number;
 }
+
+export interface Roles{
+  id:number;
+  name:string;
+  description:string;
+}
+
+export interface Employee{
+  id:number;
+  firstName:string;
+  lastName:string;
+  dateOfBirth:string;
+  email:string;
+  username:string;
+  password:string;
+  role:number;
+}
+
+export interface Attribute {
+  id: number;
+  name: string;
+  description: string;
+}
+
+export interface Resources{
+  id:number;
+  name:string;
+  attributes:Attribute[];
+}

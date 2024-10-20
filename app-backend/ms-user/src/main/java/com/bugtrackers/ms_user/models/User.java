@@ -54,5 +54,7 @@ public class User {
         this.username = username;
         this.password = password;
     }
-    
+
+    public User(int i, String mail, String user1, String password1, String authToken1, boolean b, boolean b1, boolean b2, LocalDateTime now) {
+    }
 }

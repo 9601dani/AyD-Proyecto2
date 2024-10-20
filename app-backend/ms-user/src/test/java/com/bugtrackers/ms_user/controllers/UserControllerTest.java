@@ -51,7 +51,7 @@ public class UserControllerTest {
             ))
         );
 
-        gson = GsonConfig.createGsonWithLocalDateTimeAdapter();
+        gson = GsonConfig.createGsonWithAdapter();
 
         userAllRequest = new UserAllRequest( "nitUpdate", "imageProfileUpdate", "descriptionUpdate", "dpi", "tel");
     }

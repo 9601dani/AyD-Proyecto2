@@ -1,0 +1,31 @@
+.resource-box {
+    transition: box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out; 
+  
+    &:hover {
+      box-shadow: 0 0 15px rgba(50, 115, 220, 0.3); 
+      transform: translateY(-5px);
+    }
+  }
+  .resource-box {
+    height: 350px; 
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .attributes-list {
+    max-height: 100px; 
+    overflow-y: auto; 
+    margin-top: 10px;
+  }
+  
+  .attributes-list ul {
+    list-style-type: none;
+    padding-left: 0;
+  }
+  
+  .attributes-list li {
+    margin-bottom: 5px;
+  }
+  
+  

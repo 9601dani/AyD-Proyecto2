@@ -1,2 +1,142 @@
 <app-navbar></app-navbar>
-<p>add-employee works!</p>
+
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-three-quarters-desktop is-full-mobile">
+        <h1 class="title has-text-centered">Crear Empleado</h1>
+        <p class="subtitle has-text-centered">
+          Complete el formulario para registrar un nuevo empleado. Los campos marcados con <span class="required">*</span> son obligatorios.
+        </p>
+
+        <form [formGroup]="employeeForm" (ngSubmit)="onSubmit()">
+          <div class="columns is-multiline">
+            <div class="column is-half">
+              <div class="field">
+                <label class="label">Nombre <span class="required">*</span></label>
+                <div class="control">
+                  <input class="input" formControlName="firstName" type="text" placeholder="Nombre del empleado" required />
+                </div>
+                <p *ngIf="employeeForm.get('firstName')?.invalid && employeeForm.get('firstName')?.touched" class="help is-danger">
+                  El nombre es obligatorio.
+                </p>
+                <br>
+              </div>
+
+              <div class="field">
+                <label class="label">Apellido <span class="required">*</span></label>
+                <div class="control">
+                  <input class="input" formControlName="lastName" type="text" placeholder="Apellido del empleado" required />
+                </div>
+                <p *ngIf="employeeForm.get('lastName')?.invalid && employeeForm.get('lastName')?.touched" class="help is-danger">
+                  El apellido es obligatorio.
+                </p>
+                <br>
+              </div>
+
+              <div class="field">
+                <label class="label">Fecha de Nacimiento</label>
+                <div class="control">
+                  <input class="input" type="date" formControlName="dateOfBirth" required>
+                </div>
+              </div>
+              <br>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label">Email <span class="required">*</span></label>
+                <div class="control">
+                  <input class="input" formControlName="email" type="email" placeholder="Correo Electrónico" required />
+                </div>
+                <p *ngIf="employeeForm.get('email')?.invalid && employeeForm.get('email')?.touched" class="help is-danger">
+                  El email es obligatorio y debe tener un formato válido.
+                </p>
+                <br>
+              </div>
+
+              <div class="field">
+                <label class="label">Nombre de Usuario <span class="required">*</span></label>
+                <div class="control">
+                  <input class="input" formControlName="username" type="text" placeholder="Nombre de usuario" required />
+                </div>
+                <p *ngIf="employeeForm.get('username')?.invalid && employeeForm.get('username')?.touched" class="help is-danger">
+                  El nombre de usuario es obligatorio.
+                </p>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label">Contraseña <span class="required">*</span></label>
+                <div class="control has-icons-right">
+                  <input
+                    [type]="showPassword ? 'text' : 'password'"
+                    class="input"
+                    formControlName="password"
+                    placeholder="Contraseña"
+                    required
+                  />
+                  <mat-icon class="password-toggle-icon" (click)="togglePasswordVisibility()" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                    {{ showPassword ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </div>
+                <p *ngIf="employeeForm.get('password')?.invalid && employeeForm.get('password')?.touched" class="help is-danger">
+                  La contraseña es obligatoria y debe tener al menos 6 caracteres.
+                </p>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label">Confirmar Contraseña <span class="required">*</span></label>
+                <div class="control has-icons-right">
+                  <input
+                    [type]="showConfirmPassword ? 'text' : 'password'"
+                    class="input"
+                    formControlName="confirmPassword"
+                    placeholder="Confirmar contraseña"
+                    required
+                  />
+                  <mat-icon class="password-toggle-icon" (click)="toggleConfirmPasswordVisibility()" style="cursor: pointer; position: absolute; right: 10px; top: 50%; transform: translateY(-50%);">
+                    {{ showConfirmPassword ? 'visibility_off' : 'visibility' }}
+                  </mat-icon>
+                </div>
+                <p *ngIf="employeeForm.get('confirmPassword')?.invalid && employeeForm.get('confirmPassword')?.touched" class="help is-danger">
+                  Las contraseñas deben coincidir.
+                </p>
+              </div>
+            </div>
+
+            <div class="column is-half">
+              <div class="field">
+                <label class="label">Rol <span class="required">*</span></label>
+                <div class="control">
+                  <div class="select is-fullwidth">
+                    <select formControlName="role" required>
+                      <option *ngFor="let role of roles" [value]="role.id">{{ role.name }}</option>
+                    </select>
+                  </div>
+                </div>
+                <p *ngIf="employeeForm.get('role')?.invalid && employeeForm.get('role')?.touched" class="help is-danger">
+                  El rol es obligatorio.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-grouped is-grouped-centered mt-5">
+            <div class="control">
+              <button class="button is-primary" type="submit" [disabled]="employeeForm.invalid">
+                Guardar Empleado
+              </button>
+            </div>
+            <div class="control">
+              <button class="button is-light" type="button" (click)="onCancel()">Cancelar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
