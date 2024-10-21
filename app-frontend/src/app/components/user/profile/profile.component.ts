@@ -242,6 +242,7 @@ export class ProfileComponent implements OnInit{
     this._userService.updateImgUserInformation(this._localStorageService.getUserId(), path).subscribe({
       next: (res: any) => {
 
+        this.userProfileAll.imageProfile = res.path;
         this._localStorageService.setUserPhoto(res.path);
 
         Swal.fire({

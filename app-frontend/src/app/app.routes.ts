@@ -11,6 +11,7 @@ import { Verification2faComponent } from './components/commons/verification2fa/v
 import { AddServiceComponent } from './components/admin/add-service/add-service.component';
 import { ViewServiceComponent } from './components/admin/view-service/view-service.component';
 import { AddEmployeeComponent } from './components/admin/add-employee/add-employee.component';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
 
@@ -19,28 +20,34 @@ export const routes: Routes = [
   { path: 'test', component: TestComponentsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'verify-email/:token', component: VerificationEmailComponent },
-  { path: 'verify-2fa', component: Verification2faComponent },
+  { path: 'verify-2fa', component: Verification2faComponent, canActivate: [authGuard] },
   {
     path: 'options', children: [
       { path: 'company-settings', component: CompanySettingsComponent }
-    ]
+    ],
+    canActivate: [authGuard]
   },
   {
     path: 'edit', children: [
       { path: 'profile', component: ProfileComponent }
-    ]
+    ],
+    canActivate: [authGuard]
   },
-  {path: 'services', children:[
-    {path: 'add-service', component: AddServiceComponent},
-    { path: 'edit-service/:id', component: AddServiceComponent },
-    {path: 'show-services', component: ViewServiceComponent}
-  ]},
+  {
+    path: 'services', children:[
+      { path: 'add-service', component: AddServiceComponent },
+      { path: 'edit-service/:id', component: AddServiceComponent },
+      { path: 'show-services', component: ViewServiceComponent }
+    ],
+    canActivate: [authGuard]
+  },
   {
     path: 'employees', children: [
       {
         path: 'add-employee', component: AddEmployeeComponent
       }
-    ]
+    ],
+    canActivate: [authGuard]
   },
   { path: '**', component: NotFoundComponent }
 
