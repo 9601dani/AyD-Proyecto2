@@ -29,7 +29,13 @@ spring:
               - "*"
             maxAge: 3600
       routes:
-        - id: auth-route
+        - id: auth-private-route
+          uri: ${AUTH_ROUTE_URI:http://localhost:8001}
+          predicates:
+            - Path=/auth/send-2FA/**,/auth/verify-2FA/**
+          filters:
+            - VerifyTokenFilter
+        - id: auth-public-route
           uri: ${AUTH_ROUTE_URI:http://localhost:8001}
           predicates:
             - Path=/auth/**
@@ -37,11 +43,17 @@ spring:
           uri: ${IMG_ROUTE_URI:http://localhost:8002}
           predicates:
             - Path=/img/**
+          filters:
+            - VerifyTokenFilter
         - id: user-route
           uri: ${USER_ROUTE_URI:http://localhost:8003}
           predicates:
             - Path=/user/**,/company-settings/**,/services/**, /role/**, /employee/**, /resource/**
+          filters:
+            - VerifyTokenFilter
         - id: email-route
           uri: ${EMAIL_ROUTE_URI:http://localhost:8004}
           predicates:
             - Path=/email/**
+          filters:
+            - VerifyTokenFilter

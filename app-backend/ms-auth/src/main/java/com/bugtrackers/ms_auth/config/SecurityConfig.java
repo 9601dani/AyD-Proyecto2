@@ -43,7 +43,12 @@ public class SecurityConfig {
             throw new SettingNotFoundException("No se encontró una configuración.");
         }
 
-        return new Pbkdf2PasswordEncoder(companySetting.get().getKeyValue(), 1, 32, SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512);
+        return new Pbkdf2PasswordEncoder(
+            companySetting.get().getKeyValue(),
+            1,
+            32,
+            SecretKeyFactoryAlgorithm.PBKDF2WithHmacSHA512
+        );
     }
 
 }
