@@ -62,7 +62,7 @@ public class AuthController {
     @PutMapping("send-email/{emailOrUsername}")
     @Transactional
     public ResponseEntity<HashMap<String, String>> sendEmailVerification(@PathVariable String emailOrUsername) {
-        String message = this.authService.reSendEmailVerification(emailOrUsername);
+        String message = this.authService.sendVerification(emailOrUsername);
         HashMap<String, String> response = new HashMap<>();
         response.put("message", message);
         return ResponseEntity.ok(response);
@@ -84,6 +84,21 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
     
+    @PostMapping("recovery-password/{email}")
+    public ResponseEntity<HashMap<String, String>> sendRecoveryPassword(@PathVariable String email) {
+        String message = this.authService.sendRecoveryPassword(email);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return ResponseEntity.ok(response);
+    }
     
+    @PutMapping("reset-password/{token}")
+    public ResponseEntity<HashMap<String, String>> resetPassword(@PathVariable String token, @RequestBody HashMap<String, String> body) {
+        String password = body.get("password");
+        String message = this.authService.resetPassword(token, password);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("message", message);
+        return ResponseEntity.ok(response);
+    }
     
 }

@@ -11,7 +11,7 @@
         <div class="card">
           <div class="card-content">
             <p class="title is-5">{{ service.name }}</p>
-            <p class="subtitle is-6">Precio: {{ service.price | currency }}</p>
+            <p class="subtitle is-6">Precio: {{ service.price | companyCurrency }}</p>
             <p>Tiempo Aproximado: {{ service.timeAprox }} minutos</p>
             <p>Disponible: <strong>{{ service.isAvailable ? 'Sí' : 'No' }}</strong></p>
           </div>

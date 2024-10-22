@@ -45,6 +45,10 @@ spring:
             - Path=/img/**
           filters:
             - VerifyTokenFilter
+        - id: user-public-route
+          uri: ${USER_ROUTE_URI:http://localhost:8003}
+          predicates:
+            - Path=/company-settings/currency
         - id: user-route
           uri: ${USER_ROUTE_URI:http://localhost:8003}
           predicates:

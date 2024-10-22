@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.bugtrackers.ms_auth.dto.request.EmailRequest;
 
 
-@FeignClient(name = "ms-email", url="http://localhost:8000/email")
+@FeignClient(name = "ms-email", url="http://localhost:8004/email")
 public interface EmailRestClient {
     
     @PostMapping("/send")

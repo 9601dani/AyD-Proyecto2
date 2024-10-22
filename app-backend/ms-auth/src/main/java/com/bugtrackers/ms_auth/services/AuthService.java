@@ -83,15 +83,15 @@ public class AuthService {
 
         this.userHasRoleRepository.save(userRole);
 
-        sendEmailVerification(userSaved.getEmail());
+        sendEmail(userSaved.getEmail(), "email_verification_template", "/verify-email", "Verificación de email.", false);
 
         AuthResponse response = new AuthResponse(userSaved);
         return response;
     }
 
-    private void sendEmailVerification(String email) {
+    private void sendEmail(String email, String templateKeyName, String websitePath, String subject, Boolean isResetPassword) {
         Optional<CompanySetting> optionalTemplate = this.companySettingRepository
-            .findByKeyName("email_verification_template");
+            .findByKeyName(templateKeyName);
 
         if(optionalTemplate.isEmpty()) {
             throw new SettingNotFoundException("No se encontró la plantilla.");
@@ -102,7 +102,7 @@ public class AuthService {
         String token = this.passwordEncoder.encode(uuid.toString());
 
         String htmlTemplate = template.getKeyValue();
-        htmlTemplate = htmlTemplate.replace("WEBSITE", this.website);
+        htmlTemplate = htmlTemplate.replace("WEBSITE", this.website + websitePath);
         htmlTemplate = htmlTemplate.replace("TOKEN", token);
 
         Optional<CompanySetting> optionalLogo = this.companySettingRepository.findByKeyName("company_img");
@@ -118,13 +118,14 @@ public class AuthService {
         htmlTemplate = htmlTemplate.replace("COMPANY_LOGO", logo.getKeyValue());
         htmlTemplate = htmlTemplate.replace("COMPANY_NAME", name.getKeyValue());
 
-        EmailRequest emailRequest = new EmailRequest(email, "Verificación de email.", htmlTemplate);
+        EmailRequest emailRequest = new EmailRequest(email, subject, htmlTemplate);
 
         this.emailClient.sendEmail(emailRequest);
 
         EmailVerification emailVerification = new EmailVerification();
         emailVerification.setEmail(email);
         emailVerification.setToken(token);
+        emailVerification.setIsResetPassword(isResetPassword);
 
         this.emailVerificationRepository.save(emailVerification);
     }
@@ -204,7 +205,7 @@ public class AuthService {
         Optional<EmailVerification> eOptional = this.emailVerificationRepository.findByTokenAndIsAvailable(token, true);
 
         if(eOptional.isEmpty()) {
-            throw new EmailVerificationExpiredException("El token ya no se encuentra disponible.");
+            throw new EmailVerificationExpiredException("El token no es válido.");
         }
 
         EmailVerification emailVerification = eOptional.get();
@@ -213,6 +214,10 @@ public class AuthService {
             emailVerification.setIsAvailable(false);
             this.emailVerificationRepository.save(emailVerification);
             throw new EmailVerificationExpiredException("El token ya no se encuentra disponible.");
+        }
+
+        if(emailVerification.getIsResetPassword()) {
+            throw new EmailVerificationExpiredException("El token no es válido.");
         }
 
         Optional<User> uOptional = this.authRepository.findByEmail(emailVerification.getEmail());
@@ -231,7 +236,7 @@ public class AuthService {
     }
 
 
-    public String reSendEmailVerification(String emailOrUsername) {
+    public String sendVerification(String emailOrUsername) {
         Optional<User> uOptional = this.authRepository.findByUsernameOrEmail(emailOrUsername, emailOrUsername);
 
         if(uOptional.isEmpty()) {
@@ -239,7 +244,7 @@ public class AuthService {
         }
 
         String email = uOptional.get().getEmail();
-        sendEmailVerification(email);
+        sendEmail(email, "email_verification_template", "/verify-email", "Verificación de email.", false);
 
         return "Correo enviado exitosamente!";
     }
@@ -259,7 +264,7 @@ public class AuthService {
     public String verify2FA(Integer id, String code) {
         Optional<User2FA> uOptional = this.user2FARepository.findByUserIdAndSecretKeyAndIsAvailable(id, code, true);
         if(uOptional.isEmpty()) {
-            throw new EmailVerificationExpiredException("El token ya no se encuentra disponible.");
+            throw new EmailVerificationExpiredException("El token no es válido.");
         }
 
         User2FA user2fa = uOptional.get();
@@ -274,6 +279,51 @@ public class AuthService {
         this.user2FARepository.save(user2fa);
 
         return "Usuario autenticado exitosamente!";
+    }
+
+    public String sendRecoveryPassword(String email) {
+        Optional<User> uOptional = this.authRepository.findByEmail(email);
+
+        if(uOptional.isEmpty()){
+            throw new UserNotFoundException("Usuario no encontrado.");
+        }
+
+        sendEmail(email, "email_recovery_password_template", "/reset-password", "Recuperación de contraseña", true);
+        return "Correo enviado exitosamente!";
+    }
+
+    public String resetPassword(String token, String password) {
+        Optional<EmailVerification> eOptional = this.emailVerificationRepository.findByTokenAndIsAvailable(token, true);
+
+        if(eOptional.isEmpty()) {
+            throw new EmailVerificationExpiredException("El token no es válido.");
+        }
+
+        EmailVerification emailVerification = eOptional.get();
+
+        if(!emailVerification.getIsResetPassword()) {
+            throw new EmailVerificationExpiredException("El token no es válido.");
+        }
+
+        if(LocalDateTime.now().isAfter(emailVerification.getExpiredAt())) {
+            emailVerification.setIsAvailable(false);
+            this.emailVerificationRepository.save(emailVerification);
+            throw new EmailVerificationExpiredException("El token ya no se encuentra disponible.");
+        }
+
+        Optional<User> uOptional = this.authRepository.findByEmail(emailVerification.getEmail());
+
+        if(uOptional.isEmpty()) {
+            throw new UserNotFoundException("Usuario no encontrado.");
+        }
+
+        User user = uOptional.get();
+        user.setPassword(this.passwordEncoder.encode(password));
+        this.authRepository.save(user);
+        emailVerification.setIsAvailable(false);
+        this.emailVerificationRepository.save(emailVerification);
+
+        return "Contraseña actualizada exitosamente!";
     }
 
 }

@@ -16,6 +16,11 @@
             <div class="has-text-centered mt-5">
               <button [disabled]="this.code.invalid" class="button is-primary is-medium" (click)="verifyCode()">Verificar</button>
             </div>
+            <div class="has-text-centered mt-5">
+              <p class="mt-4">¿No recibiste el código?
+                <a href="javascript:void(0)" (click)="send2fa()">Reenviar código</a>
+              </p>
+            </div>
           </div>
         </div>
       </div>

@@ -29,4 +29,16 @@ export class AuthService {
   verify2fa(id: number, code: string): Observable<any> {
     return this.http.put(`${this.apiAuth}/verify-2FA/${id}/${code}`, null);
   }
+
+  send2fa(id: number): Observable<any> {
+    return this.http.post(`${this.apiAuth}/send-2FA/${id}`, null);
+  }
+
+  sendRecoveryPassword(data: any): Observable<any> {
+    return this.http.post(`${this.apiAuth}/recovery-password/${data}`, null)
+  }
+
+  resetPassword(token: string, data: any): Observable<any> {
+    return this.http.put(`${this.apiAuth}/reset-password/${token}`, data);
+  }
 }

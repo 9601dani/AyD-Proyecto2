@@ -133,8 +133,7 @@ export class LoginComponent{
   }
 
   forgotPassword() {
-    Swal.fire("¡Lo sentimos!", "Esta funcionalidad aún no está disponible", "info");
-    // this._router.navigate(["/forgot-password"]);
+    this._router.navigate(["/recovery-password"]);
   }
 
   onLogin() {

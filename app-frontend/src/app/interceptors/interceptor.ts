@@ -37,9 +37,7 @@ export class Interceptor implements HttpInterceptor {
                             confirmButtonText: 'Ok!'
                         })
 
-                        this._router.navigateByUrl('/temp', { skipLocationChange: true }).then(() => {
-                            this._router.navigate(["/home"]);
-                        });
+                        this._router.navigate(["/login"]);
                         
                     }
                 }

@@ -15,6 +15,8 @@ import { AddResourceComponent } from './components/admin/add-resource/add-resour
 import { ViewResourceComponent } from './components/admin/view-resource/view-resource.component';
 import { ViewEmployeeComponent } from './components/admin/view-employee/view-employee.component';
 import { authGuard } from './guards/auth.guard';
+import { RecoveryPasswordComponent } from './components/commons/recovery-password/recovery-password.component';
+import { ResetPasswordComponent } from './components/commons/reset-password/reset-password.component';
 
 export const routes: Routes = [
 
@@ -23,6 +25,8 @@ export const routes: Routes = [
   { path: 'test', component: TestComponentsComponent },
   { path: 'login', component: LoginComponent },
   { path: 'verify-email/:token', component: VerificationEmailComponent },
+  { path: 'recovery-password', component: RecoveryPasswordComponent },
+  { path: 'reset-password/:token', component: ResetPasswordComponent },
   { path: 'verify-2fa', component: Verification2faComponent, canActivate: [authGuard] },
   {
     path: 'options', children: [

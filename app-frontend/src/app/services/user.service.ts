@@ -24,6 +24,10 @@ export class UserService {
     return this.http.get<Module[]>(`${this.apiUser}/pages/${id}`);
   }
 
+  getCompanySettingByKeyName(keyName: string) : Observable<CompanySetting> {
+    return this.http.get<CompanySetting>(`${this.apiCompanySettings}/${keyName}`);
+  }
+
   getSettingsType(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiCompanySettings}/setting-types`);
   }
