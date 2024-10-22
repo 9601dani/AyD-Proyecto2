@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Module } from '../models/Module.model';
 import { CompanySetting } from '../models/CompanySetting.model';
-import {Attribute, Employee, Resources, ResponseString, Roles, Service, UserAllResponse} from "../interfaces/interfaces";
+import {Attribute, Employee, Resources, ResponseString, Roles, Service, ServiceRequest, UserAllResponse} from "../interfaces/interfaces";
 import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
@@ -56,15 +56,15 @@ export class UserService {
 
   /**Routes for services CRU */
 
-  getServiceById(id: number): Observable<Service> {
-    return this.http.get<Service>(`${this.apiServices}/${id}`);
+  getServiceById(id: number): Observable<ServiceRequest> {
+    return this.http.get<ServiceRequest>(`${this.apiServices}/${id}`);
   }
 
   getAllServices(): Observable<Service[]> {
     return this.http.get<Service[]>(`${this.apiServices}`);
   }
 
-  createService(service: Service): Observable<Service> {
+  createService(service: ServiceRequest): Observable<Service> {
     return this.http.post<Service>(`${this.apiServices}`, service);
   }
 

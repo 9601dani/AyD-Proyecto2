@@ -69,3 +69,14 @@ export interface Resources{
   name:string;
   attributes:Attribute[];
 }
+
+export interface ServiceRequest{
+  name:string;
+  description:string;
+  price:number;
+  pageInformation:string;
+  timeAprox:number;
+  isAvailable:number;
+  employees:Employee[];
+  resources:Resources[];
+}

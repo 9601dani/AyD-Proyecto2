@@ -1,13 +1,31 @@
+.service-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.card-content {
+  flex-grow: 1;
+}
+
+
+.column.is-one-quarter {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-footer {
+  margin-top: auto;
+}
+
 .card {
-    margin-bottom: 1.5rem;
-    transition: transform 0.2s ease;
-  }
+  min-height: 250px;
+  padding: 20px;
+}
+
   
-  .card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .icon {
+.icon {
     margin-right: 5px;
-  }
+}
   

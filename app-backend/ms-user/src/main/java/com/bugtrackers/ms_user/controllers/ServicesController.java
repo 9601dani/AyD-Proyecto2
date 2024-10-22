@@ -1,9 +1,12 @@
 package com.bugtrackers.ms_user.controllers;
 
+import com.bugtrackers.ms_user.dto.request.ServiceRequest;
+import com.bugtrackers.ms_user.dto.response.ServiceResponse;
 import com.bugtrackers.ms_user.models.Service;
 import com.bugtrackers.ms_user.services.ServiceService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,20 +24,22 @@ public class ServicesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Service> getServiceById(@PathVariable Integer id) {
-        Service service = this.serviceService.getServiceById(id);
+    public ResponseEntity<ServiceResponse> getServiceById(@PathVariable Integer id) {
+        ServiceResponse service = this.serviceService.getServiceById(id);
         return ResponseEntity.ok(service);
     }
 
     @PostMapping("")
-    public ResponseEntity<Service> createService(@RequestBody Service service) {
+    @Transactional
+    public ResponseEntity<Service> createService(@RequestBody ServiceRequest service) {
             Service serviceCreated = this.serviceService.saveService(service);
             return ResponseEntity.ok(serviceCreated);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Service> updateService(@PathVariable Integer id, @RequestBody Service service) {
-        Service serviceUpdated = this.serviceService.updateService(id, service);
+    @Transactional
+    public ResponseEntity<ServiceResponse> updateService(@PathVariable Integer id, @RequestBody ServiceRequest service) {
+        ServiceResponse serviceUpdated = this.serviceService.updateService(id, service);
         return ResponseEntity.ok(serviceUpdated);
     }
 }
