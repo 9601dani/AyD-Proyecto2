@@ -142,82 +142,90 @@
         </form>
       </div>
 
-      <div class="column is-half">
-        <h1 class="title has-text-centered">{{ isEditMode ? 'Editar Empleados y Recursos' : 'Añadir Empleados y Recursos' }}</h1>
-        <p class="subtitle has-text-centered">
-          Seleccione los empleados y recursos que desea asignar al servicio.
-        </p>
+      @if(employees.length > 0 || resources.length > 0){
+        <div class="column is-half">
+          <h1 class="title has-text-centered">{{ isEditMode ? 'Editar Empleados y Recursos' : 'Añadir Empleados y Recursos' }}</h1>
+          <p class="subtitle has-text-centered">
+            Seleccione los empleados y recursos que desea asignar al servicio.
+          </p>
+          @if(employees.length>0){
+            <div class="field">
+              <label class="label">Buscar Empleados</label>
+              <div class="control">
+                <input
+                  class="input"
+                  type="text"
+                  [formControl]="employeeSearchControl"
+                  placeholder="Buscar empleados..."
+                />
+              </div>
+              <div class="select is-multiple mt-3">
+                <select multiple size="5" [formControl]="selectedEmployeesControl">
+                  <option *ngFor="let employee of filteredEmployees" [value]="employee.id">
+                    {{ employee.firstName }} - {{employee.username}} - {{ employee.email }}
+                  </option>
+                </select>
+              </div>
+              <div class="control mt-4">
+                <button class="button is-primary" (click)="addSelectedEmployees()" type="button">Añadir Empleados</button>
+              </div>
+            </div>
+    
+            <div class="field">
+              <h2 class="title is-5">Empleados Seleccionados</h2>
+              <ul>
+                <li *ngFor="let employee of addedEmployees" class="is-flex is-align-items-center">
+                  {{ employee.firstName }} - {{employee.username}} - {{ employee.email }}
+                  <button class="delete is-small ml-3 has-text-danger" (click)="removeEmployee(employee)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+    
+            <hr class="has-background-light" style="border-top: 1px solid #ccc;">
 
-        <div class="field">
-          <label class="label">Buscar Empleados</label>
-          <div class="control">
-            <input
-              class="input"
-              type="text"
-              [formControl]="employeeSearchControl"
-              placeholder="Buscar empleados..."
-            />
-          </div>
-          <div class="select is-multiple mt-3">
-            <select multiple size="5" [formControl]="selectedEmployeesControl">
-              <option *ngFor="let employee of filteredEmployees" [value]="employee.id">
-                {{ employee.firstName }} - {{employee.username}} - {{ employee.email }}
-              </option>
-            </select>
-          </div>
-          <div class="control mt-4">
-            <button class="button is-primary" (click)="addSelectedEmployees()" type="button">Añadir Empleados</button>
-          </div>
+          }
+
+  
+          @if(resources.length > 0){
+            <div class="field">
+              <label class="label">Buscar Recursos</label>
+              <div class="control">
+                <input
+                  class="input"
+                  type="text"
+                  [formControl]="resourceSearchControl"
+                  placeholder="Buscar recursos..."
+                />
+              </div>
+              <div class="select is-multiple mt-3">
+                <select multiple size="5" [formControl]="selectedResourcesControl">
+                  <option *ngFor="let resource of filteredResources" [value]="resource.name">
+                    {{ resource.name }}
+                  </option>
+                </select>
+              </div>
+              <div class="control mt-4">
+                <button class="button is-primary" (click)="addSelectedResources()" type="button">Añadir Recursos</button>
+              </div>
+            </div>
+    
+            <div class="field">
+              <h2 class="title is-5">Recursos Seleccionados</h2>
+              <ul>
+                <li *ngFor="let resource of addedResources" class="is-flex is-align-items-center">
+                  {{ resource.name }}
+                  <button class="delete is-small ml-3 has-text-danger" (click)="removeResource(resource)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+          }
+         
         </div>
-
-        <div class="field">
-          <h2 class="title is-5">Empleados Seleccionados</h2>
-          <ul>
-            <li *ngFor="let employee of addedEmployees" class="is-flex is-align-items-center">
-              {{ employee.firstName }} - {{employee.username}} - {{ employee.email }}
-              <button class="delete is-small ml-3 has-text-danger" (click)="removeEmployee(employee)">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </li>
-          </ul>
-        </div>
-
-        <hr class="has-background-light" style="border-top: 1px solid #ccc;">
-
-        <div class="field">
-          <label class="label">Buscar Recursos</label>
-          <div class="control">
-            <input
-              class="input"
-              type="text"
-              [formControl]="resourceSearchControl"
-              placeholder="Buscar recursos..."
-            />
-          </div>
-          <div class="select is-multiple mt-3">
-            <select multiple size="5" [formControl]="selectedResourcesControl">
-              <option *ngFor="let resource of filteredResources" [value]="resource.name">
-                {{ resource.name }}
-              </option>
-            </select>
-          </div>
-          <div class="control mt-4">
-            <button class="button is-primary" (click)="addSelectedResources()" type="button">Añadir Recursos</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <h2 class="title is-5">Recursos Seleccionados</h2>
-          <ul>
-            <li *ngFor="let resource of addedResources" class="is-flex is-align-items-center">
-              {{ resource.name }}
-              <button class="delete is-small ml-3 has-text-danger" (click)="removeResource(resource)">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </li>
-          </ul>
-        </div>
+      }
       </div>
-    </div>
   </div>
 </section>
