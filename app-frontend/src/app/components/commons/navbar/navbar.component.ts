@@ -33,7 +33,7 @@ export class NavbarComponent implements OnInit {
   logoUrl = "";
   userPhoto = "";
   username = "";
-  notOptionsUrls = ['login', 'verify-2fa', 'verify-email'];
+  notOptionsUrls = ['login', 'verify-2fa', 'verify-email', 'recovery-password', 'reset-password'];
   constructor(
     private _localStorageService: LocalStorageService,
     private router: Router,

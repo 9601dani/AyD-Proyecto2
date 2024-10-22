@@ -80,4 +80,12 @@ export class LocalStorageService {
   getUserPhoto(): string {
     return this.getItem(this.USER_PHOTO);
   }
+
+  setCurrency(currency: string): void {
+    this.setItem(this.CURRENCY, currency);
+  }
+
+  getCurrency() {
+    return this.getItem(this.CURRENCY);
+  }
 }

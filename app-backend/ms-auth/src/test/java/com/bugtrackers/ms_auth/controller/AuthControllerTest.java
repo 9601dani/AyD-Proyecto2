@@ -98,7 +98,7 @@ public class AuthControllerTest {
 
     @Test
     void shouldSendEmailVerification() throws Exception {
-        when(this.authService.reSendEmailVerification("username")).thenReturn("Correo enviado exitosamente!");
+        when(this.authService.sendVerification("username")).thenReturn("Correo enviado exitosamente!");
 
         this.mockMvc.perform(put("/auth/send-email/username"))
         .andExpect(status().isOk())
@@ -121,5 +121,25 @@ public class AuthControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().json("{\"message\": \"Usuario autenticado exitosamente!\"}"));
     }
+
+    @Test
+    void shouldSendRecoveryPassword() throws Exception {
+        when(this.authService.sendRecoveryPassword("email@example.com")).thenReturn("Correo enviado exitosamente!");
+        this.mockMvc.perform(post("/auth/recovery-password/email@example.com"))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\": \"Correo enviado exitosamente!\"}"));
+    }
 	
+    @Test
+    void shouldResetPassword() throws Exception {
+        when(this.authService.resetPassword("token", "newpassword")).thenReturn("Contraseña actualizada exitosamente!");
+        String requestJson = "{ \"password\": \"newpassword\" }";
+
+        this.mockMvc.perform(put("/auth/reset-password/token")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(requestJson))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\":\"Contraseña actualizada exitosamente!\"}"));
+
+    }
 }

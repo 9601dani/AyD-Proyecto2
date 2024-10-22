@@ -30,5 +30,7 @@ public class EmailVerification {
     private LocalDateTime expiredAt = LocalDateTime.now().plusHours(1);
     @Column(columnDefinition = "TINYINT")
     private Boolean isAvailable = true;
+    @Column(columnDefinition = "TINYINT")
+    private Boolean isResetPassword = false;
     
 }

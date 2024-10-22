@@ -472,7 +472,7 @@ public class AuthServiceTest {
             this.authService.verifyEmail("token");
         });
 
-        String expectedMessage = "El token ya no se encuentra disponible.";
+        String expectedMessage = "El token no es válido.";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
@@ -494,6 +494,27 @@ public class AuthServiceTest {
         });
 
         String expectedMessage = "El token ya no se encuentra disponible.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotVerifyEmailByIsResetPassword() {
+        EmailVerification emailVerification = new EmailVerification();
+        emailVerification.setEmail("email@example.com");
+        emailVerification.setToken("token");
+        emailVerification.setExpiredAt(LocalDateTime.now().plusHours(3));
+        emailVerification.setIsResetPassword(true);
+
+        when(this.emailVerificationRepository.findByTokenAndIsAvailable("token", true))
+                .thenReturn(Optional.of(emailVerification));
+
+        Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
+            this.authService.verifyEmail("token");
+        });
+
+        String expectedMessage = "El token no es válido.";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
@@ -620,7 +641,7 @@ public class AuthServiceTest {
         when(passwordEncoder.encode(any(String.class))).thenReturn("tokenencoded");
 
         String expectedMessage = "Correo enviado exitosamente!";
-        String actualMessage = this.authService.reSendEmailVerification("username");
+        String actualMessage = this.authService.sendVerification("username");
         assertNotNull(actualMessage);
         assertEquals(expectedMessage, actualMessage);
     }
@@ -630,7 +651,7 @@ public class AuthServiceTest {
         when(this.authRepository.findById(1)).thenReturn(Optional.empty());
 
         Exception exception = assertThrows(UserNotFoundException.class, () -> {
-            this.authService.reSendEmailVerification("username");
+            this.authService.sendVerification("username");
         });
 
         String expectedMessage = "Usuario no encontrado.";
@@ -694,7 +715,7 @@ public class AuthServiceTest {
             this.authService.verify2FA(1, "secret");
         });
 
-        String expectedMessage = "El token ya no se encuentra disponible.";
+        String expectedMessage = "El token no es válido.";
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
@@ -719,4 +740,152 @@ public class AuthServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    void shouldSendRecoveryPassword() {
+        when(this.authRepository.findByEmail("email@example.com")).thenReturn(Optional.of(mockUser));
+        CompanySetting companySetting = new CompanySetting();
+        companySetting.setKeyName("name");
+        companySetting.setKeyValue("value");
+        when(authRepository.findByUsernameOrEmail("username", "username")).thenReturn(Optional.of(mockUser));
+        when(passwordEncoder.matches("password", "password")).thenReturn(true);
+        when(this.companySettingRepository.findByKeyName("email_recovery_password_template"))
+                .thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(companySetting));
+        when(companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(companySetting));
+        when(passwordEncoder.encode(any(String.class))).thenReturn("tokenencoded");
+
+        String expectedMessage = "Correo enviado exitosamente!";
+        String actualMessage = this.authService.sendRecoveryPassword("email@example.com");
+        assertNotNull(actualMessage);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotSendRecoveryPasswordByEmailNotFound() {
+        when(this.authRepository.findByEmail("email@example.com")).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            this.authService.sendRecoveryPassword("email@example.com");
+        });
+
+        String expectedMessage = "Usuario no encontrado.";
+        String actualMessage = exception.getMessage();
+
+        assertEquals(expectedMessage, actualMessage);
+
+    }
+
+    @Test
+    void shouldResetPassword() {
+
+        String token = "token";
+        String password = "password";
+        String email = "email@example.com";
+
+        EmailVerification emailVerification = new EmailVerification();
+        emailVerification.setExpiredAt(LocalDateTime.now().plusHours(1));
+        emailVerification.setEmail(email);
+        emailVerification.setIsAvailable(true);
+        emailVerification.setIsResetPassword(true);
+        emailVerification.setToken(token);
+
+        when(this.emailVerificationRepository.findByTokenAndIsAvailable(token, true)).thenReturn(Optional.of(emailVerification));
+        when(this.authRepository.findByEmail(email)).thenReturn(Optional.of(mockUser));
+        when(this.passwordEncoder.encode(password)).thenReturn("passwordencoded");
+
+        String expectedMessage = "Contraseña actualizada exitosamente!";
+        String actualMessage = this.authService.resetPassword(token, password);
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotResetPasswordByNotFindEmailVerification() {
+        String token = "token";
+        String password = "password";
+        when(this.emailVerificationRepository.findByTokenAndIsAvailable(token, true)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
+            this.authService.resetPassword(token, password);
+        });
+
+        String expectedMessage = "El token no es válido.";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+
+    }
+
+    @Test
+    void shouldNotResetPasswordBecauseIsNotResetPassword() {
+        String token = "token";
+        String password = "password";
+        String email = "email@example.com";
+
+        EmailVerification emailVerification = new EmailVerification();
+        emailVerification.setExpiredAt(LocalDateTime.now().plusHours(1));
+        emailVerification.setEmail(email);
+        emailVerification.setIsAvailable(true);
+        emailVerification.setIsResetPassword(false);
+        emailVerification.setToken(token);
+
+        when(this.emailVerificationRepository.findByTokenAndIsAvailable(token, true)).thenReturn(Optional.of(emailVerification));
+
+        Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
+            this.authService.resetPassword(token, password);
+        });
+
+        String expectedMessage = "El token no es válido.";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotResetPasswordBecauseIsExpired() {
+        String token = "token";
+        String password = "password";
+        String email = "email@example.com";
+
+        EmailVerification emailVerification = new EmailVerification();
+        emailVerification.setExpiredAt(LocalDateTime.now().minusHours(1));
+        emailVerification.setEmail(email);
+        emailVerification.setIsAvailable(true);
+        emailVerification.setIsResetPassword(true);
+        emailVerification.setToken(token);
+
+        when(this.emailVerificationRepository.findByTokenAndIsAvailable(token, true)).thenReturn(Optional.of(emailVerification));
+        when(this.authRepository.findByEmail(email)).thenReturn(Optional.empty());
+
+        Exception exception = assertThrows(EmailVerificationExpiredException.class, () -> {
+            this.authService.resetPassword(token, password);
+        });
+
+        String expectedMessage = "El token ya no se encuentra disponible.";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void shouldNotResetPasswordByUserNotFound() {
+        String token = "token";
+        String password = "password";
+        String email = "email@example.com";
+
+        EmailVerification emailVerification = new EmailVerification();
+        emailVerification.setExpiredAt(LocalDateTime.now().plusHours(1));
+        emailVerification.setEmail(email);
+        emailVerification.setIsAvailable(true);
+        emailVerification.setIsResetPassword(true);
+        emailVerification.setToken(token);
+
+        when(this.emailVerificationRepository.findByTokenAndIsAvailable(token, true)).thenReturn(Optional.of(emailVerification));
+
+        Exception exception = assertThrows(UserNotFoundException.class, () -> {
+            this.authService.resetPassword(token, password);
+        });
+
+        String expectedMessage = "Usuario no encontrado.";
+        String actualMessage = exception.getMessage();
+        assertEquals(expectedMessage, actualMessage);
+    }
+
 }

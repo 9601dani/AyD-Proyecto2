@@ -51,6 +51,7 @@ export class Verification2faComponent implements OnInit {
       })
       this._localStorageService.logout();
       this._router.navigate(['/login']);
+      return;
     }
 
     this._authService.verify2fa(id, code!).subscribe({
@@ -66,6 +67,43 @@ export class Verification2faComponent implements OnInit {
         })
       }
     })
+  }
+
+  send2fa() {
+    const id = this._localStorageService.getUserId();
+
+    if(!id) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'No se encontró la información del usuario.',
+        icon: 'error',
+        confirmButtonText: 'Ok!'
+      })
+      this._localStorageService.logout();
+      this._router.navigate(['/login']);
+      return;
+    }
+
+    this._authService.send2fa(id).subscribe({
+      next: response => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: response.message,
+          icon: 'success',
+          confirmButtonText: 'Ok!'
+        })
+      },
+      error: err => {
+        const { message } = err.error;
+        Swal.fire({
+          title: 'Error!',
+          text: message,
+          icon: 'error',
+          confirmButtonText: 'Ok!'
+        })
+      }
+    })
+
   }
 
 }

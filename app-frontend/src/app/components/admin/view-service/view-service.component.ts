@@ -5,6 +5,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { NavbarComponent } from '../../commons/navbar/navbar.component';
 import { UserService } from '../../../services/user.service';
 import { Router } from '@angular/router';
+import { CompanyCurrencyPipe } from '../../../pipes/company-currency.pipe';
 
 @Component({
   selector: 'app-view-service',
@@ -14,6 +15,7 @@ import { Router } from '@angular/router';
     CommonModule,
     MatButtonModule,
     MatIconModule,
+    CompanyCurrencyPipe
   ],
   templateUrl: './view-service.component.html',
   styleUrl: './view-service.component.scss'

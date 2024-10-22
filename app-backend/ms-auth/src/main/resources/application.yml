@@ -1,7 +1,7 @@
 server:
   port: 8001
 website:
-  url: ${WEBSITE_URL:http://localhost:4200/verify-email}
+  url: ${WEBSITE_URL:http://localhost:4200}
 
 spring:
   profiles:
