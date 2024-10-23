@@ -157,7 +157,6 @@ export class AddServiceComponent implements OnInit {
     this._user_service.getServiceById(serviceId).subscribe(
       (res) => {
         this.service_form.patchValue(res); 
-        console.log("Service data loaded: ", res);
         this.addedEmployees = res.employees;
         this.addedResources = res.resources;
       },
@@ -196,7 +195,6 @@ export class AddServiceComponent implements OnInit {
           }
         );
       } else {
-        console.log(this.service_form.value);
         this._user_service.createService(this.service_form.value).subscribe(
           (res) => {
             this.service_form.reset();
