@@ -49,6 +49,7 @@ public class CompanySettingController {
         List<String> names = this.companySettingService.findAllSettingTypes();
         return ResponseEntity.ok(names);
     }
+
     
 
 }

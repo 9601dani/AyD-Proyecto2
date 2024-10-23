@@ -80,3 +80,24 @@ export interface ServiceRequest{
   employees:Employee[];
   resources:Resources[];
 }
+
+export interface CompanySettingConfig {
+  keyName: string;
+  property: string;
+}
+
+export interface Comment{
+  id:number;
+  FK_User:number;
+  comment:string;
+  value:number;
+  created_at:string;
+}
+
+export interface CommentResponse{
+  id:number;
+  username:string;
+  comment:string;
+  value:number;
+  createdAt:string;
+}

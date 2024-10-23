@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Module } from '../models/Module.model';
 import { CompanySetting } from '../models/CompanySetting.model';
-import {Attribute, Employee, Resources, ResponseString, Roles, Service, ServiceRequest, UserAllResponse} from "../interfaces/interfaces";
+import {Attribute, Comment, CommentResponse, Employee, Resources, ResponseString, Roles, Service, ServiceRequest, UserAllResponse} from "../interfaces/interfaces";
 import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
@@ -17,6 +17,7 @@ export class UserService {
   readonly apiRoles = "http://localhost:8000/role";
   readonly apiEmployees = "http://localhost:8000/employee";
   readonly apiResources = "http://localhost:8000/resource";
+  readonly apiComments = "http://localhost:8000/comment";
 
   constructor(private http: HttpClient, private _localStorage: LocalStorageService) { }
 
@@ -140,6 +141,18 @@ export class UserService {
 
   updateResource(id: number, resource: Resources): Observable<Resources> {
     return this.http.put<Resources>(`${this.apiResources}/${id}`, resource);
+  }
+
+  /**
+   * Routes for Comments
+   */
+
+  getAllComments(): Observable<CommentResponse[]> {
+    return this.http.get<CommentResponse[]>(`${this.apiComments}`);
+  }
+
+  saveComment(comment: Comment): Observable<CommentResponse> {
+    return this.http.post<CommentResponse>(`${this.apiComments}`, comment);
   }
 
 

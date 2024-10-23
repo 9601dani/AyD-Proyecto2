@@ -48,7 +48,7 @@ spring:
         - id: user-public-route
           uri: ${USER_ROUTE_URI:http://localhost:8003}
           predicates:
-            - Path=/company-settings/currency
+            - Path=/company-settings/currency,/company-settings/direction,/company-settings/start_hour,/company-settings/end_hour,/company-settings/service_img1, /company-settings/service_img2, /company-settings/service_img3, /company-settings/service_img4, /comment/**
         - id: user-route
           uri: ${USER_ROUTE_URI:http://localhost:8003}
           predicates:
