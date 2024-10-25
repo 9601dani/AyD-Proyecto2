@@ -25,6 +25,29 @@
             </div>
 
             <div class="column is-full">
+              <hr class="has-background-light" style="border-top: 1px solid #ccc;">
+            </div>
+
+            <div class="column is-full">
+              <div class="field">
+                <label class="label">Subir Imagen</label>
+                <div class="control">
+                  <input type="file" class="input" (change)="onFileSelected($event)" />
+                </div>
+                <p class="help is-danger" *ngIf="fileError">{{ fileError }}</p>
+              </div>
+
+              <div class="column is-full">
+                <div class="field mt-3" *ngIf="imagePreview">
+                  <label class="label">Previsualización de la Imagen:</label>
+                  <figure class="image is-128x128 image-container">
+                    <img [src]="imagePreview" alt="Previsualización de la imagen seleccionada">
+                  </figure>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-full">
                 <hr class="has-background-light" style="border-top: 1px solid #ccc;">
             </div>
 

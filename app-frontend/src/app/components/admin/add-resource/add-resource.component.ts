@@ -5,7 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import Swal from 'sweetalert2';
 import { NavbarComponent } from '../../commons/navbar/navbar.component';
 import { UserService } from '../../../services/user.service';
-import { Attribute, Resources } from '../../../interfaces/interfaces';
+import { Attribute, Resources, ResponseString } from '../../../interfaces/interfaces';
+import { ImgService } from '../../../services/img.service';
 
 @Component({
   selector: 'app-add-resource',
@@ -26,6 +27,9 @@ export class AddResourceComponent implements OnInit {
   selectedAttributesControl = new FormControl([]);
   isEditMode: boolean = false; 
   resourceId: number | null = null; 
+  selectedFile: File | null = null;
+  fileError: string | null = null;
+  imagePreview: string | null = null;
 
   attributes: Array<{ id: number, name: string, description: string }> = [
     { id: 1, name: 'Número de Jugadores', description: '7 jugadores' }
@@ -38,7 +42,8 @@ export class AddResourceComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private _userService: UserService   
+    private _userService: UserService,
+    private _imageService: ImgService
   ) { }
 
   ngOnInit(): void {
@@ -93,6 +98,7 @@ export class AddResourceComponent implements OnInit {
       const resourceData: Resources = {
         id:1,
         name: this.resourceForm.get('name')?.value,
+        image: '',
         attributes: this.addedAttributes.map(attr => ({ id:attr.id, name: attr.name, description: attr.description }))
       };
 
@@ -109,24 +115,30 @@ export class AddResourceComponent implements OnInit {
           }
         });
       } else {
-        this._userService.createResource(resourceData).subscribe((data: Resources) => {
-          if(data){
-            Swal.fire({
-              title: 'Recurso Creado',
-              text: 'El recurso ha sido creado exitosamente',
-              icon: 'success',
-              confirmButtonText: 'Aceptar'
-            });
-            this.resourceForm.reset();
-            this.addedAttributes = [];
-          }
-        },(error: any) => {
+        if(!this.selectedFile){
           Swal.fire({
             title: 'Error',
-            text: 'No se pudo guardar el recurso ',
+            text: 'Por favor, selecciona una imagen',
             icon: 'error',
             confirmButtonText: 'Aceptar'
           });
+          return;
+        }
+        this._imageService.saveImgResource(this.selectedFile).subscribe((data: ResponseString) => {
+          if(data){
+            resourceData.image = data.message;
+            this._userService.createResource(resourceData).subscribe((data: any) => {
+              if(data){
+                Swal.fire({
+                  title: 'Recurso Creado',
+                  text: 'El recurso ha sido creado exitosamente',
+                  icon: 'success',
+                  confirmButtonText: 'Aceptar'
+                });
+                console.log('Recurso Creado:', resourceData);
+              }
+            });
+          }
         });
       }
     } else {
@@ -204,6 +216,27 @@ export class AddResourceComponent implements OnInit {
   onCancel(): void {
     this.resourceForm.reset();
     this.addedAttributes = [];
+    this.imagePreview = null;
 
+  }
+
+  onFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type.startsWith('image/')) {
+        this.selectedFile = file;
+        this.fileError = null;
+        const reader = new FileReader();
+
+        reader.onload = () => {
+          this.imagePreview = reader.result as string;
+        };
+
+        reader.readAsDataURL(file);
+      } else {
+        this.fileError = 'Solo se permiten archivos de imagen.';
+      }
+    }
   }
 }

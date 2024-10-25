@@ -24,5 +24,11 @@ export class ImgService {
     formData.append('nameOldImage', oldNamePath || '');
     return this.http.put<ResponseString>(`${this.apiImg}/upload/profile`, formData);
   }
+
+  saveImgResource(file: File): Observable<ResponseString> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<ResponseString>(`${this.apiImg}/upload/resource`, formData);
+  }
   
 }

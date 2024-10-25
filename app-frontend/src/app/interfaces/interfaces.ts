@@ -78,6 +78,7 @@ export interface Attribute {
 export interface Resources{
   id:number;
   name:string;
+  image:string;
   attributes:Attribute[];
 }
 

@@ -45,5 +45,11 @@ public class ImgController {
         String new_image_path = cloudService.uploadProfileImage(file, nameOldImage);
         return ResponseEntity.ok(new ResponseString(new_image_path));
     }
+
+    @PostMapping("/upload/resource")
+    public ResponseEntity<ResponseString> uploadResourceImage(@RequestParam("file") MultipartFile file) {
+        String objectName = cloudService.uploadResourceImage(file);
+        return ResponseEntity.ok(new ResponseString(objectName));
+    }
     
 }
