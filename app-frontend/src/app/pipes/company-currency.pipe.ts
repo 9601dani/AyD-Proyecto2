@@ -9,9 +9,9 @@ export class CompanyCurrencyPipe implements PipeTransform {
 
   _localStorageService = inject(LocalStorageService);
 
-  transform(value: string): string {
+  transform(value: number): string {
     const currency = this._localStorageService.getCurrency() || "$";
-    return `${currency} ${value}`;
+    return `${currency} ${value.toFixed(2)}`;
   }
 
 }

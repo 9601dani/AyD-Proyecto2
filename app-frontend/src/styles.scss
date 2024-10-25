@@ -14,5 +14,41 @@ body {
   min-height: 100%;
 }
 
+/* Para el contenedor principal del stepper */
+::ng-deep .mat-horizontal-stepper {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* Para los pasos individuales */
+::ng-deep .mat-step-header {
+  background-color: transparent !important;
+}
+
+/* Para los íconos de los pasos (círculos que indican el paso) */
+::ng-deep .mat-step-icon {
+  background-color: transparent !important;
+  border: none !important;
+}
+
+/* Para los contenedores de cada paso */
+::ng-deep .mat-step-label {
+  background-color: transparent !important;
+}
+
+/* Si hay un borde o sombra alrededor */
+::ng-deep .mat-step {
+  box-shadow: none !important;
+}
+
+.mat-horizontal-stepper {
+  background-color: transparent !important;
+}
+
+.mat-step-header {
+  background-color: transparent !important;
+}
+
+
 /* Import custom theme */
 @import "./custom-theme.scss";

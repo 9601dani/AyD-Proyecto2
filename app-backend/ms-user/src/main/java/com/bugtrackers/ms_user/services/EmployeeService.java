@@ -14,7 +14,6 @@ import com.bugtrackers.ms_user.repositories.RoleRepository;
 import com.bugtrackers.ms_user.repositories.UserHasRoleRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;

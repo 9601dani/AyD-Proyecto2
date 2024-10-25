@@ -1,6 +1,7 @@
 package com.bugtrackers.ms_user.services;
 
 import com.bugtrackers.ms_user.dto.request.ResourceRequest;
+import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
 import com.bugtrackers.ms_user.exceptions.AttributeNoSaveException;
 import com.bugtrackers.ms_user.exceptions.ResourceNotFoundException;
@@ -34,7 +35,6 @@ public class ResourceService {
     public Attribute createAttribute(Attribute attribute) {
         Attribute newAttribute = this.attributeRepository.save(attribute);
 
-
         if(newAttribute == null) {
             throw new AttributeNoSaveException("No se pudo crear el atributo, intente nuevamente");
         }
@@ -56,7 +56,7 @@ public class ResourceService {
             this.resourceHasAttributeRepository.save(newAttribute);
         }
 
-        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes);
+        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes.stream().map(AttributeResponse::new).toList());
     }
 
     public List<ResourceResponse> getResources() {
@@ -79,7 +79,7 @@ public class ResourceService {
             ResourceResponse resourceResponse = new ResourceResponse(
                     resource.getId(),
                     resource.getName(),
-                    resourceAttributes
+                    resourceAttributes.stream().map(AttributeResponse::new).toList()
             );
 
             resourceResponses.add(resourceResponse);
@@ -109,7 +109,7 @@ public class ResourceService {
         return new ResourceResponse(
                 resourceOptional.get().getId(),
                 resourceOptional.get().getName(),
-                resourceAttributes
+                resourceAttributes.stream().map(AttributeResponse::new).toList()
         );
     }
 
@@ -142,7 +142,7 @@ public class ResourceService {
             this.resourceHasAttributeRepository.save(newAttribute);
         }
 
-        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes);
+        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes.stream().map(AttributeResponse::new).toList());
     }
 
 }

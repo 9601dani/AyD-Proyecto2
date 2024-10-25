@@ -3,7 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Module } from '../models/Module.model';
 import { CompanySetting } from '../models/CompanySetting.model';
-import {Attribute, Comment, CommentResponse, Employee, Resources, ResponseString, Roles, Service, ServiceRequest, UserAllResponse} from "../interfaces/interfaces";
+import {Attribute, Comment, CommentResponse, Employee, Resources, ResponseString, Roles, Service,ServiceWithEmplAndRes,UserAllResponse} from "../interfaces/interfaces";
+
 import { LocalStorageService } from './local-storage.service';
 
 @Injectable({
@@ -61,15 +62,15 @@ export class UserService {
 
   /**Routes for services CRU */
 
-  getServiceById(id: number): Observable<ServiceRequest> {
-    return this.http.get<ServiceRequest>(`${this.apiServices}/${id}`);
+  getServiceById(id: number): Observable<ServiceWithEmplAndRes> {
+    return this.http.get<ServiceWithEmplAndRes>(`${this.apiServices}/${id}`);
   }
 
   getAllServices(): Observable<Service[]> {
     return this.http.get<Service[]>(`${this.apiServices}`);
   }
 
-  createService(service: ServiceRequest): Observable<Service> {
+  createService(service: ServiceWithEmplAndRes): Observable<Service> {
     return this.http.post<Service>(`${this.apiServices}`, service);
   }
 
@@ -143,6 +144,7 @@ export class UserService {
     return this.http.put<Resources>(`${this.apiResources}/${id}`, resource);
   }
 
+
   /**
    * Routes for Comments
    */
@@ -155,5 +157,22 @@ export class UserService {
     return this.http.post<CommentResponse>(`${this.apiComments}`, comment);
   }
 
+
+  getResourcesByServicesId(ids: number[]): Observable<any> {
+    return this.http.get(`${this.apiServices}/reserve/resources`, {
+      params: {
+        ids: ids.join(",")
+      }
+    });
+  }
+
+  getEmployeesByServicesId(ids: number[]): Observable<any> {
+    return this.http.get(`${this.apiServices}/reserve/employees`, {
+      params: {
+        ids: ids.join(",")
+      }
+    });
+  }
+  
 
 }

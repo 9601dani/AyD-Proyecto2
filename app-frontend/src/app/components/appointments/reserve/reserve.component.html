@@ -1,0 +1,137 @@
+<app-navbar></app-navbar>
+<div class="columns m-5">
+    <div class="column is-three-fifths">
+        <div [ngSwitch]="currentStep">
+            <ng-container *ngSwitchCase="'Servicios'">
+                <ng-container *ngTemplateOutlet="servicesTemplate"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Recursos'">
+                <ng-container *ngTemplateOutlet="resourcesTemplate"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Empleados'">
+                <ng-container *ngTemplateOutlet="employeesTemplate"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Horario'">
+                <ng-container *ngTemplateOutlet="scheduleTemplate"></ng-container>
+            </ng-container>
+            <ng-container *ngSwitchCase="'Confirmación'">
+                <ng-container *ngTemplateOutlet="confirmTemplate"></ng-container>
+            </ng-container>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card p-5">
+            <h3 class="title is-3">Resumen</h3>
+            <div class="content">
+                <div class="content-height">
+                    @for(service of selectedServices; track $index) {
+                    <div class="m-5 columns">
+                        <div class="column is-two-thirds">
+                            <p class="title is-6">{{service.name}}</p>
+                            <p class="subtitle is-6">{{service.timeAprox}} min.</p>
+
+                        </div>
+                        <div class="column">
+                            {{service.price | companyCurrency}}
+                        </div>
+                    </div>
+
+                    }
+                </div>
+                <mat-divider></mat-divider>
+                <div class="section">
+                    @if(this.total !== 0) {
+                    <div class="columns">
+                        <div class="column is-two-thirds">
+                            <p class="title is-6">Total:</p>
+                        </div>
+                        <div class="column">
+                            {{this.total | companyCurrency}}
+                        </div>
+                    </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Templates-->
+<ng-template #servicesTemplate>
+    <div class="m-5">
+        <h3 class="title is-3">Servicios</h3>
+        <h5 class="subtitle">Nuestros servicios</h5>
+        <form [formGroup]="servicesForm">
+            <div class="content-height">
+                @for(service of this.services; track $index) {
+                <div class="box m-5">
+                    <p class="title is-5">
+                        <input formControlName="{{service.name}}" type="checkbox"
+                            (change)="onServiceToggle(service, $any($event.target)?.checked)">
+                        {{service.name}}
+                    </p>
+                    <p class="subtitle is-6">{{service.timeAprox}} minutos.</p>
+                    <p>{{service.description}}</p>
+                    <strong>
+                        <p>Precio: {{ service.price | companyCurrency }}</p>
+                    </strong>
+                </div>
+                }
+            </div>
+            <button class="button is-info m-3" [disabled]="this.selectedServices.length === 0"
+                (click)="verifyServices()">Siguiente</button>
+        </form>
+    </div>
+</ng-template>
+
+<ng-template #resourcesTemplate>
+    <h3 class="title is-3">Recursos</h3>
+    <h5 class="subtitle">Nuestros recursos</h5>
+    <div class="content-height columns">
+        <div class="column is-narrow">
+            <div class="card is-clickable" style="width: 200px;">
+                <div class="card-image">
+                    <figure class="image is-4by3">
+                        <img [src]="random.imageProfile"/>
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="content">
+                        <p class="title is-6">{{random.name}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @for(resource of resources; track $index) {
+        <div class="column is-narrow">
+            <div class="card is-clickable" style="width: 200px;">
+                <div class="card-image">
+                    <figure class="image is-4by3">
+                        <img [src]="random.imageProfile"/>
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="content">
+                        <p class="title is-6">{{resource.name}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <button class="button is-link m-3" (click)="this.currentStep='Servicios'">Anterior</button>
+    <button class="button is-info m-3" (click)="verifyResource()">Siguiente</button>
+</ng-template>
+
+<ng-template #employeesTemplate>
+    <h5 class="subtitle">Empleados</h5>
+</ng-template>
+
+<ng-template #scheduleTemplate>
+    <h5 class="subtitle">Horario</h5>
+</ng-template>
+
+<ng-template #confirmTemplate>
+    <h5 class="subtitle">Confirmación</h5>
+</ng-template>
