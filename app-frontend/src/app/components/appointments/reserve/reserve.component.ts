@@ -8,6 +8,8 @@ import { CommonModule } from '@angular/common';
 import { CompanyCurrencyPipe } from '../../../pipes/company-currency.pipe';
 import { MatDividerModule } from '@angular/material/divider';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ImagePipe } from '../../../pipes/image.pipe';
+import { NotProfileDirective } from '../../../directives/not-profile.directive';
 
 @Component({
   selector: 'app-reserve',
@@ -17,12 +19,15 @@ import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angul
     CommonModule,
     CompanyCurrencyPipe,
     MatDividerModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    ImagePipe,
+    NotProfileDirective
   ],
   templateUrl: './reserve.component.html',
   styleUrl: './reserve.component.scss'
 })
 export class ReserveComponent implements OnInit {
+
   _userService = inject(UserService);
   _router = inject(Router);
   _fb = inject(FormBuilder);
@@ -103,7 +108,7 @@ export class ReserveComponent implements OnInit {
       next: response => {
         this.resources = response;
         this.currentStep = "Recursos";
-        if(this.resources.length === 0) {
+        if (this.resources.length === 0) {
           this.verifyResource();
         }
       },
@@ -113,6 +118,26 @@ export class ReserveComponent implements OnInit {
     })
   }
 
+  selectRandom(array: any, type: 'resource' | 'employee') {
+    const random = Math.floor(Math.random() * array.length);
+
+    switch (type) {
+      case 'resource':
+        this.selectResource(array[random]);
+        return;
+      case 'employee':
+        this.selectEmployee(array[random]);
+        return
+    }
+  }
+
+  selectResource(resource: Resources) {
+    this.selectedResource = resource;
+  }
+
+  selectEmployee(employee: EmployeeWithImage) {
+    this.selectedEmployee = employee;
+  }
 
   verifyResource() {
     const ids: number[] = this.selectedServices.map((service) => service.id);
@@ -120,11 +145,14 @@ export class ReserveComponent implements OnInit {
       next: response => {
         this.employees = response;
         this.currentStep = "Empleados";
-        if(this.employees.length === 0) {
+        if (this.employees.length === 0) {
           this.currentStep = "Horario";
         }
       }
     })
   }
 
+  verifyEmployee() {
+    this.currentStep = "Horario";
+  }
 }

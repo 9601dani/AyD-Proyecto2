@@ -20,7 +20,7 @@
         </div>
     </div>
     <div class="column">
-        <div class="card p-5">
+        <div class="card p-2">
             <h3 class="title is-3">Resumen</h3>
             <div class="content">
                 <div class="content-height">
@@ -40,17 +40,50 @@
                 </div>
                 <mat-divider></mat-divider>
                 <div class="section">
-                    @if(this.total !== 0) {
-                    <div class="columns">
-                        <div class="column is-two-thirds">
-                            <p class="title is-6">Total:</p>
+                    <div class="grid">
+                        @if(this.selectedResource !== null) {
+                        <div class="ceil">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-64x64">
+                                        <img [src]="this.selectedResource.image | image" appNotProfile />
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-5">{{this.selectedResource.name}}</p>
+                                    <p class="subtitle is-6">Recurso</p>
+                                </div>
+                            </div>
                         </div>
-                        <div class="column">
-                            {{this.total | companyCurrency}}
+                        }
+                        @if(this.selectedEmployee !== null) {
+                        <div class="ceil">
+                            <div class="media">
+                                <div class="media-left">
+                                    <figure class="image is-48x48">
+                                        <img class="is-rounded" [src]="this.selectedEmployee.imageProfile | image"
+                                            appNotProfile />
+                                    </figure>
+                                </div>
+                                <div class="media-content">
+                                    <p class="title is-5">{{this.selectedEmployee.firstName}}</p>
+                                    <p class="subtitle is-6">{{this.selectedEmployee.roles}}</p>
+                                </div>
+                            </div>
                         </div>
+                        }
                     </div>
-                    }
                 </div>
+                @if(this.total !== 0) {
+                <div class="columns">
+                    <div class="column is-two-thirds">
+                        <p class="title is-6">Total:</p>
+                    </div>
+                    <div class="column">
+                        {{this.total | companyCurrency}}
+                    </div>
+                </div>
+                }
             </div>
         </div>
     </div>
@@ -89,10 +122,10 @@
     <h5 class="subtitle">Nuestros recursos</h5>
     <div class="content-height columns">
         <div class="column is-narrow">
-            <div class="card is-clickable" style="width: 200px;">
+            <div class="card is-clickable" style="width: 200px;" (click)="selectRandom(this.resources, 'resource')">
                 <div class="card-image">
                     <figure class="image is-4by3">
-                        <img [src]="random.imageProfile"/>
+                        <img [src]="random.imageProfile" />
                     </figure>
                 </div>
                 <div class="card-content">
@@ -100,21 +133,29 @@
                         <p class="title is-6">{{random.name}}</p>
                     </div>
                 </div>
+                <footer class="card-footer">
+                    <a class="card-footer-item"></a>
+                </footer>
             </div>
         </div>
         @for(resource of resources; track $index) {
         <div class="column is-narrow">
-            <div class="card is-clickable" style="width: 200px;">
-                <div class="card-image">
-                    <figure class="image is-4by3">
-                        <img [src]="random.imageProfile"/>
-                    </figure>
-                </div>
-                <div class="card-content">
-                    <div class="content">
-                        <p class="title is-6">{{resource.name}}</p>
+            <div class="card" [ngClass]="{'selected': resource.id === selectedResource?.id}" style="width: 200px;">
+                <div class="is-clickable" (click)="selectResource(resource)">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img [src]="resource.image | image" />
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p class="title is-6">{{resource.name}}</p>
+                        </div>
                     </div>
                 </div>
+                <footer class="card-footer">
+                    <button class="card-footer-item">Ver detalles</button>
+                </footer>
             </div>
         </div>
         }
@@ -125,7 +166,47 @@
 </ng-template>
 
 <ng-template #employeesTemplate>
-    <h5 class="subtitle">Empleados</h5>
+    <h3 class="title is-3">Empleados</h3>
+    <h5 class="subtitle">Nuestros empleados</h5>
+    <div class="content-height columns">
+        <div class="column is-narrow">
+            <div class="card is-clickable" style="width: 200px;" (click)="selectRandom(this.employees, 'employee')">
+                <div class="card-image">
+                    <figure class="image is-4by3">
+                        <img [src]="random.imageProfile" />
+                    </figure>
+                </div>
+                <div class="card-content">
+                    <div class="content">
+                        <p class="title is-6">{{random.name}}</p>
+                    </div>
+                </div>
+                <footer class="card-footer"><a class="card-footer-item"></a></footer>
+            </div>
+        </div>
+        @for(employee of employees; track $index) {
+        <div class="column is-narrow">
+            <div class="card" [ngClass]="{'selected': employee.id === selectedEmployee?.id}" style="width: 200px;">
+                <div class="is-clickable" (click)="selectEmployee(employee)">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img [src]="employee.imageProfile | image" appNotProfile />
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <div class="content">
+                            <p class="title is-5">{{employee.firstName}}</p>
+                            <p class="subtitle is-6">{{employee.roles}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        }
+    </div>
+
+    <button class="button is-link m-3" (click)="this.currentStep='Recursos'">Anterior</button>
+    <button class="button is-info m-3" (click)="verifyEmployee()">Siguiente</button>
 </ng-template>
 
 <ng-template #scheduleTemplate>

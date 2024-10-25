@@ -66,7 +66,7 @@ export interface EmployeeWithImage {
   email:string;
   username:string;
   imageProfile:string;
-  role:string;
+  roles:string[];
 }
 
 export interface Attribute {

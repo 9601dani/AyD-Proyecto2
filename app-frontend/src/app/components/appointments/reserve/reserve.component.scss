@@ -1,3 +1,4 @@
+$blue: #183059;
 .content-height {
     height: 550px;
     max-height: 500px;
@@ -6,4 +7,9 @@
 
 .custom-grid {
     display: grid;
+}
+
+.selected {
+    border-style: solid;
+    border-color: $blue;
 }
