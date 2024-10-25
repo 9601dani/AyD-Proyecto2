@@ -3,7 +3,6 @@ package com.bugtrackers.ms_user.controllers;
 import com.bugtrackers.ms_user.dto.request.CreateEmployeeRequest;
 import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
 import com.bugtrackers.ms_user.models.Employee;
-import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.services.EmployeeService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController

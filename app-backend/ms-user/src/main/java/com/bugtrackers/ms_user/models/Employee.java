@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "employee")
@@ -30,5 +32,6 @@ public class Employee {
     @JoinColumn(name = "FK_User")
     private User user;
 
-
+    @ManyToMany(mappedBy = "employees")
+    private List<Service> services = new ArrayList<>();
 }

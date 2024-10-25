@@ -1,6 +1,7 @@
 package com.bugtrackers.ms_user.services;
 
 import com.bugtrackers.ms_user.dto.request.ResourceRequest;
+import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
 import com.bugtrackers.ms_user.exceptions.AttributeNoSaveException;
 import com.bugtrackers.ms_user.exceptions.ResourceNotFoundException;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class ResourceServiceTest {
@@ -61,9 +63,9 @@ public class ResourceServiceTest {
         resource2.setName("Resource2");
 
         attribute = new Attribute(1, "Attrib" +
-                "ute1", "Description1");
-        attribute1 = new Attribute(1, "Attribute1", "Description1");
-        attribute2 = new Attribute(2, "Attribute2", "Description2");
+                "ute1", "Description1", List.of());
+        attribute1 = new Attribute(1, "Attribute1", "Description1", List.of());
+        attribute2 = new Attribute(2, "Attribute2", "Description2", List.of());
 
         List<Attribute> attributes = Arrays.asList(attribute1, attribute2);
         resourceRequest = new ResourceRequest("NewResource", attributes);
@@ -121,7 +123,7 @@ public class ResourceServiceTest {
 
         assertEquals(newResource.getId(), result.id());
         assertEquals(newResource.getName(), result.name());
-        assertEquals(resourceRequest.attributes(), result.attributes());
+        assertEquals(resourceRequest.attributes().stream().map(AttributeResponse::new).toList(), result.attributes());
 
         verify(resourceRepository, times(1)).save(any(Resource.class));
 
@@ -146,13 +148,13 @@ public class ResourceServiceTest {
         assertEquals(resource1.getId(), resourceResponse1.id());
         assertEquals(resource1.getName(), resourceResponse1.name());
         assertEquals(1, resourceResponse1.attributes().size());
-        assertEquals(attribute1.getId(), resourceResponse1.attributes().get(0).getId());
+        assertEquals(attribute1.getId(), resourceResponse1.attributes().get(0).id());
 
         ResourceResponse resourceResponse2 = result.get(1);
         assertEquals(resource2.getId(), resourceResponse2.id());
         assertEquals(resource2.getName(), resourceResponse2.name());
         assertEquals(1, resourceResponse2.attributes().size());
-        assertEquals(attribute2.getId(), resourceResponse2.attributes().get(0).getId());
+        assertEquals(attribute2.getId(), resourceResponse2.attributes().get(0).id());
 
         verify(resourceRepository, times(1)).findAll();
         verify(attributeRepository, times(1)).findAll();
@@ -171,7 +173,7 @@ public class ResourceServiceTest {
         assertEquals(resource1.getId(), response.id());
         assertEquals(resource1.getName(), response.name());
         assertEquals(1, response.attributes().size());
-        assertEquals(attribute1.getId(), response.attributes().get(0).getId());
+        assertEquals(attribute1.getId(), response.attributes().get(0).id());
 
         verify(resourceRepository, times(1)).findById(1);
         verify(attributeRepository, times(1)).findAll();
@@ -201,8 +203,8 @@ public class ResourceServiceTest {
         assertEquals(newResource.getId(), response.id());
         assertEquals(newResource.getName(), response.name());
         assertEquals(2, response.attributes().size());
-        assertEquals(attribute1.getId(), response.attributes().get(0).getId());
-        assertEquals(attribute2.getId(), response.attributes().get(1).getId());
+        assertEquals(attribute1.getId(), response.attributes().get(0).id());
+        assertEquals(attribute2.getId(), response.attributes().get(1).id());
 
         verify(resourceRepository, times(1)).findById(1);
         verify(resourceRepository, times(1)).save(any(Resource.class));

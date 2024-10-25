@@ -50,8 +50,8 @@ class EmployeeControllerTest {
         User user1 = new User(1, "email1@test.com", "user1", "password1", "authToken1", true, true, false, LocalDateTime.now());
         User user2 = new User(2, "email2@test.com", "user2", "password2", "authToken2", false, false, true, LocalDateTime.now());
 
-        Employee employee1 = new Employee(1, "John", "Doe", LocalDate.of(1985, 5, 10), user1);
-        Employee employee2 = new Employee(2, "Jane", "Doe", LocalDate.of(1990, 3, 25), user2);
+        Employee employee1 = new Employee(1, "John", "Doe", LocalDate.of(1985, 5, 10), user1, List.of());
+        Employee employee2 = new Employee(2, "Jane", "Doe", LocalDate.of(1990, 3, 25), user2, List.of());
 
         mockEmployees = List.of(employee1, employee2);
         gson = GsonConfig.createGsonWithAdapter();
@@ -66,7 +66,7 @@ class EmployeeControllerTest {
                 1
         );
 
-        mockEmployee = new Employee(1, "John", "Doe", LocalDate.of(1985, 5, 10), user1);
+        mockEmployee = new Employee(1, "John", "Doe", LocalDate.of(1985, 5, 10), user1, List.of());
     }
 
     @Test

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(ServicesController.class)
+@WebMvcTest(ServiceController.class)
 public class ServicesControllerTest {
 
     @MockBean
@@ -46,19 +47,19 @@ public class ServicesControllerTest {
     void setUp() {
         gson = GsonConfig.createGsonWithAdapter();
         mockServices = List.of(
-                new Service(1,"name", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now()),
-                new Service(2,"name2", "description2", new BigDecimal(2.0), "pageInformation2", 2, false, LocalDateTime.now())
+                new Service(1,"name", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now(), List.of(), List.of()),
+                new Service(2,"name2", "description2", new BigDecimal(2.0), "pageInformation2", 2, false, LocalDateTime.now(), List.of(), List.of())
         );
-        mockService = new Service(1, "name", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now());
+        mockService = new Service(1, "name", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now(), List.of(), List.of());
     }
 
     @Test
     void testGetServices() throws Exception {
-        when(serviceService.getAllServices()).thenReturn(mockServices);
+        when(serviceService.getAllServices()).thenReturn(mockServices.stream().map(ServiceResponse::new).toList());
 
         mockMvc.perform(get("/services"))
                 .andExpect(status().isOk())
-                .andExpect(content().json(gson.toJson(mockServices)));
+                .andExpect(content().json(gson.toJson(mockServices.stream().map(ServiceResponse::new).toList())));
     }
 
     @Test
@@ -99,7 +100,7 @@ public class ServicesControllerTest {
         );
 
         Service serviceCreated = new Service(
-                3, "name3", "description3", new BigDecimal(3.0), "pageInformation3", 3, true, LocalDateTime.now());
+                3, "name3", "description3", new BigDecimal(3.0), "pageInformation3", 3, true, LocalDateTime.now(), List.of(), List.of());
 
         when(serviceService.saveService(any(ServiceRequest.class))).thenReturn(serviceCreated);
 

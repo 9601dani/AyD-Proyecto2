@@ -1,8 +1,9 @@
 package com.bugtrackers.ms_user.services;
 
-
 import com.bugtrackers.ms_user.dto.request.ServiceRequest;
+import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
+import com.bugtrackers.ms_user.dto.response.EmployeeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
 import com.bugtrackers.ms_user.dto.response.ServiceResponse;
 import com.bugtrackers.ms_user.exceptions.ServiceNotSaveException;
@@ -14,8 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,21 +35,20 @@ public class ServiceService {
     private final EmployeeRepository employeeRepository;
     private final ResourceRepository resourceRepository;
 
-
-    public List<com.bugtrackers.ms_user.models.Service> getAllServices() {
+    public List<ServiceResponse> getAllServices() {
         List<com.bugtrackers.ms_user.models.Service> services = this.serviceRepository.findAll();
 
         if (services.isEmpty()) {
             throw new ServiceNotSaveException("No se encontraron servicios!");
         }
 
-        return services;
+        return services.stream().map(ServiceResponse::new).toList();
     }
 
     public com.bugtrackers.ms_user.models.Service saveService(ServiceRequest service) {
         Optional<com.bugtrackers.ms_user.models.Service> optional = this.serviceRepository.findByName(service.name());
 
-        if(optional.isPresent()) {
+        if (optional.isPresent()) {
             throw new ServiceNotSaveException("El servicio ya existe!");
         }
 
@@ -111,8 +113,7 @@ public class ServiceService {
                         employeeHasService.getEmployee().getLastName(),
                         employeeHasService.getEmployee().getDateOfBirth(),
                         employeeHasService.getEmployee().getUser().getEmail(),
-                        employeeHasService.getEmployee().getUser().getUsername()
-                );
+                        employeeHasService.getEmployee().getUser().getUsername());
                 employees.add(employee);
             }
         }
@@ -136,8 +137,7 @@ public class ServiceService {
                 ResourceResponse resourceResponse = new ResourceResponse(
                         resource.getId(),
                         resource.getName(),
-                        resourceAttributes
-                );
+                        resourceAttributes.stream().map(AttributeResponse::new).toList());
                 resources.add(resourceResponse);
             }
         }
@@ -151,12 +151,8 @@ public class ServiceService {
                 service.getTimeAprox(),
                 service.getIsAvailable(),
                 employees,
-                resources
-        );
+                resources);
     }
-
-
-
 
     public ServiceResponse updateService(Integer id, ServiceRequest serviceRequest) {
         Optional<com.bugtrackers.ms_user.models.Service> optional = this.serviceRepository.findById(id);
@@ -217,8 +213,7 @@ public class ServiceService {
                         employeeHasService.getEmployee().getLastName(),
                         employeeHasService.getEmployee().getDateOfBirth(),
                         employeeHasService.getEmployee().getUser().getEmail(),
-                        employeeHasService.getEmployee().getUser().getUsername()
-                );
+                        employeeHasService.getEmployee().getUser().getUsername());
                 employees.add(employee);
             }
         }
@@ -242,8 +237,7 @@ public class ServiceService {
                 ResourceResponse resourceResponse = new ResourceResponse(
                         resource.getId(),
                         resource.getName(),
-                        resourceAttributes
-                );
+                        resourceAttributes.stream().map(AttributeResponse::new).toList());
                 resources.add(resourceResponse);
             }
         }
@@ -257,7 +251,47 @@ public class ServiceService {
                 serviceUpdate.getTimeAprox(),
                 serviceUpdate.getIsAvailable(),
                 employees,
-                resources
-        );
+                resources);
+    }
+
+    public List<ResourceResponse> getResourcesByIds(List<Integer> ids) {
+        List<com.bugtrackers.ms_user.models.Service> services = this.serviceRepository.findAllByIdIn(ids);
+
+        Set<ResourceResponse> resourceResponse = new HashSet<>();
+
+        for (com.bugtrackers.ms_user.models.Service service : services) {
+            List<Resource> resources = service.getResources();
+
+            Set<ResourceResponse> currentResources = resources.stream()
+                    .map(resource -> new ResourceResponse(resource.getId(), resource.getName(),
+                            resource.getAttributes().stream().map(AttributeResponse::new).toList()))
+                    .collect(Collectors.toSet());
+
+            if(resourceResponse.isEmpty()) resourceResponse = currentResources;
+            else resourceResponse.retainAll(currentResources);
+
+        }
+        return new ArrayList<>(resourceResponse);
+
+    }
+
+    public List<EmployeeResponse> getEmployeesByIds(List<Integer> ids) {
+        List<com.bugtrackers.ms_user.models.Service> services = this.serviceRepository.findAllByIdIn(ids);
+
+        Set<EmployeeResponse> employeeResponses = new HashSet<>();
+
+        for (com.bugtrackers.ms_user.models.Service service : services) {
+            List<Employee> employees = service.getEmployees();
+
+            Set<EmployeeResponse> currentEmployees = employees.stream()
+                    .map(EmployeeResponse::new)
+                    .collect(Collectors.toSet());
+
+            if(employeeResponses.isEmpty()) employeeResponses = currentEmployees;
+            else employeeResponses.retainAll(currentEmployees);
+        }
+
+        return new ArrayList<>(employeeResponses);
+
     }
 }
