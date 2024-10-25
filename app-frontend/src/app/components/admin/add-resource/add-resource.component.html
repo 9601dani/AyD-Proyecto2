@@ -31,24 +31,37 @@
             <div class="column is-full">
               <div class="field">
                 <label class="label">Subir Imagen</label>
-                <div class="control">
-                  <input type="file" class="input" (change)="onFileSelected($event)" />
+                <div class="file has-name is-fullwidth">
+                  <label class="file-label">
+                    <input class="file-input" type="file" (change)="onFileSelected($event)" />
+                    <span class="file-cta">
+                      <span class="icon">
+                        <i class="fas fa-upload"></i>
+                      </span>
+                      <span>Elegir archivo</span>
+                    </span>
+                    <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+                  </label>
                 </div>
                 <p class="help is-danger" *ngIf="fileError">{{ fileError }}</p>
               </div>
-
+            
               <div class="column is-full">
-                <div class="field mt-3" *ngIf="imagePreview">
+                <div class="field mt-5" *ngIf="imagePreview">
                   <label class="label">Previsualización de la Imagen:</label>
-                  <figure class="image is-128x128 image-container">
-                    <img [src]="imagePreview" alt="Previsualización de la imagen seleccionada">
+                  <figure class="image image-preview-container">
+                    <img 
+                      [src]="imagePreview.startsWith('data:image') ? imagePreview : (imagePreview | image)" 
+                      alt="Previsualización de la imagen seleccionada" 
+                      class="image-preview">
                   </figure>
                 </div>
               </div>
             </div>
+            
 
             <div class="column is-full">
-                <hr class="has-background-light" style="border-top: 1px solid #ccc;">
+              <hr class="has-background-light" style="border-top: 1px solid #ccc;">
             </div>
 
             <div class="column is-full">
@@ -61,7 +74,8 @@
                   <select multiple size="5" [formControl]="selectedAttributesControl">
                     <option *ngFor="let attr of filteredAttributes" [value]="attr.id">{{ attr.name }}: {{ attr.description }}</option>
                   </select>
-                </div><div class="control mt-4">
+                </div>
+                <div class="control mt-4">
                   <button class="button is-primary" (click)="addSelectedAttributes()" type="button">Añadir Atributos</button>
                 </div>
               </div>

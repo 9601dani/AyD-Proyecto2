@@ -48,11 +48,18 @@ public class ResourcesControllerTest {
 
     @Test
     void testGetAttributes() throws Exception {
-        when(resourceService.getAttributes()).thenReturn(mockAttributes);
 
-        String jsonResponse = gson.toJson(mockAttributes);
+        Attribute attribute1 = new Attribute(1, "Attribute1", "Description1", List.of());
+        Attribute attribute2 = new Attribute(2, "Attribute2", "Description2", List.of());
+        List<Attribute> attributes = List.of(attribute1, attribute2);
+        List<AttributeResponse> attributeResponses = attributes.stream().map(AttributeResponse::new).toList();
 
-        mockMvc.perform(get("/resource/attributes"))
+        when(resourceService.getAttributes()).thenReturn(attributeResponses);
+
+        String jsonResponse = gson.toJson(attributeResponses);
+
+        mockMvc.perform(get("/resource/attributes")
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(jsonResponse));
@@ -60,12 +67,14 @@ public class ResourcesControllerTest {
 
     @Test
     void testCreateAttribute() throws Exception {
-        Attribute newAttribute = new Attribute(3, "Attribute3", "Description3", List.of());
 
-        when(resourceService.createAttribute(any(Attribute.class))).thenReturn(newAttribute);
+        Attribute attribute = new Attribute(1, "Attribute1", "Description1", List.of());
+        AttributeResponse attributeResponse = new AttributeResponse(attribute);
 
-        String jsonRequest = gson.toJson(newAttribute);
-        String jsonResponse = gson.toJson(newAttribute);
+        when(resourceService.createAttribute(any(Attribute.class))).thenReturn(attributeResponse);
+
+        String jsonRequest = gson.toJson(attribute);
+        String jsonResponse = gson.toJson(attributeResponse);
 
         mockMvc.perform(post("/resource/attributes")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,8 +87,8 @@ public class ResourcesControllerTest {
     @Test
     void testCreateResource() throws Exception {
 
-        ResourceRequest resourceRequest = new ResourceRequest("ResourceName", mockAttributes);
-        ResourceResponse resourceResponse = new ResourceResponse(1, "ResourceName", mockAttributes.stream().map(AttributeResponse::new).toList());
+        ResourceRequest resourceRequest = new ResourceRequest("ResourceName","img1", mockAttributes);
+        ResourceResponse resourceResponse = new ResourceResponse(1, "ResourceName","img1", mockAttributes.stream().map(AttributeResponse::new).toList());
 
         when(resourceService.createResource(any(ResourceRequest.class))).thenReturn(resourceResponse);
 
@@ -96,8 +105,8 @@ public class ResourcesControllerTest {
 
     @Test
     void testGetResources() throws Exception {
-        ResourceResponse resource1 = new ResourceResponse(1, "Resource1", mockAttributes.stream().map(AttributeResponse::new).toList());
-        ResourceResponse resource2 = new ResourceResponse(2, "Resource2", mockAttributes.stream().map(AttributeResponse::new).toList());
+        ResourceResponse resource1 = new ResourceResponse(1, "Resource1","img1", mockAttributes.stream().map(AttributeResponse::new).toList());
+        ResourceResponse resource2 = new ResourceResponse(2, "Resource2","img1", mockAttributes.stream().map(AttributeResponse::new).toList());
         List<ResourceResponse> resources = List.of(resource1, resource2);
 
         when(resourceService.getResources()).thenReturn(resources);
@@ -113,7 +122,7 @@ public class ResourcesControllerTest {
 
     @Test
     void testGetResourceById() throws Exception {
-        ResourceResponse resource = new ResourceResponse(1, "Resource1", mockAttributes.stream().map(AttributeResponse::new).toList());
+        ResourceResponse resource = new ResourceResponse(1, "Resource1","img1", mockAttributes.stream().map(AttributeResponse::new).toList());
 
         when(resourceService.getResourceById(1)).thenReturn(resource);
 
@@ -131,9 +140,9 @@ public class ResourcesControllerTest {
         Attribute attribute1 = new Attribute(1, "Attribute1", "Description1", List.of());
         Attribute attribute2 = new Attribute(2, "Attribute2", "Description2", List.of());
         Integer resourceId = 1;
-        ResourceRequest resourceRequest = new ResourceRequest("UpdatedResource", List.of(attribute1, attribute2));
+        ResourceRequest resourceRequest = new ResourceRequest("UpdatedResource","img1", List.of(attribute1, attribute2));
 
-        ResourceResponse updatedResourceResponse = new ResourceResponse(resourceId, "UpdatedResource", List.of(attribute1, attribute2).stream().map(AttributeResponse::new).toList());
+        ResourceResponse updatedResourceResponse = new ResourceResponse(resourceId, "UpdatedResource","img1", List.of(attribute1, attribute2).stream().map(AttributeResponse::new).toList());
 
         Mockito.when(resourceService.updateResource(eq(resourceId), any(ResourceRequest.class)))
                 .thenReturn(updatedResourceResponse);

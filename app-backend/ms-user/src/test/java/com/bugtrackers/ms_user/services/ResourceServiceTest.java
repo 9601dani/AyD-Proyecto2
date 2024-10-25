@@ -57,10 +57,12 @@ public class ResourceServiceTest {
         resource1 = new Resource();
         resource1.setId(1);
         resource1.setName("Resource1");
+        resource1.setImage("img1");
 
         resource2 = new Resource();
         resource2.setId(2);
         resource2.setName("Resource2");
+        resource2.setImage("img2");
 
         attribute = new Attribute(1, "Attrib" +
                 "ute1", "Description1", List.of());
@@ -68,11 +70,12 @@ public class ResourceServiceTest {
         attribute2 = new Attribute(2, "Attribute2", "Description2", List.of());
 
         List<Attribute> attributes = Arrays.asList(attribute1, attribute2);
-        resourceRequest = new ResourceRequest("NewResource", attributes);
+        resourceRequest = new ResourceRequest("NewResource","img1", attributes);
 
         newResource = new Resource();
         newResource.setId(1);
         newResource.setName("NewResource");
+        newResource.setImage("img1");
 
         resourceHasAttribute1 = new ResourceHasAttribute();
         resourceHasAttribute1.setResource(resource1);
@@ -85,22 +88,31 @@ public class ResourceServiceTest {
 
     @Test
     void testGetAttributes() {
-        List<Attribute> expectedAttributes = Arrays.asList(attribute1, attribute2);
 
-        when(attributeRepository.findAll()).thenReturn(expectedAttributes);
+        List<Attribute> attributes = Arrays.asList(attribute1, attribute2);
+        when(attributeRepository.findAll()).thenReturn(attributes);
 
-        List<Attribute> result = resourceService.getAttributes();
+        List<AttributeResponse> result = resourceService.getAttributes();
 
-        assertEquals(expectedAttributes, result);
+        assertEquals(2, result.size());
+        assertEquals(attribute1.getId(), result.get(0).id());
+        assertEquals(attribute1.getName(), result.get(0).name());
+        assertEquals(attribute1.getDescription(), result.get(0).description());
+
+        assertEquals(attribute2.getId(), result.get(1).id());
+        assertEquals(attribute2.getName(), result.get(1).name());
+        assertEquals(attribute2.getDescription(), result.get(1).description());
+
+        verify(attributeRepository, times(1)).findAll();
     }
 
     @Test
     void testCreateAttributeSuccess() {
         when(attributeRepository.save(attribute)).thenReturn(attribute);
 
-        Attribute result = resourceService.createAttribute(attribute);
+        AttributeResponse result = resourceService.createAttribute(attribute);
 
-        assertEquals(attribute, result);
+        assertEquals(new AttributeResponse(attribute), result);
         verify(attributeRepository, times(2)).save(attribute);
     }
 
@@ -121,14 +133,25 @@ public class ResourceServiceTest {
 
         ResourceResponse result = resourceService.createResource(resourceRequest);
 
-        assertEquals(newResource.getId(), result.id());
-        assertEquals(newResource.getName(), result.name());
-        assertEquals(resourceRequest.attributes().stream().map(AttributeResponse::new).toList(), result.attributes());
+        System.out.println("Resultado del recurso creado: " + result);
+
+        assertNotNull(result, "El resultado no debe ser nulo");
+
+        assertEquals(newResource.getId(), result.id(), "El ID del recurso creado no coincide");
+        assertEquals(newResource.getName(), result.name(), "El nombre del recurso creado no coincide");
+        assertEquals(newResource.getImage(), result.image(), "La imagen del recurso creado no coincide");
+
+        List<AttributeResponse> expectedAttributes = resourceRequest.attributes().stream()
+                .map(AttributeResponse::new)
+                .toList();
+        assertEquals(expectedAttributes, result.attributes(), "Los atributos no coinciden");
 
         verify(resourceRepository, times(1)).save(any(Resource.class));
 
         verify(resourceHasAttributeRepository, times(2)).save(any(ResourceHasAttribute.class));
     }
+
+
 
     @Test
     void testGetResourcesSuccess() {
@@ -202,6 +225,7 @@ public class ResourceServiceTest {
         assertNotNull(response);
         assertEquals(newResource.getId(), response.id());
         assertEquals(newResource.getName(), response.name());
+        assertEquals(newResource.getImage(), response.image());
         assertEquals(2, response.attributes().size());
         assertEquals(attribute1.getId(), response.attributes().get(0).id());
         assertEquals(attribute2.getId(), response.attributes().get(1).id());

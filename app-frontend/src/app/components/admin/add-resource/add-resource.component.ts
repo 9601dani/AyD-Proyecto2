@@ -7,6 +7,7 @@ import { NavbarComponent } from '../../commons/navbar/navbar.component';
 import { UserService } from '../../../services/user.service';
 import { Attribute, Resources, ResponseString } from '../../../interfaces/interfaces';
 import { ImgService } from '../../../services/img.service';
+import { ImagePipe } from '../../../pipes/image.pipe';
 
 @Component({
   selector: 'app-add-resource',
@@ -14,7 +15,8 @@ import { ImgService } from '../../../services/img.service';
   imports: [
     CommonModule,
     ReactiveFormsModule,
-    NavbarComponent
+    NavbarComponent,
+    ImagePipe
   ],
   templateUrl: './add-resource.component.html',
   styleUrls: ['./add-resource.component.scss']
@@ -30,6 +32,7 @@ export class AddResourceComponent implements OnInit {
   selectedFile: File | null = null;
   fileError: string | null = null;
   imagePreview: string | null = null;
+  oldImage: string | null = null;
 
   attributes: Array<{ id: number, name: string, description: string }> = [
     { id: 1, name: 'Número de Jugadores', description: '7 jugadores' }
@@ -84,7 +87,12 @@ export class AddResourceComponent implements OnInit {
   loadResource(id: number): void {
     this._userService.getResourceById(id).subscribe((data: Resources) =>{
       if (data) {
+        console.log('Recurso:', data);
         this.resourceForm.get('name')?.setValue(data.name);
+        if(data.image){
+          this.imagePreview = data.image;
+          this.oldImage = data.image;
+        }
         this.addedAttributes = data.attributes;
         this.resourceForm.patchValue({ name: data.name });
         this.addedAttributes = data.attributes;
@@ -103,17 +111,34 @@ export class AddResourceComponent implements OnInit {
       };
 
       if (this.isEditMode && this.resourceId) {
-        this._userService.updateResource(this.resourceId, resourceData).subscribe((data: Resources) => {
+        let resourceId = this.resourceId;
+        if(!this.selectedFile){
+          Swal.fire({
+            title: 'Error',
+            text: 'Por favor, selecciona una imagen',
+            icon: 'error',
+            confirmButtonText: 'Aceptar'
+          });
+          return;
+        }
+        this._imageService.updateImgResource(this.oldImage || '', this.selectedFile).subscribe((data: ResponseString) => {
           if(data){
-            Swal.fire({
-              title: 'Recurso Actualizado',
-              text: 'El recurso ha sido actualizado exitosamente',
-              icon: 'success',
-              confirmButtonText: 'Aceptar'
+            console.log('Imagen Actualizada:', data);
+            resourceData.image = data.message;
+            this._userService.updateResource(resourceId, resourceData).subscribe((data: Resources) => {
+              if(data){
+                Swal.fire({
+                  title: 'Recurso Actualizado',
+                  text: 'El recurso ha sido actualizado exitosamente',
+                  icon: 'success',
+                  confirmButtonText: 'Aceptar'
+                });
+                console.log('Recurso Actualizado:', resourceData);
+              }
             });
-            console.log('Recurso Actualizado:', resourceData);
           }
         });
+        
       } else {
         if(!this.selectedFile){
           Swal.fire({
@@ -135,7 +160,7 @@ export class AddResourceComponent implements OnInit {
                   icon: 'success',
                   confirmButtonText: 'Aceptar'
                 });
-                console.log('Recurso Creado:', resourceData);
+                this.onCancel();
               }
             });
           }
@@ -222,21 +247,34 @@ export class AddResourceComponent implements OnInit {
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
+  
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
-      if (file.type.startsWith('image/')) {
-        this.selectedFile = file;
-        this.fileError = null;
-        const reader = new FileReader();
-
-        reader.onload = () => {
-          this.imagePreview = reader.result as string;
-        };
-
-        reader.readAsDataURL(file);
-      } else {
+  
+      if (!file.type.startsWith('image/')) {
         this.fileError = 'Solo se permiten archivos de imagen.';
+        this.selectedFile = null;
+        this.imagePreview = null;
+        return;
       }
+  
+      const maxSizeInMB = 10;
+      if (file.size > maxSizeInMB * 1024 * 1024) {
+        this.fileError = `El archivo es demasiado grande. Debe ser menor de ${maxSizeInMB} MB.`;
+        this.selectedFile = null;
+        this.imagePreview = null;
+        return;
+      }
+      this.selectedFile = file;
+      this.fileError = null;
+  
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result as string;  
+      };
+  
+      reader.readAsDataURL(file); 
     }
   }
+  
 }

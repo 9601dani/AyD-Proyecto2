@@ -70,4 +70,20 @@ public class CloudService {
             throw new FileNotCreatedException("No se pudo guardar la imagen");
         }
     }
+
+    public String updateResourceImage(MultipartFile file, String nameOldImage) {
+        Bucket bucket = storage.get(bucketName);
+
+        if(nameOldImage != null && !nameOldImage.isEmpty()){
+            deleteImage(nameOldImage,bucket);
+        }
+
+        String objectName = "resources/" + UUID.randomUUID().toString();
+        try{
+            bucket.create(objectName, file.getBytes(), file.getContentType());
+            return objectName;
+        }catch (Exception e) {
+            throw new FileNotCreatedException("No se pudo guardar la imagen");
+        }
+    }
 }

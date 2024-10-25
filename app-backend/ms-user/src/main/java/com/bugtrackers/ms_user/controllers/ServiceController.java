@@ -58,7 +58,6 @@ public class ServiceController {
     @GetMapping("/reserve/employees")
     public ResponseEntity<List<EmployeeResponse>> findEmployeesByServicesId(@RequestParam List<Integer> ids) {
         List<EmployeeResponse> employees = this.serviceService.getEmployeesByIds(ids);
-        
         return ResponseEntity.ok(employees);
     }
     

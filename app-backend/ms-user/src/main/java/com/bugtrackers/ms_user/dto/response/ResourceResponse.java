@@ -7,9 +7,10 @@ import java.util.List;
 public record ResourceResponse(
         Integer id,
         String name,
+        String image,
         List<AttributeResponse> attributes
 ) {
         public ResourceResponse(Resource resource) {
-                this(resource.getId(), resource.getName(), resource.getAttributes().stream().map(AttributeResponse::new).toList());
+                this(resource.getId(),resource.getImage(), resource.getName(), resource.getAttributes().stream().map(AttributeResponse::new).toList());
         }
 }

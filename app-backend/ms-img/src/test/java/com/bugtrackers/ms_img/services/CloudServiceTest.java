@@ -280,7 +280,111 @@ public class CloudServiceTest {
     }
 
 
+    @Test
+    void shouldUploadResourceImage() throws IOException {
+        String objectName = "resources/" + UUID.randomUUID().toString();
+        byte[] fileBytes = "file-content".getBytes();
+        String contentType = "image/jpeg";
 
+        when(file.getBytes()).thenReturn(fileBytes);
+        when(file.getContentType()).thenReturn(contentType);
+
+        when(storage.get(bucketName)).thenReturn(bucket);
+        when(bucket.create(anyString(), eq(fileBytes), eq(contentType))).thenReturn(null);
+
+        String result = cloudService.uploadResourceImage(file);
+
+        verify(bucket, times(1)).create(anyString(), eq(fileBytes), eq(contentType));
+        assertTrue(result.startsWith("resources/"));
+    }
+
+    @Test
+    void shouldThrowFileNotCreatedExceptionWhenUploadResourceFails() throws IOException {
+        when(file.getBytes()).thenThrow(new IOException());
+
+        assertThrows(FileNotCreatedException.class, () -> cloudService.uploadResourceImage(file));
+
+        verify(bucket, never()).create(anyString(), any(byte[].class), anyString());
+    }
+
+    @Test
+    void shouldUpdateResourceImageAndDeleteOld() throws IOException {
+        String nameOldImage = "resources/oldImage.jpg";
+        byte[] fileBytes = "file-content".getBytes();
+        String contentType = "image/jpeg";
+
+        when(file.getBytes()).thenReturn(fileBytes);
+        when(file.getContentType()).thenReturn(contentType);
+        when(storage.get(bucketName)).thenReturn(bucket);
+        when(bucket.get(nameOldImage)).thenReturn(blob);
+        when(blob.exists()).thenReturn(true);
+
+        when(bucket.create(anyString(), eq(fileBytes), eq(contentType))).thenReturn(null);
+
+        String result = cloudService.updateResourceImage(file, nameOldImage);
+
+        verify(bucket, times(1)).get(nameOldImage);
+        verify(blob, times(1)).delete();
+        verify(bucket, times(1)).create(anyString(), eq(fileBytes), eq(contentType));
+
+        assertTrue(result.startsWith("resources/"));
+    }
+
+    @Test
+    void shouldUpdateResourceImageWithoutDeletingOld() throws IOException {
+        byte[] fileBytes = "file-content".getBytes();
+        String contentType = "image/jpeg";
+
+        when(file.getBytes()).thenReturn(fileBytes);
+        when(file.getContentType()).thenReturn(contentType);
+        when(storage.get(bucketName)).thenReturn(bucket);
+
+        when(bucket.create(anyString(), eq(fileBytes), eq(contentType))).thenReturn(null);
+
+        String result = cloudService.updateResourceImage(file, "");
+
+        verify(bucket, never()).get(anyString());
+        verify(bucket, times(1)).create(anyString(), eq(fileBytes), eq(contentType));
+
+        assertTrue(result.startsWith("resources/"));
+    }
+
+    @Test
+    void shouldThrowFileNotCreatedExceptionWhenUpdateResourceFails() throws IOException {
+        byte[] fileBytes = "file-content".getBytes();
+        String contentType = "image/jpeg";
+
+        when(file.getBytes()).thenReturn(fileBytes);
+        when(file.getContentType()).thenReturn(contentType);
+        when(storage.get(bucketName)).thenReturn(bucket);
+
+        when(bucket.create(anyString(), eq(fileBytes), eq(contentType))).thenThrow(new RuntimeException("Error al subir"));
+
+        assertThrows(FileNotCreatedException.class, () -> {
+            cloudService.updateResourceImage(file, "");
+        });
+
+        verify(bucket, times(1)).create(anyString(), eq(fileBytes), eq(contentType));
+    }
+
+    @Test
+    void shouldUpdateResourceImageWithNullOldImage() throws IOException {
+        byte[] fileBytes = "file-content".getBytes();
+        String contentType = "image/jpeg";
+
+        when(file.getBytes()).thenReturn(fileBytes);
+        when(file.getContentType()).thenReturn(contentType);
+        when(storage.get(bucketName)).thenReturn(bucket);
+
+        when(bucket.create(anyString(), eq(fileBytes), eq(contentType))).thenReturn(null);
+
+        String result = cloudService.updateResourceImage(file, null);
+
+        verify(bucket, never()).get(anyString());
+        verify(bucket, times(1)).create(anyString(), eq(fileBytes), eq(contentType));
+
+        assertTrue(result.startsWith("resources/"));
+    }
 
 
 }

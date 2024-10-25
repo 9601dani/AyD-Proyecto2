@@ -7,6 +7,7 @@ import java.util.List;
 
 public record ResourceRequest(
         @NotBlank String name,
+        @NotBlank String image,
         @NotBlank List<Attribute> attributes
 ) {
 }

@@ -137,6 +137,7 @@ public class ServiceService {
                 ResourceResponse resourceResponse = new ResourceResponse(
                         resource.getId(),
                         resource.getName(),
+                        resource.getImage(),
                         resourceAttributes.stream().map(AttributeResponse::new).toList());
                 resources.add(resourceResponse);
             }
@@ -237,6 +238,7 @@ public class ServiceService {
                 ResourceResponse resourceResponse = new ResourceResponse(
                         resource.getId(),
                         resource.getName(),
+                        resource.getImage(),
                         resourceAttributes.stream().map(AttributeResponse::new).toList());
                 resources.add(resourceResponse);
             }
@@ -263,7 +265,7 @@ public class ServiceService {
             List<Resource> resources = service.getResources();
 
             Set<ResourceResponse> currentResources = resources.stream()
-                    .map(resource -> new ResourceResponse(resource.getId(), resource.getName(),
+                    .map(resource -> new ResourceResponse(resource.getId(), resource.getName(),resource.getImage(),
                             resource.getAttributes().stream().map(AttributeResponse::new).toList()))
                     .collect(Collectors.toSet());
 

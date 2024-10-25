@@ -28,22 +28,26 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourceHasAttributeRepository resourceHasAttributeRepository;
 
-    public List<Attribute> getAttributes() {
-        return this.attributeRepository.findAll();
+    public List<AttributeResponse> getAttributes() {
+        return this.attributeRepository.findAll().stream()
+                .map(AttributeResponse::new).toList();
     }
 
-    public Attribute createAttribute(Attribute attribute) {
+    public AttributeResponse createAttribute(Attribute attribute) {
         Attribute newAttribute = this.attributeRepository.save(attribute);
 
         if(newAttribute == null) {
             throw new AttributeNoSaveException("No se pudo crear el atributo, intente nuevamente");
         }
-        return this.attributeRepository.save(attribute);
+        Attribute saved = this.attributeRepository.save(attribute);
+        AttributeResponse response = new AttributeResponse(saved);
+        return response;
     }
 
     public ResourceResponse createResource(ResourceRequest resourceRequest) {
         Resource resource = new Resource();
         resource.setName(resourceRequest.name());
+        resource.setImage(resourceRequest.image());
 
         Resource newResource = this.resourceRepository.save(resource);
 
@@ -56,7 +60,7 @@ public class ResourceService {
             this.resourceHasAttributeRepository.save(newAttribute);
         }
 
-        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes.stream().map(AttributeResponse::new).toList());
+        return new ResourceResponse(newResource.getId(), newResource.getName(), newResource.getImage(), attributes.stream().map(AttributeResponse::new).toList());
     }
 
     public List<ResourceResponse> getResources() {
@@ -79,6 +83,7 @@ public class ResourceService {
             ResourceResponse resourceResponse = new ResourceResponse(
                     resource.getId(),
                     resource.getName(),
+                    resource.getImage(),
                     resourceAttributes.stream().map(AttributeResponse::new).toList()
             );
 
@@ -109,6 +114,7 @@ public class ResourceService {
         return new ResourceResponse(
                 resourceOptional.get().getId(),
                 resourceOptional.get().getName(),
+                resourceOptional.get().getImage(),
                 resourceAttributes.stream().map(AttributeResponse::new).toList()
         );
     }
@@ -122,6 +128,7 @@ public class ResourceService {
 
         Resource resource = resourceOptional.get();
         resource.setName(resourceRequest.name());
+        resource.setImage(resourceRequest.image());
 
         Resource newResource = this.resourceRepository.save(resource);
 
@@ -142,7 +149,7 @@ public class ResourceService {
             this.resourceHasAttributeRepository.save(newAttribute);
         }
 
-        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes.stream().map(AttributeResponse::new).toList());
+        return new ResourceResponse(newResource.getId(), newResource.getName(),newResource.getImage(), attributes.stream().map(AttributeResponse::new).toList());
     }
 
 }

@@ -21,6 +21,9 @@ public class Resource {
     private Integer id;
 
     private String name;
+
+    private String image;
+
     @ManyToMany(mappedBy = "resources")
     private List<Service> services = new ArrayList<>();
     @ManyToMany(mappedBy = "resources")

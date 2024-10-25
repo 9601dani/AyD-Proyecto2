@@ -70,8 +70,8 @@ public class ServicesControllerTest {
         );
 
         List<ResourceResponse> mockResources = List.of(
-                new ResourceResponse(1, "Recurso 1", List.of()),
-                new ResourceResponse(2, "Recurso 2", List.of())
+                new ResourceResponse(1, "Recurso 1","img1", List.of()),
+                new ResourceResponse(2, "Recurso 2","img1", List.of())
         );
 
         ServiceResponse serviceResponse = new ServiceResponse(
