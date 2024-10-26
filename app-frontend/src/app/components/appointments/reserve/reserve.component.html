@@ -210,7 +210,10 @@
 </ng-template>
 
 <ng-template #scheduleTemplate>
-    <h5 class="subtitle">Horario</h5>
+    <h3 class="title is-3">Horario</h3>
+    <h5 class="subtitle">Selecciona el horario de tu cita.</h5>
+    <p class="help">Por favor da click en el día y la hora que deseas reservar.</p>
+    <full-calendar [options]="calendarOptions"></full-calendar>
 </ng-template>
 
 <ng-template #confirmTemplate>
