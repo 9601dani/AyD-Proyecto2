@@ -3,7 +3,6 @@ package com.bugtrackers.ms_user.services;
 import com.bugtrackers.ms_user.dto.request.ResourceRequest;
 import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
-import com.bugtrackers.ms_user.exceptions.AttributeNoSaveException;
 import com.bugtrackers.ms_user.exceptions.ResourceNotFoundException;
 import com.bugtrackers.ms_user.models.Attribute;
 import com.bugtrackers.ms_user.models.Resource;
@@ -34,11 +33,6 @@ public class ResourceService {
     }
 
     public AttributeResponse createAttribute(Attribute attribute) {
-        Attribute newAttribute = this.attributeRepository.save(attribute);
-
-        if(newAttribute == null) {
-            throw new AttributeNoSaveException("No se pudo crear el atributo, intente nuevamente");
-        }
         Attribute saved = this.attributeRepository.save(attribute);
         AttributeResponse response = new AttributeResponse(saved);
         return response;

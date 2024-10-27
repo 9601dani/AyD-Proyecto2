@@ -2,7 +2,6 @@ package com.bugtrackers.ms_user.controllers;
 
 import com.bugtrackers.ms_user.dto.request.CommentRequest;
 import com.bugtrackers.ms_user.dto.response.CommentResponse;
-import com.bugtrackers.ms_user.models.Comment;
 import com.bugtrackers.ms_user.services.CommentService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;

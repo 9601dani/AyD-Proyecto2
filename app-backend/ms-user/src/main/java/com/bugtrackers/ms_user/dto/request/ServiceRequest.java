@@ -2,8 +2,6 @@ package com.bugtrackers.ms_user.dto.request;
 
 import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
-import com.bugtrackers.ms_user.models.Employee;
-import com.bugtrackers.ms_user.models.Resource;
 import jakarta.validation.constraints.NotBlank;
 
 import java.math.BigDecimal;

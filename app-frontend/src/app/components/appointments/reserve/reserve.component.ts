@@ -19,6 +19,14 @@ import esLocale from '@fullcalendar/core/locales/es';
 import { CompanySetting } from '../../../models/CompanySetting.model';
 import { LocalStorageService } from '../../../services/local-storage.service';
 
+export interface Appointment {
+  userId: number,
+  resourceId?: number,
+  startTime: string,
+  endTime: string,
+  employeeId?: number,
+  servicesId: number[]
+}
 
 @Component({
   selector: 'app-reserve',
@@ -49,6 +57,15 @@ export class ReserveComponent implements OnInit {
     selectable: false,
     allDaySlot: false,
     expandRows: true,
+    eventOverlap: false,
+    slotEventOverlap: false,
+    selectAllow: (selectInfo: any) => {
+      const calendarApi = selectInfo.view.calendar;
+      const events = calendarApi.getEvents();
+      return !events.some((event: any) =>
+        (selectInfo.start < event.end && selectInfo.end > event.start)
+      );
+    },
     locale: esLocale,
     slotMinTime: '07:00:00',
     slotMaxTime: `19:00:00`,
@@ -62,6 +79,7 @@ export class ReserveComponent implements OnInit {
   selectedServices: Service[] = [];
   selectedResource: Resources | null = null;
   selectedEmployee: EmployeeWithImage | null = null;
+  currentAppointment: Appointment | null = null;
   currentStep = "Servicios";
   appointment: any;
   total: number = 0;
@@ -120,16 +138,46 @@ export class ReserveComponent implements OnInit {
   }
 
   createReserve(info: any) {
-    const username = this._localStorageService.getUserName();
-    const id = this._localStorageService.getUserId();
+
+    const calendarApi = info.view.calendar;
+    const events = calendarApi.getEvents();
+
     const minutes: number = this.selectedServices.map(service => service.timeAprox)
-      .reduce((a, b) => a + b);
+    .reduce((a, b) => a + b);
     const init: Date = new Date(info.date);
     const end: Date = new Date(init.getTime() + minutes * 60000);
 
+    const hasOverlap = events.some((event: any) => {
+      return init < event.end && end > event.start;
+    });
+
+    if(hasOverlap) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'Horario no disponible',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      })
+      return;
+    }
+
+    const username = this._localStorageService.getUserName();
+    const id = this._localStorageService.getUserId();
+
+    const timezoneOffset = init.getTimezoneOffset() * 60000;
+    const adjustedInit = new Date(init.getTime() - timezoneOffset);
+    const adjustedEnd = new Date(end.getTime() - timezoneOffset);
+
+    this.currentAppointment = {
+      userId: id,
+      startTime: adjustedInit.toISOString().slice(0, -1),
+      endTime: adjustedEnd.toISOString().slice(0, -1),
+      servicesId: this.selectedServices.map(service => service.id)
+    }
+
     const userEvent = (this.calendarOptions.events as any[]).find(e => e.extendedProps?.userId === id);
 
-    if(userEvent) {
+    if (userEvent) {
       this.calendarOptions.events = (this.calendarOptions.events as any[]).filter(e => e.extendedProps?.userId !== id);
     }
 
@@ -211,7 +259,7 @@ export class ReserveComponent implements OnInit {
         this.employees = response;
         this.currentStep = "Empleados";
         if (this.employees.length === 0) {
-          this.currentStep = "Horario";
+          this.verifyEmployee()
         }
       }
     })
@@ -219,5 +267,62 @@ export class ReserveComponent implements OnInit {
 
   verifyEmployee() {
     this.currentStep = "Horario";
+    // TODO: GET ALL appointments with resource or employee
+    const resource = this.selectedResource === null ? 0 : this.selectedResource.id;
+    const employee = this.selectedEmployee === null ? 0 : this.selectedEmployee.id;
+
+    this._userService.findByResourceOrEmployee(resource, employee).subscribe({
+      next: (response: any[]) => {
+        response.forEach(element => {
+          this.calendarOptions.events = [
+            ...(this.calendarOptions.events as any[]),
+            {
+              title: element.username,
+              start: element.startTime,
+              end: element.endTime,
+              color: 'red'
+            }
+          ]
+        })
+      }
+    })
   }
+
+  saveAppointment() {
+    if (this.currentAppointment === null) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'No se ha elegido una fecha para la cita.',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      })
+      this.currentStep = "Horario";
+      return;
+    }
+
+    if (this.selectedEmployee !== null) {
+      this.currentAppointment.employeeId = this.selectedEmployee.id;
+    }
+
+    if (this.selectedResource !== null) {
+      this.currentAppointment.resourceId = this.selectedResource.id;
+    }
+
+    console.log(this.currentAppointment);
+    this._userService.saveAppointment(this.currentAppointment).subscribe({
+      next: response => {
+        Swal.fire({
+          title: 'Éxito!',
+          text: `Se ha creado la reservación No. ${response.id}`,
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        })
+        window.location.reload;
+      },
+      error: err => {
+        console.log(err)
+      }
+    })
+  }
+
 }

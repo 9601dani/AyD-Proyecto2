@@ -3,7 +3,6 @@ package com.bugtrackers.ms_user.services;
 import com.bugtrackers.ms_user.dto.request.ResourceRequest;
 import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
-import com.bugtrackers.ms_user.exceptions.AttributeNoSaveException;
 import com.bugtrackers.ms_user.exceptions.ResourceNotFoundException;
 import com.bugtrackers.ms_user.models.Attribute;
 import com.bugtrackers.ms_user.models.Resource;
@@ -113,17 +112,6 @@ public class ResourceServiceTest {
         AttributeResponse result = resourceService.createAttribute(attribute);
 
         assertEquals(new AttributeResponse(attribute), result);
-        verify(attributeRepository, times(2)).save(attribute);
-    }
-
-    @Test
-    void testCreateAttributeFailure() {
-        when(attributeRepository.save(attribute)).thenReturn(null);
-
-        assertThrows(AttributeNoSaveException.class, () -> {
-            resourceService.createAttribute(attribute);
-        });
-
         verify(attributeRepository, times(1)).save(attribute);
     }
 
