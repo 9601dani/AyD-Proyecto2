@@ -1,0 +1,28 @@
+<app-navbar></app-navbar>
+
+<section class="section">
+  <div class="container is-fluid">
+    <div class="columns is-centered">
+      <div class="column is-full-mobile is-three-quarters-tablet is-two-thirds-desktop">
+        <h1 class="title has-text-centered">Mis Citas</h1>
+        <p class="subtitle has-text-centered">Aquí puedes ver tus citas programadas</p>
+
+        @if(!hasAppointments){
+            <div class="notification has-text-centered">
+                <p>Actualmente no tienes citas</p>
+                <button class="button is-primary mt-3" (click)="goToReserve()">Reserva Aquí</button>
+            </div>
+        }
+       
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="container is-fluid">
+  <div class="box">
+    <full-calendar
+      [options]="calendarOptions">
+    </full-calendar>
+  </div>
+</div>

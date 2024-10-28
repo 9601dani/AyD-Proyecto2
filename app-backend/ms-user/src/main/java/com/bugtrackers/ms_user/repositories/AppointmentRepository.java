@@ -11,5 +11,9 @@ import com.bugtrackers.ms_user.models.Appointment;
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
     
 
+
     List<Appointment> findByResourceIdOrEmployeeId(Integer resource, Integer employee);
+
+    List<Appointment> findByUserId(Integer userId);
+
 }
