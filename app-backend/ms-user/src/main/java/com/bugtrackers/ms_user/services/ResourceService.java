@@ -1,8 +1,8 @@
 package com.bugtrackers.ms_user.services;
 
 import com.bugtrackers.ms_user.dto.request.ResourceRequest;
+import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
-import com.bugtrackers.ms_user.exceptions.AttributeNoSaveException;
 import com.bugtrackers.ms_user.exceptions.ResourceNotFoundException;
 import com.bugtrackers.ms_user.models.Attribute;
 import com.bugtrackers.ms_user.models.Resource;
@@ -27,23 +27,21 @@ public class ResourceService {
     private final ResourceRepository resourceRepository;
     private final ResourceHasAttributeRepository resourceHasAttributeRepository;
 
-    public List<Attribute> getAttributes() {
-        return this.attributeRepository.findAll();
+    public List<AttributeResponse> getAttributes() {
+        return this.attributeRepository.findAll().stream()
+                .map(AttributeResponse::new).toList();
     }
 
-    public Attribute createAttribute(Attribute attribute) {
-        Attribute newAttribute = this.attributeRepository.save(attribute);
-
-
-        if(newAttribute == null) {
-            throw new AttributeNoSaveException("No se pudo crear el atributo, intente nuevamente");
-        }
-        return this.attributeRepository.save(attribute);
+    public AttributeResponse createAttribute(Attribute attribute) {
+        Attribute saved = this.attributeRepository.save(attribute);
+        AttributeResponse response = new AttributeResponse(saved);
+        return response;
     }
 
     public ResourceResponse createResource(ResourceRequest resourceRequest) {
         Resource resource = new Resource();
         resource.setName(resourceRequest.name());
+        resource.setImage(resourceRequest.image());
 
         Resource newResource = this.resourceRepository.save(resource);
 
@@ -56,7 +54,7 @@ public class ResourceService {
             this.resourceHasAttributeRepository.save(newAttribute);
         }
 
-        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes);
+        return new ResourceResponse(newResource.getId(), newResource.getName(), newResource.getImage(), attributes.stream().map(AttributeResponse::new).toList());
     }
 
     public List<ResourceResponse> getResources() {
@@ -79,7 +77,8 @@ public class ResourceService {
             ResourceResponse resourceResponse = new ResourceResponse(
                     resource.getId(),
                     resource.getName(),
-                    resourceAttributes
+                    resource.getImage(),
+                    resourceAttributes.stream().map(AttributeResponse::new).toList()
             );
 
             resourceResponses.add(resourceResponse);
@@ -109,7 +108,8 @@ public class ResourceService {
         return new ResourceResponse(
                 resourceOptional.get().getId(),
                 resourceOptional.get().getName(),
-                resourceAttributes
+                resourceOptional.get().getImage(),
+                resourceAttributes.stream().map(AttributeResponse::new).toList()
         );
     }
 
@@ -122,6 +122,7 @@ public class ResourceService {
 
         Resource resource = resourceOptional.get();
         resource.setName(resourceRequest.name());
+        resource.setImage(resourceRequest.image());
 
         Resource newResource = this.resourceRepository.save(resource);
 
@@ -142,7 +143,7 @@ public class ResourceService {
             this.resourceHasAttributeRepository.save(newAttribute);
         }
 
-        return new ResourceResponse(newResource.getId(), newResource.getName(), attributes);
+        return new ResourceResponse(newResource.getId(), newResource.getName(),newResource.getImage(), attributes.stream().map(AttributeResponse::new).toList());
     }
 
 }

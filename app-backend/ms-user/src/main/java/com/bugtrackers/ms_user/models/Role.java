@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Table(name = "role")
@@ -19,10 +21,9 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-
     private String name;
-
     private String description;
-
     private LocalDateTime createdAt = LocalDateTime.now();
+    @ManyToMany(mappedBy = "roles")
+    private List<User> users = new ArrayList<>();
 }

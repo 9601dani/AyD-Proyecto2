@@ -1,6 +1,7 @@
 package com.bugtrackers.ms_user.controllers;
 
 import com.bugtrackers.ms_user.dto.request.ResourceRequest;
+import com.bugtrackers.ms_user.dto.response.AttributeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
 import com.bugtrackers.ms_user.models.Attribute;
 import com.bugtrackers.ms_user.services.ResourceService;
@@ -19,14 +20,14 @@ public class ResourcesController {
 
 
     @GetMapping("/attributes")
-    public ResponseEntity<List<Attribute>> getAttributes() {
-        List<Attribute> attributes = this.resourceService.getAttributes();
+    public ResponseEntity<List<AttributeResponse>> getAttributes() {
+        List<AttributeResponse> attributes = this.resourceService.getAttributes();
         return ResponseEntity.ok(attributes);
     }
 
     @PostMapping("/attributes")
-    public ResponseEntity<Attribute> createAttribute(@RequestBody Attribute attribute) {
-        Attribute newAttribute = this.resourceService.createAttribute(attribute);
+    public ResponseEntity<AttributeResponse> createAttribute(@RequestBody Attribute attribute) {
+        AttributeResponse newAttribute = this.resourceService.createAttribute(attribute);
         return ResponseEntity.ok(newAttribute);
     }
 

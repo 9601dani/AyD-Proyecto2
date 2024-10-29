@@ -17,6 +17,7 @@ import { ViewEmployeeComponent } from './components/admin/view-employee/view-emp
 import { authGuard } from './guards/auth.guard';
 import { RecoveryPasswordComponent } from './components/commons/recovery-password/recovery-password.component';
 import { ResetPasswordComponent } from './components/commons/reset-password/reset-password.component';
+import { ReserveComponent } from './components/appointments/reserve/reserve.component';
 
 export const routes: Routes = [
 
@@ -60,6 +61,12 @@ export const routes: Routes = [
       { path: 'add-resource', component: AddResourceComponent },
       { path: 'show-resources', component: ViewResourceComponent },
       { path: 'add-resource/:id', component: AddResourceComponent }
+    ],
+    canActivate: [authGuard]
+  },
+  {
+    path: 'appointments', children: [
+      { path: 'reserve', component: ReserveComponent }
     ],
     canActivate: [authGuard]
   },

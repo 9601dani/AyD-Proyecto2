@@ -58,6 +58,17 @@ export interface Employee{
   role:number;
 }
 
+export interface EmployeeWithImage {
+  id:number;
+  firstName:string;
+  lastName:string;
+  dateOfBirth:string;
+  email:string;
+  username:string;
+  imageProfile:string;
+  roles:string[];
+}
+
 export interface Attribute {
   id: number;
   name: string;
@@ -67,10 +78,11 @@ export interface Attribute {
 export interface Resources{
   id:number;
   name:string;
+  image:string;
   attributes:Attribute[];
 }
 
-export interface ServiceRequest{
+export interface ServiceWithEmplAndRes {
   name:string;
   description:string;
   price:number;

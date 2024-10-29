@@ -6,6 +6,7 @@ import { UserService } from '../../../services/user.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
+import { ImagePipe } from '../../../pipes/image.pipe';
 
 @Component({
   selector: 'app-view-resource',
@@ -15,14 +16,15 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     MatButtonModule,
     MatIconModule,
-    FormsModule
+    FormsModule,
+    ImagePipe
   ],
   templateUrl: './view-resource.component.html',
   styleUrls: ['./view-resource.component.scss']
 })
 export class ViewResourceComponent {
-  resources: Array<{ id: number, name: string, attributes: Array<{ name: string, description: string }> }> = [];
-  filteredResources: Array<{ id: number, name: string, attributes: Array<{ name: string, description: string }> }> = [];
+  resources: Array<{ id: number, name: string, image:string, attributes: Array<{ name: string, description: string }> }> = [];
+  filteredResources: Array<{ id: number, name: string,image:string, attributes: Array<{ name: string, description: string }> }> = [];
   searchTerm: string = '';
 
   constructor(
@@ -37,6 +39,7 @@ export class ViewResourceComponent {
   loadResources(): void {
     this._userService.getAllResources().subscribe(
       (response) => {
+        console.log(response);
         this.resources = response;
         this.filteredResources = response; 
       },

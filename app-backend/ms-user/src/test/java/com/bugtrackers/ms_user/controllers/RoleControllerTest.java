@@ -35,8 +35,8 @@ public class RoleControllerTest {
 
     @BeforeEach
     void setUp() {
-        Role role1 = new Role(1, "Admin", "Administrator role", LocalDateTime.now());
-        Role role2 = new Role(2, "User", "Standard user role", LocalDateTime.now());
+        Role role1 = new Role(1, "Admin", "Administrator role", LocalDateTime.now(), List.of());
+        Role role2 = new Role(2, "User", "Standard user role", LocalDateTime.now(), List.of());
         mockRoles = List.of(role1, role2);
 
         gson = GsonConfig.createGsonWithAdapter();
@@ -56,7 +56,7 @@ public class RoleControllerTest {
 
     @Test
     void testSaveRole() throws Exception {
-        Role role = new Role(1, "Admin", "Administrator role", LocalDateTime.now());
+        Role role = new Role(1, "Admin", "Administrator role", LocalDateTime.now(), List.of());
         when(roleService.saveRole(any(Role.class))).thenReturn(role);
         String roleJson = gson.toJson(role);
 

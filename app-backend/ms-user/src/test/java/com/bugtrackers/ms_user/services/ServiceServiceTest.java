@@ -2,6 +2,7 @@ package com.bugtrackers.ms_user.services;
 
 import com.bugtrackers.ms_user.dto.request.ServiceRequest;
 import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
+import com.bugtrackers.ms_user.dto.response.EmployeeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
 import com.bugtrackers.ms_user.dto.response.ServiceResponse;
 import com.bugtrackers.ms_user.exceptions.ServiceNotSaveException;
@@ -50,6 +51,8 @@ public class ServiceServiceTest {
     private ServiceService serviceService;
 
     private List<Service> mockServices;
+    private List<Resource> mResources;
+    private List<Employee> mEmployees;
     private Service mockService;
 
 
@@ -57,11 +60,30 @@ public class ServiceServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        mockServices = List.of(
-                new Service(1, "Service 1", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now()),
-                new Service(2, "Service 2", "description2", new BigDecimal(2.0), "pageInformation2", 2, false, LocalDateTime.now())
+        mResources = List.of(
+                new Resource(1, "name", "image", List.of(), List.of()),
+                new Resource(2, "name", "image", List.of(), List.of()),
+                new Resource(3, "name", "image", List.of(), List.of())
+                
         );
-        mockService = new Service(1, "Service 1", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now());
+
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setUsername("username");
+        mockUser.setEmail("email");
+        mockUser.setUserInformation(new UserInformation("nit", "profile", "description", null, "dpi", "phone"));
+
+        mEmployees = List.of(
+                new Employee(1, "name", "lastname", LocalDate.now(), mockUser, List.of()),
+                new Employee(2, "name", "lastname", LocalDate.now(), mockUser, List.of()),
+                new Employee(3, "name", "lastname", LocalDate.now(), mockUser, List.of()),
+                new Employee(4, "name", "lastname", LocalDate.now(), mockUser, List.of())
+        );
+        mockServices = List.of(
+                new Service(1, "Service 1", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now(), mResources, mEmployees),
+                new Service(2, "Service 2", "description2", new BigDecimal(2.0), "pageInformation2", 2, false, LocalDateTime.now(), mResources, mEmployees)
+        );
+        mockService = new Service(1, "Service 1", "description", new BigDecimal(1.0), "pageInformation", 1, true, LocalDateTime.now(), List.of(), List.of());
     }
 
     @Test
@@ -69,26 +91,26 @@ public class ServiceServiceTest {
         when(serviceRepository.findById(mockService.getId())).thenReturn(Optional.of(mockService));
 
         List<EmployeeHasService> mockEmployeeHasServices = List.of(
-                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User()), mockService),
-                new EmployeeHasService(2, new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User()), mockService)
+                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User(), List.of()), mockService),
+                new EmployeeHasService(2, new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User(), List.of()), mockService)
         );
         when(employeeHasServiceRepository.findAll()).thenReturn(mockEmployeeHasServices);
 
         List<ResourceHasService> mockResourceHasServices = List.of(
-                new ResourceHasService(1, new Resource(1, "Recurso 1"), mockService),
-                new ResourceHasService(2, new Resource(2, "Recurso 2"), mockService)
+                new ResourceHasService(1, new Resource(1, "Recurso 1","img1", List.of(), List.of()), mockService),
+                new ResourceHasService(2, new Resource(2, "Recurso 2","img1", List.of(), List.of()), mockService)
         );
         when(resourceHasServiceRepository.findAll()).thenReturn(mockResourceHasServices);
 
         List<ResourceHasAttribute> mockResourceHasAttributes = List.of(
-                new ResourceHasAttribute(1, new Resource(1, "Recurso 1"), new Attribute(1, "Attr 1", "description 1")),
-                new ResourceHasAttribute(2, new Resource(2, "Recurso 2"), new Attribute(2, "Attr 2", "description 2"))
+                new ResourceHasAttribute(1, new Resource(1, "Recurso 1","img1", List.of(), List.of()), new Attribute(1, "Attr 1", "description 1", List.of())),
+                new ResourceHasAttribute(2, new Resource(2, "Recurso 2","img1", List.of(), List.of()), new Attribute(2, "Attr 2", "description 2", List.of()))
         );
         when(resourceHasAttributeRepository.findAll()).thenReturn(mockResourceHasAttributes);
 
         List<Attribute> mockAttributes = List.of(
-                new Attribute(1, "Attr 1", "description 1"),
-                new Attribute(2, "Attr 2", "description 2")
+                new Attribute(1, "Attr 1", "description 1", List.of()),
+                new Attribute(2, "Attr 2", "description 2", List.of())
         );
         when(attributeRepository.findAll()).thenReturn(mockAttributes);
 
@@ -123,11 +145,11 @@ public class ServiceServiceTest {
     void testGetAllServicesSuccess() {
         when(serviceRepository.findAll()).thenReturn(mockServices);
 
-        List<Service> services = serviceService.getAllServices();
+        List<ServiceResponse> services = serviceService.getAllServices();
 
         assertNotNull(services);
         assertEquals(2, services.size());
-        assertEquals("Service 1", services.get(0).getName());
+        assertEquals("Service 1", services.get(0).name());
     }
 
     @Test
@@ -172,8 +194,8 @@ public class ServiceServiceTest {
         );
 
         List<ResourceResponse> mockResources = List.of(
-                new ResourceResponse(1, "Resource 1", List.of()),
-                new ResourceResponse(2, "Resource 2", List.of())
+                new ResourceResponse(1, "Resource 1","img1", List.of()),
+                new ResourceResponse(2, "Resource 2","img1", List.of())
         );
 
         ServiceRequest serviceRequest = new ServiceRequest(
@@ -195,7 +217,9 @@ public class ServiceServiceTest {
                 "Updated pageInformation",
                 2,
                 false,
-                LocalDateTime.now()
+                LocalDateTime.now(),
+                List.of(),
+                List.of()
         );
 
         when(serviceRepository.findById(eq(mockService.getId()))).thenReturn(Optional.of(mockService));
@@ -204,33 +228,33 @@ public class ServiceServiceTest {
         doNothing().when(resourceHasServiceRepository).deleteByServiceId(mockService.getId());
         doNothing().when(employeeHasServiceRepository).deleteByServiceId(mockService.getId());
 
-        when(resourceRepository.findById(1)).thenReturn(Optional.of(new Resource(1, "Resource 1")));
-        when(resourceRepository.findById(2)).thenReturn(Optional.of(new Resource(2, "Resource 2")));
+        when(resourceRepository.findById(1)).thenReturn(Optional.of(new Resource(1, "Resource 1","img1", List.of(), List.of())));
+        when(resourceRepository.findById(2)).thenReturn(Optional.of(new Resource(2, "Resource 2","img1", List.of(), List.of())));
 
-        when(employeeRepository.findById(1)).thenReturn(Optional.of(new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User())));
-        when(employeeRepository.findById(2)).thenReturn(Optional.of(new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User())));
+        when(employeeRepository.findById(1)).thenReturn(Optional.of(new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User(), List.of())));
+        when(employeeRepository.findById(2)).thenReturn(Optional.of(new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User(), List.of())));
 
         List<EmployeeHasService> mockEmployeeHasServices = List.of(
-                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User()), mockService),
-                new EmployeeHasService(2, new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User()), mockService)
+                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User(), List.of()), mockService),
+                new EmployeeHasService(2, new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User(), List.of()), mockService)
         );
         when(employeeHasServiceRepository.findAll()).thenReturn(mockEmployeeHasServices);
 
         List<ResourceHasService> mockResourceHasServices = List.of(
-                new ResourceHasService(1, new Resource(1, "Resource 1"), mockService),
-                new ResourceHasService(2, new Resource(2, "Resource 2"), mockService)
+                new ResourceHasService(1, new Resource(1, "Resource 1","img1", List.of(), List.of()), mockService),
+                new ResourceHasService(2, new Resource(2, "Resource 2","img1", List.of(), List.of()), mockService)
         );
         when(resourceHasServiceRepository.findAll()).thenReturn(mockResourceHasServices);
 
         List<ResourceHasAttribute> mockResourceHasAttributes = List.of(
-                new ResourceHasAttribute(1, new Resource(1, "Resource 1"), new Attribute(1, "Attr 1", "description 1")),
-                new ResourceHasAttribute(2, new Resource(2, "Resource 2"), new Attribute(2, "Attr 2", "description 2"))
+                new ResourceHasAttribute(1, new Resource(1, "Resource 1","img1", List.of(), List.of()), new Attribute(1, "Attr 1", "description 1", List.of())),
+                new ResourceHasAttribute(2, new Resource(2, "Resource 2","img1", List.of(), List.of()), new Attribute(2, "Attr 2", "description 2", List.of()))
         );
         when(resourceHasAttributeRepository.findAll()).thenReturn(mockResourceHasAttributes);
 
         List<Attribute> mockAttributes = List.of(
-                new Attribute(1, "Attr 1", "description 1"),
-                new Attribute(2, "Attr 2", "description 2")
+                new Attribute(1, "Attr 1", "description 1", List.of()),
+                new Attribute(2, "Attr 2", "description 2", List.of())
         );
         when(attributeRepository.findAll()).thenReturn(mockAttributes);
 
@@ -284,12 +308,12 @@ public class ServiceServiceTest {
                 2,
                 false,
                 List.of(),
-                List.of(new ResourceResponse(1, "Resource 1", List.of()))
+                List.of(new ResourceResponse(1, "Resource 1","img1", List.of()))
         );
 
         when(serviceRepository.findById(mockService.getId())).thenReturn(Optional.of(mockService));
 
-        when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User())));
+        when(employeeRepository.findById(anyInt())).thenReturn(Optional.of(new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User(), List.of())));
 
         when(resourceRepository.findById(1)).thenReturn(Optional.empty());
 
@@ -320,7 +344,7 @@ public class ServiceServiceTest {
 
         when(serviceRepository.findById(mockService.getId())).thenReturn(Optional.of(mockService));
 
-        when(resourceRepository.findById(anyInt())).thenReturn(Optional.of(new Resource(1, "Resource 1")));
+        when(resourceRepository.findById(anyInt())).thenReturn(Optional.of(new Resource(1, "Resource 1","img1", List.of(), List.of())));
 
         when(employeeRepository.findById(1)).thenReturn(Optional.empty());
 
@@ -346,12 +370,12 @@ public class ServiceServiceTest {
                 60,
                 true,
                 List.of(new CreateEmployeeResponse(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), "juan.perez@example.com", "juanperez")),
-                List.of(new ResourceResponse(1, "Resource 1", List.of()))
+                List.of(new ResourceResponse(1, "Resource 1","img1", List.of()))
         );
 
         when(serviceRepository.findByName(serviceRequest.name())).thenReturn(Optional.empty());
 
-        Service newService = new Service(1, "New Service", "Service description", new BigDecimal(100.0), "Service Page Info", 60, true, LocalDateTime.now());
+        Service newService = new Service(1, "New Service", "Service description", new BigDecimal(100.0), "Service Page Info", 60, true, LocalDateTime.now(), List.of(), List.of());
         when(serviceRepository.save(any(Service.class))).thenReturn(newService);
 
         when(employeeHasServiceRepository.save(any(EmployeeHasService.class))).thenReturn(new EmployeeHasService());
@@ -407,12 +431,12 @@ public class ServiceServiceTest {
                 60,
                 true,
                 List.of(new CreateEmployeeResponse(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), "juan.perez@example.com", "juanperez")),
-                List.of(new ResourceResponse(1, "Resource 1", List.of()))
+                List.of(new ResourceResponse(1, "Resource 1","img1", List.of()))
         );
 
         when(serviceRepository.findByName(serviceRequest.name())).thenReturn(Optional.empty());
 
-        Service newService = new Service(1, "New Service", "Service description", new BigDecimal(100.0), "Service Page Info", 60, true, LocalDateTime.now());
+        Service newService = new Service(1, "New Service", "Service description", new BigDecimal(100.0), "Service Page Info", 60, true, LocalDateTime.now(), List.of(), List.of());
         when(serviceRepository.save(any(Service.class))).thenReturn(newService);
 
         when(employeeHasServiceRepository.save(any(EmployeeHasService.class))).thenReturn(new EmployeeHasService());
@@ -433,8 +457,8 @@ public class ServiceServiceTest {
         when(serviceRepository.findById(mockService.getId())).thenReturn(Optional.of(mockService));
 
         List<EmployeeHasService> mockEmployeeHasServices = List.of(
-                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User()), mockService),
-                new EmployeeHasService(2, new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User()), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now()))
+                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User(), List.of()), mockService),
+                new EmployeeHasService(2, new Employee(2, "Ana", "Gomez", LocalDate.of(1985, 11, 20), new User(), List.of()), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now(), List.of(), List.of()))
         );
         when(employeeHasServiceRepository.findAll()).thenReturn(mockEmployeeHasServices);
 
@@ -463,8 +487,8 @@ public class ServiceServiceTest {
         when(employeeHasServiceRepository.findAll()).thenReturn(List.of());
 
         List<ResourceHasService> mockResourceHasServices = List.of(
-                new ResourceHasService(1, new Resource(1, "Recurso 1"), mockService),
-                new ResourceHasService(2, new Resource(2, "Recurso 2"), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now()))
+                new ResourceHasService(1, new Resource(1, "Recurso 1","img1", List.of(), List.of()), mockService),
+                new ResourceHasService(2, new Resource(2, "Recurso 2","img1", List.of(), List.of()), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now(), List.of(), List.of()))
         );
         when(resourceHasServiceRepository.findAll()).thenReturn(mockResourceHasServices);
 
@@ -500,8 +524,8 @@ public class ServiceServiceTest {
 
 
         List<EmployeeHasService> mockEmployeeHasServices = List.of(
-                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User()), mockService),
-                new EmployeeHasService(2, new Employee(2, "Pedro", "Lopez", LocalDate.of(1990, 5, 15), new User()), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now()))
+                new EmployeeHasService(1, new Employee(1, "Juan", "Perez", LocalDate.of(1990, 5, 15), new User(), List.of()), mockService),
+                new EmployeeHasService(2, new Employee(2, "Pedro", "Lopez", LocalDate.of(1990, 5, 15), new User(), List.of()), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now(), List.of(), List.of()))
         );
         when(employeeHasServiceRepository.findAll()).thenReturn(mockEmployeeHasServices);
 
@@ -524,8 +548,8 @@ public class ServiceServiceTest {
         when(serviceRepository.save(any(Service.class))).thenReturn(mockService);
 
         List<ResourceHasService> mockResourceHasServices = List.of(
-                new ResourceHasService(1, new Resource(1, "Recurso 1"), mockService),
-                new ResourceHasService(2, new Resource(2, "Recurso 2"), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now()))
+                new ResourceHasService(1, new Resource(1, "Recurso 1","img1", List.of(), List.of()), mockService),
+                new ResourceHasService(2, new Resource(2, "Recurso 2","img1", List.of(), List.of()), new Service(99, "Other Service", "Other Desc", new BigDecimal(100), "Other Info", 60, true, LocalDateTime.now(), List.of(), List.of()))
         );
         when(resourceHasServiceRepository.findAll()).thenReturn(mockResourceHasServices);
 
@@ -539,6 +563,32 @@ public class ServiceServiceTest {
         assertEquals(1, result.resources().size());
         assertEquals(1, result.resources().get(0).id());
         verify(serviceRepository, times(1)).save(any(Service.class));
+    }
+
+    @Test
+    void shouldGetAllResourcesByIdsIn() {
+        List<Integer> ids = List.of(1, 2, 3);
+
+        when(this.serviceRepository.findAllByIdIn(ids)).thenReturn(mockServices);
+
+        List<ResourceResponse> expected = this.mResources.stream().map(ResourceResponse::new).toList();
+
+        List<ResourceResponse> actual = this.serviceService.getResourcesByIds(ids);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void shouldGetAllEmployeesByIdsIn() {
+        List<Integer> ids = List.of(1, 2, 3);
+
+        when(this.serviceRepository.findAllByIdIn(ids)).thenReturn(mockServices);
+
+        List<EmployeeResponse> expected = this.mEmployees.stream().map(EmployeeResponse::new).toList();
+
+        List<EmployeeResponse> actual = this.serviceService.getEmployeesByIds(ids);
+        assertNotNull(actual);
+        assertEquals(expected, actual);
     }
 
 

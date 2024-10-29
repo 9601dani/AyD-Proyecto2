@@ -16,6 +16,9 @@
               </ul>
             </div>
           </div>
+          @if(this.isLogged) {
+            <a class="button is-info m-5"  href="/appointments/reserve" >Reservar</a>
+          }
         </div>
       </div>
     </div>
@@ -112,7 +115,7 @@
     <div *ngFor="let comment of comments.slice(0, 3)" class="box comment-box">
       <p><strong>Usuario {{ comment.username }}:</strong> {{ comment.comment }}</p>
       <p><strong>Valoración:</strong> {{ comment.value }} estrellas</p>
-      <p><small><em>Publicado el {{ comment.createdAt }}</em></small></p>
+      <p><small><em>Publicado el {{ comment.createdAt | date: 'medium' }}</em></small></p>
     </div>
       
     <div *ngFor="let comment of comments.slice(3)" class="box comment-box">
@@ -122,7 +125,7 @@
         {{ comment.value }} estrellas
       </p>
       
-      <p><small><em>Publicado el {{ comment.createdAt }}</em></small></p>
+      <p><small><em>Publicado el {{ comment.createdAt | date: 'medium' }}</em></small></p>
     </div>
   </div>  
 </div>

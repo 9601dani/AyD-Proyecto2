@@ -1,9 +1,8 @@
 import {Component, OnInit, AfterViewInit, CUSTOM_ELEMENTS_SCHEMA, inject, PLATFORM_ID, Inject} from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import {MatIcon, MatIconModule} from "@angular/material/icon";
-import {CommonModule} from "@angular/common";
+import {CommonModule, DatePipe, isPlatformBrowser} from "@angular/common";
 import Splide from "@splidejs/splide";
-import { isPlatformBrowser } from '@angular/common';
 import { UserService } from '../../../services/user.service';
 import { CompanySetting } from '../../../models/CompanySetting.model';
 import { LocalStorageService } from '../../../services/local-storage.service';
@@ -21,7 +20,8 @@ import Swal from 'sweetalert2';
     MatIcon,
     ImagePipe,
     FormsModule,
-    MatIconModule
+    MatIconModule,
+    DatePipe
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',

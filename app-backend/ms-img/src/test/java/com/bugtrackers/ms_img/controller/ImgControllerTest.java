@@ -79,6 +79,39 @@ public class ImgControllerTest {
                 .andExpect(content().json("{\"message\":\"" + responseString.getMessage() + "\"}"));
     }
 
+    @Test
+    void shouldUploadResourceImage() throws Exception {
+        String objectName = "resources/test-image";
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "test-image.png", "image/png", "some-image-content".getBytes());
 
+        when(cloudService.uploadResourceImage(multipartFile)).thenReturn(objectName);
+
+        mockMvc.perform(multipart("/img/upload/resource")
+                        .file(multipartFile)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"" + objectName + "\"}"));
+    }
+
+
+    @Test
+    void shouldUpdateResourceImage() throws Exception {
+        String newImagePath = "resources/new-test-image";
+        String oldImageName = "resources/old-test-image";
+        MockMultipartFile multipartFile = new MockMultipartFile("file", "test-image.png", "image/png", "some-image-content".getBytes());
+
+        when(cloudService.updateResourceImage(multipartFile, oldImageName)).thenReturn(newImagePath);
+
+        mockMvc.perform(multipart("/img/upload/resource")
+                        .file(multipartFile)
+                        .param("nameOldImage", oldImageName)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{\"message\":\"" + newImagePath + "\"}"));
+    }
 
 }
