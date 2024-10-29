@@ -5,10 +5,17 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import java.util.Optional;
+
+import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
+import com.bugtrackers.ms_user.models.*;
+import com.bugtrackers.ms_user.models.Module;
+import com.bugtrackers.ms_user.repositories.AppointmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,18 +26,17 @@ import com.bugtrackers.ms_user.dto.request.UserAllRequest;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.exceptions.UserNotFoundException;
-import com.bugtrackers.ms_user.models.Module;
-import com.bugtrackers.ms_user.models.Page;
 import com.bugtrackers.ms_user.repositories.ModuleRepository;
 import com.bugtrackers.ms_user.repositories.UserInformationRepository;
 import com.bugtrackers.ms_user.repositories.UserRepository;
-import com.bugtrackers.ms_user.models.User;
-import com.bugtrackers.ms_user.models.UserInformation;
 
 public class UserServiceTest {
 
     @Mock
     private ModuleRepository moduleRepository;
+
+    @Mock
+    private AppointmentRepository appointmentRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -243,6 +249,39 @@ public class UserServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    void shouldGetMyAppointments() {
+        List<Appointment> mockAppointments = List.of(
+                new Appointment(1, user, new Resource(), new BigDecimal("100.00"), "PENDING",
+                        LocalDateTime.now(), LocalDateTime.of(2024, 10, 1, 9, 0),
+                        LocalDateTime.of(2024, 10, 1, 10, 0),
+                        new Employee(), new ArrayList<>()),
+                new Appointment(2, user, new Resource(), new BigDecimal("150.00"), "PENDING",
+                        LocalDateTime.now(), LocalDateTime.of(2024, 11, 15, 14, 0),
+                        LocalDateTime.of(2024, 11, 15, 15, 0),
+                        new Employee(), new ArrayList<>())
+        );
+
+        when(this.appointmentRepository.findByUserId(1)).thenReturn(mockAppointments);
+
+        List<AppointmentResponse> appointmentResponses = this.userService.getMyAppointments(1);
+
+        assertNotNull(appointmentResponses);
+        assertEquals(2, appointmentResponses.size());
+
+        assertEquals("PENDING", appointmentResponses.get(0).state());
+        assertEquals(new BigDecimal("100.00"), appointmentResponses.get(0).total());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 9, 0), appointmentResponses.get(0).startTime());
+        assertEquals(LocalDateTime.of(2024, 10, 1, 10, 0), appointmentResponses.get(0).endTime());
+
+        assertEquals("PENDING", appointmentResponses.get(1).state());
+        assertEquals(new BigDecimal("150.00"), appointmentResponses.get(1).total());
+        assertEquals(LocalDateTime.of(2024, 11, 15, 14, 0), appointmentResponses.get(1).startTime());
+        assertEquals(LocalDateTime.of(2024, 11, 15, 15, 0), appointmentResponses.get(1).endTime());
+    }
+
+
 
 
 }

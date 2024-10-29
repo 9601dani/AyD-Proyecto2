@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.bugtrackers.ms_user.dto.request.RequestString;
+import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
 import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.models.UserInformation;
 import org.junit.jupiter.api.BeforeEach;
@@ -141,6 +142,20 @@ public class UserControllerTest {
         .andExpect(content().json("{\"message\": \"2FA actualizada exitosamente!\"}"));
     }
 
+    @Test
+    public void testGetMyAppointments() throws Exception {
+        List<AppointmentResponse> appointmentResponses = List.of(
+            new AppointmentResponse(1, "username", "employeeFirstName", "resourceName", null, "state", LocalDateTime.now(), LocalDateTime.now(), List.of("serviceNames"))
+        );
+
+        when(userService.getMyAppointments(1)).thenReturn(appointmentResponses);
+
+        String expectedJson = gson.toJson(appointmentResponses);
+
+        mockMvc.perform(get("/user/appointments/1"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
 
 
 }
