@@ -2,6 +2,9 @@ package com.bugtrackers.ms_user.services;
 
 import java.util.List;
 
+import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
+import com.bugtrackers.ms_user.models.Appointment;
+import com.bugtrackers.ms_user.repositories.AppointmentRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,7 @@ public class UserService {
     private final ModuleRepository moduleRepository;
     private final UserRepository userRepository;
     private final UserInformationRepository userInformationRepository;
+    private final AppointmentRepository appointmentRepository;
 
     public List<ModuleResponse> getPages(Integer id) {
         List<Module> modules = this.moduleRepository.findModulesByUserId(id);
@@ -134,5 +138,10 @@ public class UserService {
         return "2FA actualizada exitosamente!";
     }
 
+
+    public List<AppointmentResponse> getMyAppointments(Integer id) {
+        List<Appointment> appointments = this.appointmentRepository.findByUserId(id);
+        return appointments.stream().map(AppointmentResponse::new).toList();
+    }
 
 }

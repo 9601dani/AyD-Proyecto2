@@ -186,4 +186,8 @@ export class UserService {
       }
     })
   }
+
+  getMyAppointments(id: number): Observable<any> {
+    return this.http.get(`${this.apiUser}/appointments/${id}`);
+  }
 }

@@ -18,6 +18,7 @@ import { authGuard } from './guards/auth.guard';
 import { RecoveryPasswordComponent } from './components/commons/recovery-password/recovery-password.component';
 import { ResetPasswordComponent } from './components/commons/reset-password/reset-password.component';
 import { ReserveComponent } from './components/appointments/reserve/reserve.component';
+import { MyAppointmentsComponent } from './components/user/my-appointments/my-appointments.component';
 
 export const routes: Routes = [
 
@@ -66,7 +67,8 @@ export const routes: Routes = [
   },
   {
     path: 'appointments', children: [
-      { path: 'reserve', component: ReserveComponent }
+      { path: 'reserve', component: ReserveComponent },
+      { path: 'my-appointments', component: MyAppointmentsComponent }
     ],
     canActivate: [authGuard]
   },

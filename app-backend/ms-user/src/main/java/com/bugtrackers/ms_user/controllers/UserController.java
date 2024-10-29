@@ -2,6 +2,7 @@ package com.bugtrackers.ms_user.controllers;
 
 import com.bugtrackers.ms_user.dto.request.RequestString;
 import com.bugtrackers.ms_user.dto.request.UserAllRequest;
+import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.services.UserService;
@@ -67,6 +68,12 @@ public class UserController {
         HashMap<String, String> response = new HashMap<>();
         response.put("message", message);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/appointments/{id}")
+    public ResponseEntity<List<AppointmentResponse>> getMyAppointments(@PathVariable Integer id) {
+        List<AppointmentResponse> appointmentResponse = this.userService.getMyAppointments(id);
+        return ResponseEntity.ok(appointmentResponse);
     }
 
 
