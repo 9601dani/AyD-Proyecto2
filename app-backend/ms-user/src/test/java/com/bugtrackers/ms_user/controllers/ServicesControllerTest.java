@@ -3,9 +3,14 @@ package com.bugtrackers.ms_user.controllers;
 import com.bugtrackers.ms_user.config.GsonConfig;
 import com.bugtrackers.ms_user.dto.request.ServiceRequest;
 import com.bugtrackers.ms_user.dto.response.CreateEmployeeResponse;
+import com.bugtrackers.ms_user.dto.response.EmployeeResponse;
 import com.bugtrackers.ms_user.dto.response.ResourceResponse;
 import com.bugtrackers.ms_user.dto.response.ServiceResponse;
+import com.bugtrackers.ms_user.models.Employee;
+import com.bugtrackers.ms_user.models.Resource;
 import com.bugtrackers.ms_user.models.Service;
+import com.bugtrackers.ms_user.models.User;
+import com.bugtrackers.ms_user.models.UserInformation;
 import com.bugtrackers.ms_user.services.ServiceService;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
@@ -147,5 +152,43 @@ public class ServicesControllerTest {
                 .andExpect(content().json(gson.toJson(serviceResponse)));
 
         verify(serviceService, times(1)).updateService(eq(mockService.getId()), any(ServiceRequest.class));
+    }
+
+    @Test
+    void shouldFindResourcesById() throws Exception {
+        List<Integer> ids = List.of(1, 2);
+
+        List<Resource> resources = List.of(
+                new Resource(1, "name", "image", List.of(), List.of()),
+                new Resource(2, "name", "image", List.of(), List.of())
+        );
+
+        when(this.serviceService.getResourcesByIds(ids)).thenReturn(resources.stream().map(ResourceResponse::new).toList());
+        
+        this.mockMvc.perform(get("/services/reserve/resources").param("ids", "1,2"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(gson.toJson(resources.stream().map(ResourceResponse::new).toList())));
+    }
+
+    @Test
+    void shouldFindEmployeesById() throws Exception {
+        List<Integer> ids = List.of(1, 2);
+
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setUsername("username");
+        mockUser.setEmail("email");
+        mockUser.setUserInformation(new UserInformation("nit", "profile", "description", null, "dpi", "phone"));
+
+        List<Employee> employees = List.of(
+                new Employee(1, "name", "lastname", LocalDate.now(), mockUser, List.of()),
+                new Employee(2, "name", "lastname", LocalDate.now(), mockUser, List.of())
+        );
+
+        when(this.serviceService.getEmployeesByIds(ids)).thenReturn(employees.stream().map(EmployeeResponse::new).toList());
+        
+        this.mockMvc.perform(get("/services/reserve/employees").param("ids", "1,2"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(gson.toJson(employees.stream().map(EmployeeResponse::new).toList())));
     }
 }

@@ -59,12 +59,8 @@ export class ReserveComponent implements OnInit {
     expandRows: true,
     eventOverlap: false,
     slotEventOverlap: false,
-    selectAllow: (selectInfo: any) => {
-      const calendarApi = selectInfo.view.calendar;
-      const events = calendarApi.getEvents();
-      return !events.some((event: any) =>
-        (selectInfo.start < event.end && selectInfo.end > event.start)
-      );
+    validRange: {
+      start: new Date().toISOString().split('T')[0]
     },
     locale: esLocale,
     slotMinTime: '07:00:00',
@@ -122,6 +118,7 @@ export class ReserveComponent implements OnInit {
     this._userService.getCompanySettingByKeyName("start_hour").subscribe({
       next: (response: CompanySetting) => {
         this.calendarOptions.slotMinTime = `${response.keyValue}`
+        
       },
       error: error => {
         console.error(error)
@@ -139,6 +136,8 @@ export class ReserveComponent implements OnInit {
 
   createReserve(info: any) {
 
+    const id = this._localStorageService.getUserId();
+
     const calendarApi = info.view.calendar;
     const events = calendarApi.getEvents();
 
@@ -147,14 +146,39 @@ export class ReserveComponent implements OnInit {
     const init: Date = new Date(info.date);
     const end: Date = new Date(init.getTime() + minutes * 60000);
 
+    const slotMaxTime = new Date(info.date);
+    const [hours, minutesMax] = (this.calendarOptions?.slotMaxTime as string).split(':');
+    slotMaxTime.setHours(parseInt(hours, 10), parseInt(minutesMax, 10), 0, 0);
+
+    if (end > slotMaxTime) {
+      Swal.fire({
+        title: 'Error!',
+        text: `La cita no puede finalizar después de las ${this.calendarOptions.slotMaxTime}.`,
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
+      return;
+    }
+
     const hasOverlap = events.some((event: any) => {
-      return init < event.end && end > event.start;
+      return init < event.end && end > event.start && event.extendedProps?.userId !== id;
     });
 
     if(hasOverlap) {
       Swal.fire({
         title: 'Error!',
-        text: 'Horario no disponible',
+        text: 'Horario no disponible. Por favor cambie de recurso o empleado y vuelva a intentarlo.',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      })
+      return;
+    }
+
+    const today = new Date();
+    if(init.getTime() < today.getTime()) {
+      Swal.fire({
+        title: 'Error!',
+        text: 'No puede agendar una cita en horario no disponible.',
         icon: 'error',
         confirmButtonText: 'Ok'
       })
@@ -162,7 +186,6 @@ export class ReserveComponent implements OnInit {
     }
 
     const username = this._localStorageService.getUserName();
-    const id = this._localStorageService.getUserId();
 
     const timezoneOffset = init.getTimezoneOffset() * 60000;
     const adjustedInit = new Date(init.getTime() - timezoneOffset);
@@ -317,7 +340,7 @@ export class ReserveComponent implements OnInit {
           icon: 'success',
           confirmButtonText: 'Ok'
         })
-        window.location.reload;
+        this._router.navigate(['/home']);
       },
       error: err => {
         console.log(err)

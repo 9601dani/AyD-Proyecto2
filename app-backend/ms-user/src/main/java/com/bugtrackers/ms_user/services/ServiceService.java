@@ -15,10 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -258,42 +256,51 @@ public class ServiceService {
 
     public List<ResourceResponse> getResourcesByIds(List<Integer> ids) {
         List<com.bugtrackers.ms_user.models.Service> services = this.serviceRepository.findAllByIdIn(ids);
-
-        Set<ResourceResponse> resourceResponse = new HashSet<>();
-
+    
+        List<ResourceResponse> resourceResponse = new ArrayList<>();
+    
         for (com.bugtrackers.ms_user.models.Service service : services) {
             List<Resource> resources = service.getResources();
-
-            Set<ResourceResponse> currentResources = resources.stream()
-                    .map(resource -> new ResourceResponse(resource.getId(), resource.getName(),resource.getImage(),
+    
+            List<ResourceResponse> currentResources = resources.stream()
+                    .map(resource -> new ResourceResponse(resource.getId(), resource.getName(), resource.getImage(),
                             resource.getAttributes().stream().map(AttributeResponse::new).toList()))
-                    .collect(Collectors.toSet());
-
-            if(resourceResponse.isEmpty()) resourceResponse = currentResources;
-            else resourceResponse.retainAll(currentResources);
-
+                    .toList();
+    
+            if (resourceResponse.isEmpty()) {
+                resourceResponse = currentResources;
+            } else {
+                resourceResponse = resourceResponse.stream()
+                        .filter(currentResources::contains)
+                        .toList();
+            }
         }
-        return new ArrayList<>(resourceResponse);
-
+        return resourceResponse;
     }
+    
 
     public List<EmployeeResponse> getEmployeesByIds(List<Integer> ids) {
         List<com.bugtrackers.ms_user.models.Service> services = this.serviceRepository.findAllByIdIn(ids);
-
-        Set<EmployeeResponse> employeeResponses = new HashSet<>();
-
+    
+        List<EmployeeResponse> employeeResponses = new ArrayList<>();
+    
         for (com.bugtrackers.ms_user.models.Service service : services) {
             List<Employee> employees = service.getEmployees();
-
-            Set<EmployeeResponse> currentEmployees = employees.stream()
+    
+            List<EmployeeResponse> currentEmployees = employees.stream()
                     .map(EmployeeResponse::new)
-                    .collect(Collectors.toSet());
-
-            if(employeeResponses.isEmpty()) employeeResponses = currentEmployees;
-            else employeeResponses.retainAll(currentEmployees);
+                    .toList();
+    
+            if (employeeResponses.isEmpty()) {
+                employeeResponses = currentEmployees;
+            } else {
+                employeeResponses = employeeResponses.stream()
+                        .filter(currentEmployees::contains)
+                        .toList(); 
+            }
         }
-
-        return new ArrayList<>(employeeResponses);
-
+    
+        return employeeResponses;
     }
+    
 }

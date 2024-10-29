@@ -11,6 +11,6 @@ public record ResourceResponse(
         List<AttributeResponse> attributes
 ) {
         public ResourceResponse(Resource resource) {
-                this(resource.getId(),resource.getImage(), resource.getName(), resource.getAttributes().stream().map(AttributeResponse::new).toList());
+                this(resource.getId(),resource.getName(), resource.getImage(), resource.getAttributes().stream().map(AttributeResponse::new).toList());
         }
 }
