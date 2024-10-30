@@ -1,6 +1,8 @@
 package com.bugtrackers.ms_user.controllers;
 
 import com.bugtrackers.ms_user.config.GsonConfig;
+import com.bugtrackers.ms_user.dto.request.RoleRequest;
+import com.bugtrackers.ms_user.dto.response.RoleResponse;
 import com.bugtrackers.ms_user.models.Role;
 import com.bugtrackers.ms_user.services.RoleService;
 import com.google.gson.Gson;
@@ -35,8 +37,8 @@ public class RoleControllerTest {
 
     @BeforeEach
     void setUp() {
-        Role role1 = new Role(1, "Admin", "Administrator role", LocalDateTime.now(), List.of());
-        Role role2 = new Role(2, "User", "Standard user role", LocalDateTime.now(), List.of());
+        Role role1 = new Role(1, "Admin", "Administrator role", LocalDateTime.now(), List.of(), List.of());
+        Role role2 = new Role(2, "User", "Standard user role", LocalDateTime.now(), List.of(), List.of());
         mockRoles = List.of(role1, role2);
 
         gson = GsonConfig.createGsonWithAdapter();
@@ -44,9 +46,9 @@ public class RoleControllerTest {
 
     @Test
     void testGetRoles() throws Exception {
-        when(roleService.getRoles()).thenReturn(mockRoles);
+        when(roleService.getRoles()).thenReturn(mockRoles.stream().map(RoleResponse::new).toList());
 
-        String jsonResponse = gson.toJson(mockRoles);
+        String jsonResponse = gson.toJson(mockRoles.stream().map(RoleResponse::new).toList());
 
         mockMvc.perform(get("/role"))
                 .andExpect(status().isOk())
@@ -56,9 +58,9 @@ public class RoleControllerTest {
 
     @Test
     void testSaveRole() throws Exception {
-        Role role = new Role(1, "Admin", "Administrator role", LocalDateTime.now(), List.of());
-        when(roleService.saveRole(any(Role.class))).thenReturn(role);
-        String roleJson = gson.toJson(role);
+        Role role = new Role(1, "Admin", "Administrator role", LocalDateTime.now(), List.of(), List.of());
+        when(roleService.saveRole(any(RoleRequest.class))).thenReturn(new RoleResponse(role));
+        String roleJson = gson.toJson(new RoleResponse(role));
 
         mockMvc.perform(post("/role")
                         .contentType(MediaType.APPLICATION_JSON)

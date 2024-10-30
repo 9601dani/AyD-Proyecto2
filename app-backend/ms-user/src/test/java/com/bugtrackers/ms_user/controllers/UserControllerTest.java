@@ -48,7 +48,7 @@ public class UserControllerTest {
     void setUp() {
         mockModules = List.of(
             new Module(1, "module", "/direction", true, LocalDateTime.now(), List.of(
-                new Page(1, "page", "/path", null, true, LocalDateTime.now())
+                new Page(1, "page", "/path", null, true, LocalDateTime.now(), List.of())
             ))
         );
 

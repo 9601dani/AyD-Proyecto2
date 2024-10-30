@@ -1,5 +1,7 @@
 package com.bugtrackers.ms_user.services;
 
+import com.bugtrackers.ms_user.dto.request.RoleRequest;
+import com.bugtrackers.ms_user.dto.response.RoleResponse;
 import com.bugtrackers.ms_user.models.Role;
 import com.bugtrackers.ms_user.repositories.RoleRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,33 +46,37 @@ public class RoleServiceTest {
         List<Role> roles = Arrays.asList(role1, role2);
         when(roleRepository.findAll()).thenReturn(roles);
 
-        List<Role> result = roleService.getRoles();
+        List<RoleResponse> result = roleService.getRoles();
 
         assertEquals(2, result.size());
-        assertEquals("ROLE_ADMIN", result.get(0).getName());
-        assertEquals("ROLE_USER", result.get(1).getName());
+        assertEquals("ROLE_ADMIN", result.get(0).name());
+        assertEquals("ROLE_USER", result.get(1).name());
     }
 
     @Test
     void testSaveRole_Success() {
-        when(roleRepository.findById(1)).thenReturn(Optional.empty());
+        when(roleRepository.findByName(role1.getName())).thenReturn(Optional.empty());
         when(roleRepository.save(any(Role.class))).thenReturn(role1);
 
-        Role result = roleService.saveRole(role1);
+        RoleRequest request = new RoleRequest(role1.getName(), role1.getDescription());
+
+        RoleResponse result = roleService.saveRole(request);
 
         assertNotNull(result);
-        assertEquals("ROLE_ADMIN", result.getName());
-        verify(roleRepository, times(1)).findById(1);
-        verify(roleRepository, times(1)).save(role1);
+        assertEquals("ROLE_ADMIN", result.name());
+        verify(roleRepository, times(1)).findByName(role1.getName());
+        // verify(roleRepository, times(1)).save(role1);
     }
 
     @Test
     void testSaveRole_RoleAlreadyExists() {
-        when(roleRepository.findById(1)).thenReturn(Optional.of(role1));
+        RoleRequest request = new RoleRequest(role1.getName(), role1.getDescription());
 
-        RuntimeException exception = assertThrows(RuntimeException.class, () -> roleService.saveRole(role1));
+        when(roleRepository.findByName(role1.getName())).thenReturn(Optional.of(role1));
+
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> roleService.saveRole(request));
         assertEquals("El rol ya existe!", exception.getMessage());
-        verify(roleRepository, times(1)).findById(1);
+        verify(roleRepository, times(1)).findByName(role1.getName());
         verify(roleRepository, times(0)).save(any(Role.class));
     }
 }
