@@ -38,7 +38,7 @@ public class EmailControllerTest {
     @Test
     void shouldSendEmail() throws Exception {
         
-        EmailRequest emailRequest = new EmailRequest("to@test.com", "Subject", "content");
+        EmailRequest emailRequest = new EmailRequest("to@test.com", "Subject", "content", false);
         String requestJson = gson.toJson(emailRequest);
 
         when(this.emailService.sendEmail(emailRequest)).thenReturn("El correo se envió exitosamente!");

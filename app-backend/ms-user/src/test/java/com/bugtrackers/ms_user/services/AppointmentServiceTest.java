@@ -17,18 +17,23 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.bugtrackers.ms_user.clients.EmailRestClient;
 import com.bugtrackers.ms_user.dto.request.AppointmentRequest;
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
 import com.bugtrackers.ms_user.exceptions.EmployeeNotFoundException;
 import com.bugtrackers.ms_user.exceptions.ResourceNotFoundException;
 import com.bugtrackers.ms_user.exceptions.UserNotFoundException;
 import com.bugtrackers.ms_user.models.Appointment;
+import com.bugtrackers.ms_user.models.Bill;
+import com.bugtrackers.ms_user.models.CompanySetting;
 import com.bugtrackers.ms_user.models.Employee;
 import com.bugtrackers.ms_user.models.Resource;
 import com.bugtrackers.ms_user.models.Service;
 import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.repositories.AppointmentRepository;
 import com.bugtrackers.ms_user.repositories.AppointmentServiceRepository;
+import com.bugtrackers.ms_user.repositories.BillRepository;
+import com.bugtrackers.ms_user.repositories.CompanySettingRepository;
 import com.bugtrackers.ms_user.repositories.EmployeeRepository;
 import com.bugtrackers.ms_user.repositories.ResourceRepository;
 import com.bugtrackers.ms_user.repositories.ServiceRepository;
@@ -54,6 +59,15 @@ public class AppointmentServiceTest {
     @Mock
     private AppointmentServiceRepository appointmentServiceRepository;
 
+    @Mock
+    private CompanySettingRepository companySettingRepository;
+
+    @Mock
+    private EmailRestClient emailClient;
+
+    @Mock
+    private BillRepository billRepository;
+
     @InjectMocks
     private AppointmentService appointmentService;
     private List<Service> mockServices;
@@ -64,11 +78,16 @@ public class AppointmentServiceTest {
     private User mockUser;
     private Resource mockResource;
     private Employee mockEmployee;
+    private CompanySetting mockSetting;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
+        this.mockSetting = new CompanySetting();
+        this.mockSetting.setId(1);
+        this.mockSetting.setKeyName("name");
+        this.mockSetting.setKeyValue("value");
         this.mockUser = new User(1, "email", "username", "password", "token", true, true, true, LocalDateTime.now());
         this.mockResource = new Resource(1, "name", "image", List.of(), List.of());
         this.mockEmployee = new Employee(1, "name", "lastname", LocalDate.now(), mockUser, List.of());
@@ -114,12 +133,24 @@ public class AppointmentServiceTest {
         AppointmentRequest request = new AppointmentRequest(1, 1, "2024-02-27T18:14:01.184", "2024-02-27T19:14:01.184", 1, List.of(1, 2));
 
         Appointment saved = new Appointment(1, mockUser, mockResource, BigDecimal.ZERO, "PENDING", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), mockEmployee, List.of());
+        Bill billSaved = new Bill(1, "CF", "username", "CIUDAD", "DESCRIPCION", BigDecimal.ZERO, LocalDateTime.now(), BigDecimal.ZERO, BigDecimal.ZERO, saved);
         List<Integer> ids = List.of(1,2);
         when(this.userRepository.findById(1)).thenReturn(Optional.of(this.mockUser));
         when(this.resourceRepository.findById(1)).thenReturn(Optional.of(this.mockResource));
         when(this.employeeRepository.findById(1)).thenReturn(Optional.of(this.mockEmployee));
         when(this.serviceRepository.findAllByIdIn(ids)).thenReturn(mockServices);
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(saved);
+        when(this.companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("currency")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("gmail_bill")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("start_hour")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("end_hour")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("phone_number")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("direction")).thenReturn(Optional.of(mockSetting));
+        mockSetting.setKeyValue("10");
+        when(this.companySettingRepository.findByKeyName("tax")).thenReturn(Optional.of(mockSetting));
+        when(this.billRepository.save(any())).thenReturn(billSaved);
 
         AppointmentResponse expected = new AppointmentResponse(saved);
 
@@ -132,10 +163,23 @@ public class AppointmentServiceTest {
         AppointmentRequest request = new AppointmentRequest(1, null, "2024-02-27T18:14:01.184", "2024-02-27T19:14:01.184", null, List.of(1, 2));
 
         Appointment saved = new Appointment(1, mockUser, null, BigDecimal.ZERO, "PENDING", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), null, List.of());
+        Bill billSaved = new Bill(1, "CF", "username", "CIUDAD", "DESCRIPCION", BigDecimal.ZERO, LocalDateTime.now(), BigDecimal.ZERO, BigDecimal.ZERO, saved);
+
         List<Integer> ids = List.of(1,2);
         when(this.userRepository.findById(1)).thenReturn(Optional.of(this.mockUser));
         when(this.serviceRepository.findAllByIdIn(ids)).thenReturn(mockServices);
         when(this.appointmentRepository.save(any(Appointment.class))).thenReturn(saved);
+        when(this.companySettingRepository.findByKeyName("company_img")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("company_name")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("currency")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("gmail_bill")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("start_hour")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("end_hour")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("phone_number")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("direction")).thenReturn(Optional.of(mockSetting));
+        mockSetting.setKeyValue("10");
+        when(this.companySettingRepository.findByKeyName("tax")).thenReturn(Optional.of(mockSetting));
+        when(this.billRepository.save(any())).thenReturn(billSaved);
 
         AppointmentResponse expected = new AppointmentResponse(saved);
 

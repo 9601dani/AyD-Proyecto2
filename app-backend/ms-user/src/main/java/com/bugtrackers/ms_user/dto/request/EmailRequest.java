@@ -1,4 +1,4 @@
-package com.bugtrackers.ms_auth.dto.request;
+package com.bugtrackers.ms_user.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
