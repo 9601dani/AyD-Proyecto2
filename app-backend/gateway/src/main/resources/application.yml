@@ -1,0 +1,63 @@
+server:
+  port: 8000
+
+spring:
+  profiles:
+    active: dev
+  application:
+    name: gateway
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000
+  
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:4200"
+            allowedMethods:
+              - GET
+              - POST
+              - PUT
+              - DELETE
+            allowedHeaders:
+              - "*"
+            maxAge: 3600
+      routes:
+        - id: auth-private-route
+          uri: ${AUTH_ROUTE_URI:http://localhost:8001}
+          predicates:
+            - Path=/auth/send-2FA/**,/auth/verify-2FA/**
+          filters:
+            - VerifyTokenFilter
+        - id: auth-public-route
+          uri: ${AUTH_ROUTE_URI:http://localhost:8001}
+          predicates:
+            - Path=/auth/**
+        - id: img-route
+          uri: ${IMG_ROUTE_URI:http://localhost:8002}
+          predicates:
+            - Path=/img/**
+          filters:
+            - VerifyTokenFilter
+        - id: user-public-route
+          uri: ${USER_ROUTE_URI:http://localhost:8003}
+          predicates:
+            - Path=/company-settings/currency,/company-settings/direction,/company-settings/start_hour,/company-settings/end_hour,/company-settings/service_img1, /company-settings/service_img2, /company-settings/service_img3, /company-settings/service_img4, /comment/**
+        - id: user-route
+          uri: ${USER_ROUTE_URI:http://localhost:8003}
+          predicates:
+            - Path=/user/**,/company-settings/**,/services/**, /role/**, /employee/**, /resource/**,/appointment/**
+          filters:
+            - VerifyTokenFilter
+        - id: email-route
+          uri: ${EMAIL_ROUTE_URI:http://localhost:8004}
+          predicates:
+            - Path=/email/**
+          filters:
+            - VerifyTokenFilter

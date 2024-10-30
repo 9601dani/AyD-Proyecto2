@@ -9,17 +9,25 @@ pipeline {
         PROFILES = 'test'
     }
     stages {
-        stage('Check Branch') {
+        // stage('Check Branch') {
+        //     steps {
+        //         script {
+        //             def allowedBranches = ['develop', 'main']
+        //             if (!allowedBranches.contains(env.BRANCH_NAME)) {
+        //                 echo "Branch '${env.BRANCH_NAME}' is not allowed for this pipeline. Aborting."
+        //                 currentBuild.result = 'SUCCESS'
+        //                 error("Stopping pipeline as branch '${env.BRANCH_NAME}' is not allowed.")
+        //             } else {
+        //                 echo "Branch '${env.BRANCH_NAME}' is allowed. Continuing with the build."
+        //             }
+        //         }
+        //     }
+        // }
+        stage('Check Environment Variables') {
             steps {
                 script {
-                    def allowedBranches = ['develop', 'main']
-                    if (!allowedBranches.contains(env.BRANCH_NAME)) {
-                        echo "Branch '${env.BRANCH_NAME}' is not allowed for this pipeline. Aborting."
-                        currentBuild.result = 'SUCCESS'
-                        error("Stopping pipeline as branch '${env.BRANCH_NAME}' is not allowed.")
-                    } else {
-                        echo "Branch '${env.BRANCH_NAME}' is allowed. Continuing with the build."
-                    }
+                    echo "GCP_BUCKET_NAME=${env.GCP_BUCKET_NAME}"
+                    echo "GCP_CREDENTIALS_FILE_PATH=${env.GCP_CREDENTIALS_FILE_PATH}"
                 }
             }
         }
@@ -37,8 +45,19 @@ pipeline {
                 dir('app-backend/ms-auth') {
                     // Build using Maven
                     sh '''
-                        mvn test &&
-                        mvn clean install
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
+        stage('Build Backend Microservice Img') {
+            steps {
+                dir('app-backend/ms-img') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
                     '''
                 }
             }
@@ -48,11 +67,49 @@ pipeline {
             steps {
                 dir('app-backend/ms-user') {
                     // Build using Maven
-                    sh 'mvn clean install'
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
                 }
             }
         }
         */
+        stage('Build Backend Microservice User') {
+            steps {
+                dir('app-backend/ms-user') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
+
+        stage('Build Backend Microservice Email') {
+            steps {
+                dir('app-backend/ms-email') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
+        // This should be built after all microservices.
+        stage('Build Backend Gateway') {
+            steps {
+                dir('app-backend/gateway') {
+                    // Build using Maven
+                    sh '''
+                        mvn clean test -D spring.profiles.active=test &&
+                        mvn clean install -D spring.profiles.active=test
+                    '''
+                }
+            }
+        }
         // stage('Build Frontend') {
         //     steps {
         //         dir('app-frontend') {
@@ -67,20 +124,51 @@ pipeline {
         //         }
         //     }
         // }
-
-        stage('Merge PR') {
-            when {
-                changeRequest()
-            }
+        stage('Merge Jacoco Reports') {
             steps {
-                script {
-                    echo "Proceeding with merge PR."
+                dir('app-backend') {
+                    echo "Merging Jacoco reports from all microservices..."
+                    sh 'mvn clean test verify -D spring.profiles.active=test'
                 }
             }
         }
+
+        stage('Verify tests') {
+            steps {
+                
+                dir('app-backend') {
+                    echo "cat ms-auth TESTS"
+                    sh 'cat ms-auth/target/surefire-reports/*.txt'
+                    echo "cat gateway TESTS"
+                    sh 'cat gateway/target/surefire-reports/*.txt'
+                    echo "cat report TESTS"
+                    sh 'cat report/target/surefire-reports/*.txt'
+                }
+            }
+        }
+
+        stage('Verify Jacoco Exec') {
+            steps {
+                dir('app-backend/report/target') {
+                    sh 'ls -l'
+                }
+            }
+        }
+        
     }
     post {
         success {
+            script {
+                jacoco (
+                    execPattern: '**/target/*.exec',
+                    classPattern: '**/target/classes',
+                    sourcePattern: '**/src/main/java',
+                    exclusionPattern: '**/target/test-classes',
+                    changeBuildStatus: true,
+                    minimumLineCoverage: '80'
+                )
+
+            }
             echo 'Backend build completed successfully!'
         }
         failure {

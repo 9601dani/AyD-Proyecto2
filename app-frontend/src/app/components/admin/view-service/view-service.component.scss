@@ -1,0 +1,31 @@
+.service-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.card-content {
+  flex-grow: 1;
+}
+
+
+.column.is-one-quarter {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-footer {
+  margin-top: auto;
+}
+
+.card {
+  min-height: 250px;
+  padding: 20px;
+}
+
+  
+.icon {
+    margin-right: 5px;
+}
+  

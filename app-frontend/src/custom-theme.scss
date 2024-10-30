@@ -1,17 +1,19 @@
 // Define your brand colors
-$blue: #005792;
-$orange: #FD5F00;
-$dark-blue: #13334C;
+$blue: #183059;
+$red: #D72638;
+$light-blue: #7ea3cc;
+$dark-purple: #140F2D;
 $beige-light: #d0d1cd;
 $beige-lighter: #F6F6E9;
 
 // Path to Bulma's sass folder
 @use "bulma/sass" with (
   $family-primary: '"Nunito", sans-serif',
-  $grey-dark: $dark-blue,  
+  $grey-dark: $dark-purple,  
   $grey-light: $beige-light,
   $primary: $blue,   
-  $link: $orange,     
+  $warning: $red,
+  $link: $light-blue,  
   $control-border-width: 2px,
   $input-shadow: none
 );

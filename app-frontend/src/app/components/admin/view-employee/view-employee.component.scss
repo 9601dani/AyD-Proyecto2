@@ -1,0 +1,10 @@
+.employee-card {
+    border: 1px solid transparent;
+    transition: border-color 0.3s ease-in-out;
+  
+    &:hover {
+      border-color: #3273dc;
+      box-shadow: 0 0 15px rgba(50, 115, 220, 0.3); 
+    }
+  }
+  

@@ -1,0 +1,133 @@
+<app-navbar></app-navbar>
+
+<div class="container">
+  <section class="section">
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="box has-text-centered">
+          <h2 class="title">Nuestros Servicios</h2>
+
+          <div id="service-slider" class="splide" aria-label="Nuestros Servicios">
+            <div class="splide__track">
+              <ul class="splide__list">
+                <li *ngFor="let image of serviceImages" class="splide__slide">
+                  <img [src]="image.url | image" [alt]="image.alt" class="carousel-image">
+                </li>
+              </ul>
+            </div>
+          </div>
+          @if(this.isLogged) {
+            <a class="button is-info m-5"  href="/appointments/reserve" >Reservar</a>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="columns">
+      
+      <div class="column is-half">
+        <div class="box equal-height has-text-centered is-flex is-align-items-center is-justify-content-center">
+          <div>
+            <h3 class="title is-3">Dirección y Horario</h3>
+      
+            <div class="content">
+              <p class="is-size-3">
+                <strong>Dirección:</strong><br> <br>
+                <span>{{ direction }}</span>
+              </p>
+      
+              <p class="is-size-3"> 
+                <strong>Horario:</strong><br> <br>
+                <span>{{ start_hour }} am - {{ end_hour }} pm</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      @if(this.isLogged){
+
+        <div class="column is-half">
+          <div class="box equal-height">
+          <strong> <h3 class="title is-5 has-text-centered">Añade un comentario:</h3></strong>
+
+            <div class="field">
+              <label class="label">Escribe tu comentario</label>
+              <div class="control">
+                <textarea class="textarea" [(ngModel)]="newCommentText" placeholder="Escribe un comentario..."></textarea>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label">Valoración (1-5)</label>
+              <div class="control">
+                <input class="input" type="number" min="1" max="5" [(ngModel)]="newCommentValue" placeholder="Escribe tu valoración (1-5)">
+              </div>
+            </div>
+
+            <br>
+
+            <div class="field">
+              <div class="control">
+                <button class="button is-primary is-fullwidth" (click)="addComment()">Enviar comentario</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+      
+      @if(!this.isLogged){
+        <div class="column is-half">
+          <div class="box equal-height">
+            <strong><h3 class="title is-5 has-text-centered">FAQ’s</h3></strong>
+        
+            <div class="content">
+              <div class="faq-item">
+                <h4 class="title is-6">¿Cómo puedo iniciar sesión?</h4>
+                <p>Para iniciar sesión, haz clic en el botón "Ingreso/Registro" en la parte superior derecha de la página, ingresa tu correo electrónico y contraseña, y presiona el botón de "Iniciar sesión".</p>
+              </div>
+        
+              <div class="faq-item">
+                <h4 class="title is-6">¿Qué hago si olvidé mi contraseña?</h4>
+                <p>Si olvidaste tu contraseña, haz clic en "¿Olvidaste tu contraseña?" en la página de inicio de sesión y sigue las instrucciones para restablecerla.</p>
+              </div>
+        
+              <div class="faq-item">
+                <h4 class="title is-6">¿Cómo puedo crear una nueva cuenta?</h4>
+                <p>Para crear una cuenta nueva, haz clic en "Ingreso/Registro" y selecciona la opción de "Registrarse". Luego, ingresa los detalles requeridos como tu nombre, correo electrónico y contraseña.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+      }
+      
+    </div>
+  </section>
+
+  <p>
+    <strong>Comentarios:</strong>
+  </p>
+  
+  <div class="content" style="max-height: 300px; overflow-y: scroll;">
+    <div *ngFor="let comment of comments.slice(0, 3)" class="box comment-box">
+      <p><strong>Usuario {{ comment.username }}:</strong> {{ comment.comment }}</p>
+      <p><strong>Valoración:</strong> {{ comment.value }} estrellas</p>
+      <p><small><em>Publicado el {{ comment.createdAt | date: 'medium' }}</em></small></p>
+    </div>
+      
+    <div *ngFor="let comment of comments.slice(3)" class="box comment-box">
+      <p><strong>Usuario {{ comment.username }}:</strong> {{ comment.comment }}</p>
+      
+      <p><strong>Valoración:</strong> 
+        {{ comment.value }} estrellas
+      </p>
+      
+      <p><small><em>Publicado el {{ comment.createdAt | date: 'medium' }}</em></small></p>
+    </div>
+  </div>  
+</div>
+
+<br><br><br><br>

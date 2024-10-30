@@ -43,3 +43,6 @@ build/
 
 ### secrets ###
 secrets.yml
+
+### credentials bucket ###
+bucket-ayd1-da3089c77dd4.json

@@ -1,0 +1,154 @@
+<app-navbar></app-navbar>
+
+<br><br><br>
+<div class="container">
+  <div class="box">
+    <h2 class="title is-3 has-text-centered">MI PERFIL</h2>
+
+    <div class="has-text-centered">
+      <figure class="image is-128x128 is-inline-block">
+        <img class="is-rounded" [src]="userProfileAll.imageProfile | image" appNotProfile alt="profile image" />
+      </figure>
+      
+      <input 
+        type="file" 
+        accept=".jpg, .jpeg, .png" 
+        (change)="onFileSelected($event)" 
+        style="display: none" 
+        #fileInput />
+
+      <div>
+        <br>
+        <br>
+        <button class="button is-primary mt-3" (click)="triggerFileInput()">Seleccionar Imagen</button>
+      </div>
+    
+      <div *ngIf="selectedPreviewImage" class="preview-container">
+        <figure class="image is-64x64">
+          <img [src]="selectedPreviewImage" alt="Imagen seleccionada" />
+        </figure>
+        <p>Vista previa de la imagen seleccionada</p>
+      </div>
+    
+      <div *ngIf="selectedFile">
+        <button (click)="onUpload()" class="button is-success mt-3">Actualizar Foto</button>
+      </div>
+
+      <p *ngIf="errorMessage" class="error-message">{{ errorMessage }}</p>
+    </div>
+    
+    <div class="columns mt-6">
+      <div class="column">
+        <div class="box">
+          <h3 class="title is-5">CREDENCIALES</h3>
+          <div class="field">
+            <label class="label">Email</label>
+            <div class="control has-icons-left">
+              <input 
+                class="input is-static" 
+                type="text" 
+                [value]="userProfileAll.email" 
+                readonly 
+                style="background-color: #f0f0f0; border-color: #e0e0e0;">
+            </div>
+          </div>
+          
+          <div class="field">
+            <label class="label">Username</label>
+            <div class="control has-icons-left">
+              <input 
+                class="input is-static" 
+                type="text" 
+                [value]="userProfileAll.username" 
+                readonly 
+                style="background-color: #f0f0f0; border-color: #e0e0e0;">
+            </div>
+          </div>
+          
+        </div>
+        <br>
+        
+        <!--SEGURIDAD-->
+        <div class="box">
+          <h5 class="title is-5">SEGURIDAD</h5>
+          <form [formGroup]="authForm" (ngSubmit)="set2fa()">
+            <h6 class="subtitle is-6">¿Desea habilitar la autenticación en dos pasos?</h6>
+            <div class="buttons has-addons">
+              <button [disabled]="this.userProfileAll.is2FA" class="button is-success" [ngClass]="{'is-active': this.userProfileAll.is2FA}">Sí</button>
+              <button [disabled]="!this.userProfileAll.is2FA" class="button is-warning" [ngClass]="{'is-active': !this.userProfileAll.is2FA}">No</button>
+            </div>
+          </form>
+          <br>
+          <p class="help is-info">Habilitar esta opción permitirá que su cuenta se encuentre protegida.</p>
+        </div>
+      </div>
+
+      <div class="column">
+        <div class="box">
+          <h3 class="title is-5">MI INFORMACION</h3>
+          <form [formGroup]="profileForm">
+            <div class="field">
+              <label class="label">NIT</label>
+              <div class="control">
+                <input class="input" type="text" formControlName="nit">
+              </div>
+              <p class="help is-danger" *ngIf="profileForm.get('nit')?.touched && profileForm.get('nit')?.hasError('required')">
+                El campo NIT no puede estar vacío.
+              </p>
+            </div>
+
+            <div class="field">
+              <br>
+              <label class="label">DPI</label>
+              <div class="control">
+                <input class="input" type="text" formControlName="dpi">
+              </div>
+              <br>
+              <p class="help is-danger" *ngIf="profileForm.get('dpi')?.touched && profileForm.get('dpi')?.hasError('required')">
+                El campo DPI no puede estar vacío.
+              </p>
+              <p class="help is-danger" *ngIf="profileForm.get('dpi')?.touched && profileForm.get('dpi')?.hasError('pattern')">
+                El DPI debe tener exactamente 13 dígitos.
+              </p>
+            </div>
+
+            <div class="field">
+              <br>
+              <label class="label">Teléfono</label>
+              <div class="control">
+                <input class="input" type="text" formControlName="phoneNumber">
+              </div>
+              <p class="help is-danger" *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.hasError('required')">
+                El campo Teléfono no puede estar vacío.
+              </p>
+              <p class="help is-danger" *ngIf="profileForm.get('phoneNumber')?.touched && profileForm.get('phoneNumber')?.hasError('pattern')">
+                El número de teléfono debe tener exactamente 8 dígitos.
+              </p>
+            </div>
+
+            <div class="field">
+              <br>
+              <label class="label">Descripción</label>
+              <div class="control">
+                <textarea class="textarea" formControlName="description"></textarea>
+              </div>
+              <p class="help is-danger" *ngIf="profileForm.get('description')?.touched && profileForm.get('description')?.hasError('required')">
+                El campo Descripción no puede estar vacío.
+              </p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="has-text-centered mt-5">
+      <button 
+        class="button is-primary" 
+        [disabled]="!profileForm.touched || profileForm.invalid || !changesMade" 
+        (click)="saveChanges()"
+      >
+        Guardar Cambios
+      </button>
+    </div>
+  </div>
+</div>

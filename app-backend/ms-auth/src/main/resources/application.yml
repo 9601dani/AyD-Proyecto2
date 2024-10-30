@@ -1,8 +1,17 @@
 server:
   port: 8001
+website:
+  url: ${WEBSITE_URL:http://localhost:4200}
 
 spring:
   profiles:
     active: dev
   application:
     name: ms-auth
+  datasource:
+    hikari:
+      maximum-pool-size: 3
+      minimum-idle: 1
+      idle-timeout: 60000
+      max-lifetime: 1800000
+      connection-timeout: 30000

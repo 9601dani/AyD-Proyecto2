@@ -1,0 +1,58 @@
+.equal-height {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 450px;
+}
+
+p.is-size-3 {
+  font-size: 1.75rem;
+}
+
+strong {
+  font-size: 1.85rem; 
+}
+
+.comment-box p strong {
+  font-size: 1.15rem; 
+}
+
+.comment-box small {
+  color: #7a7a7a;
+}
+
+.comment-box {
+  border: 2px solid #eaeaea;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.comment-box:hover {
+  border-color: #cccccc;
+}
+
+.comment-box.selected {
+  border-color: #3273dc;
+  background-color: #f5fafe;
+}
+
+.mat-icon {
+  font-size: 20px;
+  color: #ffcc00; 
+  vertical-align: middle; 
+}
+
+.star {
+  font-size: 24px; 
+  color: #ffcc00;
+  margin-right: 5px;
+}
+
+.star.empty {
+  color: #e0e0e0;
+}
+
+

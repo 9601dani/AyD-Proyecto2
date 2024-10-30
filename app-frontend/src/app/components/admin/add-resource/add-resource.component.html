@@ -1,0 +1,127 @@
+<app-navbar></app-navbar>
+
+<section class="section">
+  <div class="container">
+    <div class="columns is-centered">
+      <div class="column is-three-quarters-desktop is-full-mobile">
+        <h1 class="title has-text-centered">{{ isEditMode ? 'Editar Recurso' : 'Crear Recurso' }}</h1>
+        <p class="subtitle has-text-centered">
+          Complete el formulario para {{ isEditMode ? 'editar el' : 'registrar un nuevo' }} recurso.
+          Los campos marcados con <span class="required">*</span> son obligatorios.
+        </p>
+
+        <form [formGroup]="resourceForm" (ngSubmit)="onSubmit()">
+          <div class="columns is-multiline">
+            <div class="column is-full">
+              <div class="field mb-5">
+                <label class="label">Nombre del Recurso <span class="required">*</span></label>
+                <div class="control">
+                  <input class="input" formControlName="name" type="text" placeholder="Nombre del recurso" required />
+                </div>
+                <p *ngIf="resourceForm.get('name')?.invalid && resourceForm.get('name')?.touched" class="help is-danger">
+                  El nombre es obligatorio.
+                </p>
+              </div>
+            </div>
+
+            <div class="column is-full">
+              <hr class="has-background-light" style="border-top: 1px solid #ccc;">
+            </div>
+
+            <div class="column is-full">
+              <div class="field">
+                <label class="label">Subir Imagen</label>
+                <div class="file has-name is-fullwidth">
+                  <label class="file-label">
+                    <input class="file-input" type="file" (change)="onFileSelected($event)" />
+                    <span class="file-cta">
+                      <span class="icon">
+                        <i class="fas fa-upload"></i>
+                      </span>
+                      <span>Elegir archivo</span>
+                    </span>
+                    <span class="file-name" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+                  </label>
+                </div>
+                <p class="help is-danger" *ngIf="fileError">{{ fileError }}</p>
+              </div>
+            
+              <div class="column is-full">
+                <div class="field mt-5" *ngIf="imagePreview">
+                  <label class="label">Previsualización de la Imagen:</label>
+                  <figure class="image image-preview-container">
+                    <img 
+                      [src]="imagePreview.startsWith('data:image') ? imagePreview : (imagePreview | image)" 
+                      alt="Previsualización de la imagen seleccionada" 
+                      class="image-preview">
+                  </figure>
+                </div>
+              </div>
+            </div>
+            
+
+            <div class="column is-full">
+              <hr class="has-background-light" style="border-top: 1px solid #ccc;">
+            </div>
+
+            <div class="column is-full">
+              <div class="field mb-5">
+                <label class="label">Atributos del Recurso</label>
+                <div class="control">
+                  <input class="input" type="text" [formControl]="attributeSearch" placeholder="Buscar atributos..." />
+                </div>
+                <div class="select is-multiple mt-3">
+                  <select multiple size="5" [formControl]="selectedAttributesControl">
+                    <option *ngFor="let attr of filteredAttributes" [value]="attr.id">{{ attr.name }}: {{ attr.description }}</option>
+                  </select>
+                </div>
+                <div class="control mt-4">
+                  <button class="button is-primary" (click)="addSelectedAttributes()" type="button">Añadir Atributos</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="column is-full">
+              <h2 class="title is-5">Atributos Seleccionados</h2>
+              <ul>
+                <li *ngFor="let attr of addedAttributes" class="is-flex is-align-items-center">
+                  {{ attr.name }}: {{ attr.description }} 
+                  <button class="delete is-small ml-3 has-text-danger" (click)="removeAttribute(attr)" style="font-size: 1.2rem;">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div class="column is-full">
+              <div class="field mb-5">
+                <label class="label">Agregar Nuevo Atributo</label>
+                <div class="control mb-3">
+                  <input class="input" type="text" [formControl]="newAttributeNameControl" placeholder="Nombre del Atributo..." />
+                </div>
+                <div class="control mb-3">
+                  <input class="input" type="text" [formControl]="newAttributeDescriptionControl" placeholder="Descripción del Atributo..." />
+                </div>
+                <button class="button is-primary mt-2" (click)="addNewAttribute()" type="button">Crear Atributo</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="field is-grouped is-grouped-centered mt-5">
+            <div class="control">
+              <button *ngIf="!isEditMode" class="button is-primary" type="submit" [disabled]="resourceForm.invalid">
+                Guardar Recurso
+              </button>
+              <button *ngIf="isEditMode" class="button is-primary" type="submit" [disabled]="resourceForm.invalid">
+                Actualizar Recurso
+              </button>
+            </div>
+            <div class="control">
+              <button class="button is-light" type="button" (click)="onCancel()">Cancelar</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>

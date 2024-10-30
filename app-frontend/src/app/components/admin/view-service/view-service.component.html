@@ -1,0 +1,31 @@
+<app-navbar></app-navbar>
+
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Lista de Servicios</h1>
+    <p class="subtitle has-text-centered">Aquí puedes ver los servicios disponibles y editarlos.</p>
+
+    <br><br>
+    <div class="columns is-multiline">
+      <div class="column is-one-quarter" *ngFor="let service of services">
+        <div class="card service-card">
+          <div class="card-content">
+            <p class="title is-5">{{ service.name }}</p>
+            <p class="subtitle is-6">Precio: {{ service.price | companyCurrency }}</p>
+            <p>Tiempo Aproximado: {{ service.timeAprox }} minutos</p>
+            <p>Disponible: <strong>{{ service.isAvailable ? 'Sí' : 'No' }}</strong></p>
+          </div>
+
+          <footer class="card-footer">
+            <a class="card-footer-item" (click)="editService(service.id)">
+              <span class="icon">
+                <i class="fas fa-edit"></i>
+              </span>
+              Editar
+            </a>
+          </footer>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
