@@ -40,7 +40,7 @@ public class EmailServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emailRequest = new EmailRequest("to@gmail.com", "subject", "content");
+        emailRequest = new EmailRequest("to@gmail.com", "subject", "content", false);
     }
 
     @Test

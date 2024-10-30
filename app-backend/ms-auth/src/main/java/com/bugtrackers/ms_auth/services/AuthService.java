@@ -118,7 +118,7 @@ public class AuthService {
         htmlTemplate = htmlTemplate.replace("COMPANY_LOGO", logo.getKeyValue());
         htmlTemplate = htmlTemplate.replace("COMPANY_NAME", name.getKeyValue());
 
-        EmailRequest emailRequest = new EmailRequest(email, subject, htmlTemplate);
+        EmailRequest emailRequest = new EmailRequest(email, subject, htmlTemplate, false);
 
         this.emailClient.sendEmail(emailRequest);
 
@@ -189,7 +189,7 @@ public class AuthService {
         htmlTemplate = htmlTemplate.replace("COMPANY_LOGO", logo.getKeyValue());
         htmlTemplate = htmlTemplate.replace("COMPANY_NAME", name.getKeyValue());
 
-        EmailRequest emailRequest = new EmailRequest(user.getEmail(), "Código de autenticación.", htmlTemplate);
+        EmailRequest emailRequest = new EmailRequest(user.getEmail(), "Código de autenticación.", htmlTemplate, false);
 
         this.emailClient.sendEmail(emailRequest);
 

@@ -101,7 +101,7 @@ public class AuthServiceTest {
     @Test
     void shouldRegisterNewUser() {
 
-        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value");
+        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value", false);
 
         HashMap<String, String> responseClient = new HashMap<>();
         responseClient.put("message", "message");
@@ -178,7 +178,7 @@ public class AuthServiceTest {
 
     @Test
     void shouldNotFindTemplate() {
-        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value");
+        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value", false);
 
         HashMap<String, String> responseClient = new HashMap<>();
         responseClient.put("message", "message");
@@ -227,7 +227,7 @@ public class AuthServiceTest {
 
     @Test
     void shouldNotFindLogo() {
-        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value");
+        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value", false);
 
         HashMap<String, String> responseClient = new HashMap<>();
         responseClient.put("message", "message");
@@ -277,7 +277,7 @@ public class AuthServiceTest {
 
     @Test
     void shouldNotFindCompanyName() {
-        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value");
+        EmailRequest emailRequest = new EmailRequest("email@example.com", "Verificación de Email", "value", false);
 
         HashMap<String, String> responseClient = new HashMap<>();
         responseClient.put("message", "message");
