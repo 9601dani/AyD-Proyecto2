@@ -19,9 +19,11 @@ import { RecoveryPasswordComponent } from './components/commons/recovery-passwor
 import { ResetPasswordComponent } from './components/commons/reset-password/reset-password.component';
 import { ReserveComponent } from './components/appointments/reserve/reserve.component';
 import { MyAppointmentsComponent } from './components/user/my-appointments/my-appointments.component';
+import { RolesAndPrivilegesComponent } from './components/admin/roles-and-privileges/roles-and-privileges.component';
 import { CustomReportsComponent } from './components/admin/custom-reports/custom-reports.component';
 import { ShowReportsComponent } from './components/admin/show-reports/show-reports.component';
 import { ReportBillComponent } from './components/admin/report-bill/report-bill.component';
+
 
 export const routes: Routes = [
 
@@ -56,7 +58,8 @@ export const routes: Routes = [
   {
     path: 'employees', children: [
       { path: 'add-employee', component: AddEmployeeComponent },
-      { path: 'show-employee', component: ViewEmployeeComponent }
+      { path: 'show-employee', component: ViewEmployeeComponent },
+      { path: 'roles-and-privileges', component: RolesAndPrivilegesComponent }
     ],
     canActivate: [authGuard]
   },

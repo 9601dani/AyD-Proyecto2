@@ -15,11 +15,14 @@ import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.exceptions.UserNotFoundException;
 import com.bugtrackers.ms_user.repositories.ModuleRepository;
+import com.bugtrackers.ms_user.repositories.RolePageRepository;
 import com.bugtrackers.ms_user.repositories.UserInformationRepository;
 import com.bugtrackers.ms_user.repositories.UserRepository;
 
 import lombok.AllArgsConstructor;
 import com.bugtrackers.ms_user.models.Module;
+import com.bugtrackers.ms_user.models.Page;
+import com.bugtrackers.ms_user.models.RolePage;
 import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.models.UserInformation;
 import java.util.Optional;
@@ -34,11 +37,23 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserInformationRepository userInformationRepository;
     private final AppointmentRepository appointmentRepository;
+    private final RolePageRepository rolePageRepository;
 
     public List<ModuleResponse> getPages(Integer id) {
         List<Module> modules = this.moduleRepository.findModulesByUserId(id);
         System.out.println(modules);
-        List<ModuleResponse> moduleResponses = modules.stream().map(ModuleResponse::new).toList();
+        List<RolePage> rolePages = this.rolePageRepository.findRolePageByUserId(id);
+        
+        for(Module module: modules) {
+            List<Page> pages = rolePages.stream().map(RolePage::getPage)
+                .filter(p -> p.getModule().getId() == module.getId())
+                .toList();
+
+            module.setPages(pages);
+        }
+
+        List<ModuleResponse> moduleResponses = modules.stream()
+        .map(ModuleResponse::new).toList();
         return moduleResponses;
     }
 

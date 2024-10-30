@@ -191,6 +191,26 @@ export class UserService {
     return this.http.get(`${this.apiUser}/appointments/${id}`);
   }
 
+  
+  updateRolePages(currentPermissionsRoleId: number, rolePages: any[]) : Observable<any> {
+    return this.http.put(`${this.apiRoles}/update/${currentPermissionsRoleId}`, rolePages)
+  }
+  updateRole(name: string, description: string, currentRoleId: number): Observable<any>  {
+    throw new Error('Method not implemented.');
+  }
+  addRole(name: string, description: string): Observable<any>  {
+    return this.http.post(`${this.apiRoles}`, {name, description});
+  }
+  getAllRolePages(id: number): Observable<any>  {
+    return this.http.get(`${this.apiRoles}/find-pages/${id}`);
+  }
+  getRoles(): Observable<any>  {
+    return this.http.get(`${this.apiRoles}`);
+
+  }
+
+  getAllPages(): Observable<any>  {
+    return this.http.get(`${this.apiRoles}/find-pages/all`);
   getAllAppointments(): Observable<any> {
     return this.http.get(`${this.apiAppointment}`);
   }

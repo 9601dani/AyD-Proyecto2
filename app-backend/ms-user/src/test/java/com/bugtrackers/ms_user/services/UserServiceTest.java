@@ -3,7 +3,13 @@ package com.bugtrackers.ms_user.services;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,7 +21,6 @@ import java.util.Optional;
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
 import com.bugtrackers.ms_user.dto.response.PopularityResponse;
 import com.bugtrackers.ms_user.models.*;
-import com.bugtrackers.ms_user.models.Module;
 import com.bugtrackers.ms_user.repositories.AppointmentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +33,7 @@ import com.bugtrackers.ms_user.dto.response.ModuleResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.exceptions.UserNotFoundException;
 import com.bugtrackers.ms_user.repositories.ModuleRepository;
+import com.bugtrackers.ms_user.repositories.RolePageRepository;
 import com.bugtrackers.ms_user.repositories.UserInformationRepository;
 import com.bugtrackers.ms_user.repositories.UserRepository;
 
@@ -45,19 +51,23 @@ public class UserServiceTest {
     @Mock
     private UserInformationRepository userInformationRepository;
 
+    @Mock
+    private RolePageRepository rolePageRepository;
+
     private User user;
     private UserInformation userInformation;
 
     @InjectMocks
     private UserService userService;
-    private List<Module> mockModules;
+
+    private List<com.bugtrackers.ms_user.models.Module> mockModules;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
         mockModules = List.of(
-            new Module(1, "module", "/direction", true, LocalDateTime.now(), List.of(
-                new Page(1, "page", "/path", null, true, LocalDateTime.now())
+            new com.bugtrackers.ms_user.models.Module(1, "module", "/direction", true, LocalDateTime.now(), List.of(
+                new Page(1, "page", "/path", null, true, LocalDateTime.now(), List.of())
             ))
         );
         user = new User("email", "username", "password");
@@ -66,7 +76,19 @@ public class UserServiceTest {
 
     @Test
     void testGetPages() {
+
+        Role role = new Role(1, "role", "description", LocalDateTime.now(), null, List.of());
+        Page page = new Page(1, "name", "path", mockModules.get(0), true, LocalDateTime.now(), List.of(role));
+
+        List<RolePage> mockPages= List.of(
+            new RolePage(1, role, page, true, true, true),
+            new RolePage(2, role, page, true, true, true),
+            new RolePage(3, role, page, true, true, true),
+            new RolePage(4, role, page, true, true, true)
+        );
+
         when(moduleRepository.findModulesByUserId(1)).thenReturn(mockModules);
+        when(rolePageRepository.findRolePageByUserId(1)).thenReturn(mockPages);
 
         List<ModuleResponse> modules = userService.getPages(1);
 

@@ -26,4 +26,6 @@ public class Role {
     private LocalDateTime createdAt = LocalDateTime.now();
     @ManyToMany(mappedBy = "roles")
     private List<User> users = new ArrayList<>();
+    @ManyToMany(mappedBy = "roles")
+    private List<Page> pages = new ArrayList<>();
 }

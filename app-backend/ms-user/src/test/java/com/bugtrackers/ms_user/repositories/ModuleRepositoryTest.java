@@ -24,7 +24,7 @@ public class ModuleRepositoryTest {
         MockitoAnnotations.openMocks(this);
         mockModules = List.of(
             new Module(1, "module 1", "/direction", true, LocalDateTime.now(), List.of(
-                new Page(1, "page", "/path", null, true, LocalDateTime.now())
+                new Page(1, "page", "/path", null, true, LocalDateTime.now(), List.of())
             )));
     }
 
