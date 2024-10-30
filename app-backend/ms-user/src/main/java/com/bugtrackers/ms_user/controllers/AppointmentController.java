@@ -1,5 +1,6 @@
 package com.bugtrackers.ms_user.controllers;
 
+import com.bugtrackers.ms_user.dto.response.BillReportResponse;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +39,18 @@ public class AppointmentController {
             @RequestParam(required = false, defaultValue = "0") Integer employee) {
 
         List<AppointmentResponse> response = this.appointmentService.findByResourceOrEmployee(resource, employee);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("")
+    public ResponseEntity<List<AppointmentResponse>> findAll() {
+        List<AppointmentResponse> response = this.appointmentService.findAll();
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/bill")
+    public ResponseEntity<List<BillReportResponse>> getBill() {
+        List<BillReportResponse> response = this.appointmentService.getBill();
         return ResponseEntity.ok(response);
     }
 

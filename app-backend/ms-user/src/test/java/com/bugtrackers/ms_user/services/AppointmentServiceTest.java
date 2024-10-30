@@ -6,11 +6,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import com.bugtrackers.ms_user.dto.response.BillReportResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -235,4 +237,57 @@ public class AppointmentServiceTest {
 
         assertEquals(expectedMessage, actualMessage);
     }
+
+    @Test
+    void shouldFindAll() {
+        when(this.appointmentRepository.findAll()).thenReturn(mAppointments);
+
+        List<AppointmentResponse> expected = this.mAppointments.stream().map(AppointmentResponse::new).toList();
+        List<AppointmentResponse> actual = this.appointmentService.findAll();
+
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testGetBill() {
+        List<Object[]> mockBillData = List.of(
+                new Object[]{"John Doe", "12345678", "Some Address", new BigDecimal("100.50"), new BigDecimal("50.00"), Timestamp.valueOf(LocalDateTime.of(2024, 10, 29, 12, 0, 0))},
+                new Object[]{"Jane Doe", "87654321", "Another Address", new BigDecimal("200.00"), new BigDecimal("100.00"), Timestamp.valueOf(LocalDateTime.of(2024, 10, 30, 15, 30, 0))}
+        );
+
+        when(appointmentRepository.getBill()).thenReturn(mockBillData);
+
+        List<BillReportResponse> billReports = appointmentService.getBill();
+
+        assertEquals(2, billReports.size());
+
+        BillReportResponse firstBill = billReports.get(0);
+        assertEquals("John Doe", firstBill.name());
+        assertEquals("12345678", firstBill.nit());
+        assertEquals("Some Address", firstBill.address());
+        assertEquals(100.50, firstBill.totalAmount());
+        assertEquals(50.00, firstBill.advancement());
+        assertEquals(LocalDateTime.of(2024, 10, 29, 12, 0, 0), firstBill.billDate());
+
+        BillReportResponse secondBill = billReports.get(1);
+        assertEquals("Jane Doe", secondBill.name());
+        assertEquals("87654321", secondBill.nit());
+        assertEquals("Another Address", secondBill.address());
+        assertEquals(200.00, secondBill.totalAmount());
+        assertEquals(100.00, secondBill.advancement());
+        assertEquals(LocalDateTime.of(2024, 10, 30, 15, 30, 0), secondBill.billDate());
+    }
+
+    @Test
+    void testGetBillEmpty() {
+        when(appointmentRepository.getBill()).thenReturn(List.of());
+
+        List<BillReportResponse> billReports = appointmentService.getBill();
+
+        assertEquals(0, billReports.size());
+    }
+
+
+
+
 }

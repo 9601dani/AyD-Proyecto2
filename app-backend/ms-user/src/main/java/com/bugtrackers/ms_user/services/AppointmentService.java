@@ -2,12 +2,14 @@ package com.bugtrackers.ms_user.services;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.bugtrackers.ms_user.dto.response.BillReportResponse;
 import org.springframework.stereotype.Service;
 
 import com.bugtrackers.ms_user.clients.EmailRestClient;
@@ -215,6 +217,25 @@ public class AppointmentService {
 
         EmailRequest request = new EmailRequest(user.getEmail(), "Factura", template, true);
         this.emailClient.sendEmail(request);
+    }
+
+    public List<AppointmentResponse> findAll() {
+        List<Appointment> appointments = this.appointmentRepository.findAll();
+        return appointments.stream().map(AppointmentResponse::new).toList();
+    }
+
+    public List<BillReportResponse> getBill() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        List<Object[]> bills = this.appointmentRepository.getBill();
+        return bills.stream().map(bill -> new BillReportResponse(
+                (String) bill[0],
+                (String) bill[1],
+                (String) bill[2],
+                ((BigDecimal) bill[3]).doubleValue(),
+                ((BigDecimal) bill[4]).doubleValue(),
+                ((Timestamp) bill[5]).toLocalDateTime()
+        )).toList();
     }
 
 }

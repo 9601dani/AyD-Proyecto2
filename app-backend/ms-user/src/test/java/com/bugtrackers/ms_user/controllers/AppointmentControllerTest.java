@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.bugtrackers.ms_user.dto.response.BillReportResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,5 +83,36 @@ public class AppointmentControllerTest {
         .content(gson.toJson(request)))
         .andExpect(status().isOk())
         .andExpect(content().json(gson.toJson(response)));
+    }
+
+    @Test
+    void testFindAll() throws Exception {
+        User mockUser = new User();
+        mockUser.setId(1);
+        mockUser.setUsername("username");
+        mockUser.setEmail("email");
+        mockUser.setUserInformation(new UserInformation("nit", "profile", "description", null, "dpi", "phone"));
+
+
+        Appointment appointment = new Appointment(1, mockUser, null, BigDecimal.ZERO, "PENDING", LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), null, List.of());
+        AppointmentResponse response = new AppointmentResponse(appointment);
+
+        when(this.appointmentService.findAll()).thenReturn(List.of(response));
+
+        this.mockMvc.perform(get("/appointment"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(gson.toJson(List.of(response))));
+
+    }
+
+    @Test
+    void testGetBill() throws Exception {
+        BillReportResponse response = new BillReportResponse("name", "nit", "address", 100.0, 50.0, LocalDateTime.now());
+
+        when(this.appointmentService.getBill()).thenReturn(List.of(response));
+
+        this.mockMvc.perform(get("/appointment/bill"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(gson.toJson(List.of(response))));
     }
 }

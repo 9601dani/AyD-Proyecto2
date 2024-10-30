@@ -190,4 +190,28 @@ export class UserService {
   getMyAppointments(id: number): Observable<any> {
     return this.http.get(`${this.apiUser}/appointments/${id}`);
   }
+
+  getAllAppointments(): Observable<any> {
+    return this.http.get(`${this.apiAppointment}`);
+  }
+
+  /*
+  * reports 
+  */
+
+  getPopularityServices(): Observable<any> {
+    return this.http.get(`${this.apiUser}/report/popularity`);
+  }
+
+  getUserByRole(): Observable<any> {
+    return this.http.get(`${this.apiUser}/report/users`);
+  }
+
+  getPopularityResources(): Observable<any> {
+    return this.http.get(`${this.apiUser}/report/resources`);
+  }
+
+  getBillReport(): Observable<any> {
+    return this.http.get(`${this.apiAppointment}/bill`);
+  }
 }
