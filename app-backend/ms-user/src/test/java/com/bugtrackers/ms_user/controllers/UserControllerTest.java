@@ -11,6 +11,7 @@ import java.util.List;
 
 import com.bugtrackers.ms_user.dto.request.RequestString;
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
+import com.bugtrackers.ms_user.dto.response.PopularityResponse;
 import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.models.UserInformation;
 import org.junit.jupiter.api.BeforeEach;
@@ -156,6 +157,52 @@ public class UserControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().json(expectedJson));
     }
+
+    @Test
+    void testGetPopularity() throws Exception {
+        List<PopularityResponse> popularityResponses = List.of(
+            new PopularityResponse("name", 1)
+        );
+
+        when(userService.getPopularity()).thenReturn(popularityResponses);
+
+        String expectedJson = gson.toJson(popularityResponses);
+
+        mockMvc.perform(get("/user/report/popularity"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void testGetUsersByRole() throws Exception {
+        List<PopularityResponse> popularityResponses = List.of(
+            new PopularityResponse("name", 1)
+        );
+
+        when(userService.getUserByRole()).thenReturn(popularityResponses);
+
+        String expectedJson = gson.toJson(popularityResponses);
+
+        mockMvc.perform(get("/user/report/users"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
+    @Test
+    void testGetPopularityResources() throws Exception {
+        List<PopularityResponse> popularityResponses = List.of(
+            new PopularityResponse("name", 1)
+        );
+
+        when(userService.getPopularityResources()).thenReturn(popularityResponses);
+
+        String expectedJson = gson.toJson(popularityResponses);
+
+        mockMvc.perform(get("/user/report/resources"))
+                .andExpect(status().isOk())
+                .andExpect(content().json(expectedJson));
+    }
+
 
 
 }

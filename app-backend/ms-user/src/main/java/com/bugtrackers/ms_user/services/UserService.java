@@ -1,8 +1,10 @@
 package com.bugtrackers.ms_user.services;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
+import com.bugtrackers.ms_user.dto.response.PopularityResponse;
 import com.bugtrackers.ms_user.models.Appointment;
 import com.bugtrackers.ms_user.repositories.AppointmentRepository;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,7 @@ import com.bugtrackers.ms_user.models.RolePage;
 import com.bugtrackers.ms_user.models.User;
 import com.bugtrackers.ms_user.models.UserInformation;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -158,5 +161,36 @@ public class UserService {
         List<Appointment> appointments = this.appointmentRepository.findByUserId(id);
         return appointments.stream().map(AppointmentResponse::new).toList();
     }
+
+    public List<PopularityResponse> getPopularity() {
+        List<Object[]> popularity = this.userRepository.getPopularity();
+        return popularity.stream()
+                .map(p -> new PopularityResponse(
+                        (String) p[0],
+                        ((Long) p[1]).intValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<PopularityResponse> getUserByRole() {
+        List<Object[]> userByRole = this.userRepository.getUserByRole();
+        return userByRole.stream()
+                .map(p -> new PopularityResponse(
+                        (String) p[0],
+                        ((Long) p[1]).intValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
+    public List<PopularityResponse> getPopularityResources() {
+        List<Object[]> popularityResources = this.userRepository.getPopularityResources();
+        return popularityResources.stream()
+                .map(p -> new PopularityResponse(
+                        (String) p[0],
+                        ((Long) p[1]).intValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
 }

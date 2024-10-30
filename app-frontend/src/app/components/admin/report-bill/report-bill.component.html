@@ -1,0 +1,66 @@
+<app-navbar></app-navbar>
+
+<div class="container mt-5">
+  <h2 class="title is-4 has-text-centered">Reporte de Facturas</h2>
+
+  <div class="box">
+    <form (submit)="filterByDate()">
+      <div class="columns is-vcentered">
+        <div class="column is-3">
+          <div class="field">
+            <label for="startDate" class="label">Fecha Inicio:</label>
+            <div class="control">
+              <input type="date" id="startDate" [(ngModel)]="startDate" class="input" name="startDate">
+            </div>
+          </div>
+        </div>
+        <div class="column is-3">
+          <div class="field">
+            <label for="endDate" class="label">Fecha Fin:</label>
+            <div class="control">
+              <input type="date" id="endDate" [(ngModel)]="endDate" class="input" name="endDate">
+            </div>
+          </div>
+        </div>
+        <div class="column is-2">
+          <div class="field">
+            <div class="control mt-5">
+              <button type="submit" class="button is-primary is-fullwidth">Filtrar</button>
+            </div>
+          </div>
+        </div>
+        <div class="column is-4">
+          <div class="buttons is-right">
+            <button class="button is-info" (click)="exportToPDF()">Exportar a PDF</button>
+            <button class="button is-info" (click)="exportToCSV()">Exportar a CSV</button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table class="table is-striped is-fullwidth">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>NIT</th>
+          <th>Dirección</th>
+          <th>Monto Total</th>
+          <th>Adelanto</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appointment of filteredAppointments">
+          <td>{{ appointment.name }}</td>
+          <td>{{ appointment.nit }}</td>
+          <td>{{ appointment.address }}</td>
+          <td>{{ appointment.totalAmount | companyCurrency }}</td>
+          <td>{{ appointment.advancement | companyCurrency }}</td>
+          <td>{{ formatDate(appointment.billDate) }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

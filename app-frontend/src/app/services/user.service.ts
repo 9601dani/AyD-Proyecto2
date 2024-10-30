@@ -191,6 +191,7 @@ export class UserService {
     return this.http.get(`${this.apiUser}/appointments/${id}`);
   }
 
+  
   updateRolePages(currentPermissionsRoleId: number, rolePages: any[]) : Observable<any> {
     return this.http.put(`${this.apiRoles}/update/${currentPermissionsRoleId}`, rolePages)
   }
@@ -210,5 +211,27 @@ export class UserService {
 
   getAllPages(): Observable<any>  {
     return this.http.get(`${this.apiRoles}/find-pages/all`);
+  getAllAppointments(): Observable<any> {
+    return this.http.get(`${this.apiAppointment}`);
+  }
+
+  /*
+  * reports 
+  */
+
+  getPopularityServices(): Observable<any> {
+    return this.http.get(`${this.apiUser}/report/popularity`);
+  }
+
+  getUserByRole(): Observable<any> {
+    return this.http.get(`${this.apiUser}/report/users`);
+  }
+
+  getPopularityResources(): Observable<any> {
+    return this.http.get(`${this.apiUser}/report/resources`);
+  }
+
+  getBillReport(): Observable<any> {
+    return this.http.get(`${this.apiAppointment}/bill`);
   }
 }
