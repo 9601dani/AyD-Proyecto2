@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
+import com.bugtrackers.ms_user.dto.response.PopularityResponse;
 import com.bugtrackers.ms_user.models.*;
 import com.bugtrackers.ms_user.models.Module;
 import com.bugtrackers.ms_user.repositories.AppointmentRepository;
@@ -281,6 +282,68 @@ public class UserServiceTest {
         assertEquals(LocalDateTime.of(2024, 11, 15, 15, 0), appointmentResponses.get(1).endTime());
     }
 
+    @Test
+    void shouldGetPopularity() {
+        List<Object[]> mockPopularity = List.of(
+                new Object[]{"ROLE_USER", 10L},
+                new Object[]{"ROLE_ADMIN", 5L}
+        );
+
+        when(this.userRepository.getPopularity()).thenReturn(mockPopularity);
+
+        List<PopularityResponse> popularityResponses = this.userService.getPopularity();
+
+        assertNotNull(popularityResponses);
+        assertEquals(2, popularityResponses.size());
+
+        assertEquals("ROLE_USER", popularityResponses.get(0).name());
+        assertEquals(10, popularityResponses.get(0).total_requests());
+
+        assertEquals("ROLE_ADMIN", popularityResponses.get(1).name());
+        assertEquals(5, popularityResponses.get(1).total_requests());
+    }
+
+    @Test
+    void shouldGetByRole() {
+        List<Object[]> mockUserByRole = List.of(
+                new Object[]{"ROLE_USER", 10L},
+                new Object[]{"ROLE_ADMIN", 5L}
+        );
+
+        when(this.userRepository.getUserByRole()).thenReturn(mockUserByRole);
+
+        List<PopularityResponse> popularityResponses = this.userService.getUserByRole();
+
+        assertNotNull(popularityResponses);
+        assertEquals(2, popularityResponses.size());
+
+        assertEquals("ROLE_USER", popularityResponses.get(0).name());
+        assertEquals(10, popularityResponses.get(0).total_requests());
+
+        assertEquals("ROLE_ADMIN", popularityResponses.get(1).name());
+        assertEquals(5, popularityResponses.get(1).total_requests());
+    }
+
+    @Test
+    void shouldGetPopularityResources() {
+        List<Object[]> mockPopularityResources = List.of(
+                new Object[]{"RESOURCE1", 10L},
+                new Object[]{"RESOURCE2", 5L}
+        );
+
+        when(this.userRepository.getPopularityResources()).thenReturn(mockPopularityResources);
+
+        List<PopularityResponse> popularityResponses = this.userService.getPopularityResources();
+
+        assertNotNull(popularityResponses);
+        assertEquals(2, popularityResponses.size());
+
+        assertEquals("RESOURCE1", popularityResponses.get(0).name());
+        assertEquals(10, popularityResponses.get(0).total_requests());
+
+        assertEquals("RESOURCE2", popularityResponses.get(1).name());
+        assertEquals(5, popularityResponses.get(1).total_requests());
+    }
 
 
 

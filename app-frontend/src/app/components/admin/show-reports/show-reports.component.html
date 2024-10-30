@@ -1,0 +1,62 @@
+<app-navbar></app-navbar>
+
+<section class="section">
+  <div class="container">
+    <h1 class="title has-text-centered">Reporte de Citas</h1>
+
+    <div class="columns is-multiline">
+      <div class="column is-full-mobile is-half-tablet">
+        <div class="control">
+          <input class="input" type="date" placeholder="Fecha inicio" [(ngModel)]="startDate">
+        </div>
+      </div>
+      <div class="column is-full-mobile is-half-tablet">
+        <div class="control">
+          <input class="input" type="date" placeholder="Fecha fin" [(ngModel)]="endDate">
+        </div>
+      </div>
+      <div class="column is-full-mobile">
+        <div class="control">
+          <button class="button is-info is-fullwidth" (click)="filterAppointments()">Filtrar</button>
+        </div>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="columns is-multiline">
+      <div class="column is-half-mobile">
+        <button class="button is-primary is-fullwidth" (click)="exportToPDF()">Exportar a PDF</button>
+      </div>
+      <div class="column is-half-mobile">
+        <button class="button is-link is-fullwidth" (click)="exportToCSV()">Exportar a CSV</button>
+      </div>
+    </div>
+
+    <br>
+    <div class="table-container">
+      <table class="table is-striped is-hoverable is-fullwidth">
+        <thead>
+          <tr>
+            <th>Empleado</th>
+            <th>Recurso</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Duración</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let appointment of filteredAppointments">
+            <td>{{ appointment.employeeFirstName || 'Sin empleado' }}</td>
+            <td>{{ appointment.resourceName || 'Sin recurso' }}</td>
+            <td>{{ formatDate(appointment.startTime) }}</td>
+            <td>{{ translateState(appointment.state) }}</td>
+            <td>{{ appointment.serviceNames.join(', ') }}</td>
+            <td>{{ appointment.total | companyCurrency }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>

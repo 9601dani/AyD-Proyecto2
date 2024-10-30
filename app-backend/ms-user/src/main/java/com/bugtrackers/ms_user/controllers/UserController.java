@@ -4,6 +4,7 @@ import com.bugtrackers.ms_user.dto.request.RequestString;
 import com.bugtrackers.ms_user.dto.request.UserAllRequest;
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;
 import com.bugtrackers.ms_user.dto.response.ModuleResponse;
+import com.bugtrackers.ms_user.dto.response.PopularityResponse;
 import com.bugtrackers.ms_user.dto.response.UserAllResponse;
 import com.bugtrackers.ms_user.services.UserService;
 
@@ -74,6 +75,24 @@ public class UserController {
     public ResponseEntity<List<AppointmentResponse>> getMyAppointments(@PathVariable Integer id) {
         List<AppointmentResponse> appointmentResponse = this.userService.getMyAppointments(id);
         return ResponseEntity.ok(appointmentResponse);
+    }
+
+    @GetMapping("/report/popularity")
+    public ResponseEntity<List<PopularityResponse>> getPopularity() {
+        List<PopularityResponse> popularityResponse = this.userService.getPopularity();
+        return ResponseEntity.ok(popularityResponse);
+    }
+
+    @GetMapping("/report/users")
+    public ResponseEntity<List<PopularityResponse>> getUsersByRole() {
+        List<PopularityResponse> popularityResponse = this.userService.getUserByRole();
+        return ResponseEntity.ok(popularityResponse);
+    }
+
+    @GetMapping("/report/resources")
+    public ResponseEntity<List<PopularityResponse>> getPopularityResources() {
+        List<PopularityResponse> popularityResponse = this.userService.getPopularityResources();
+        return ResponseEntity.ok(popularityResponse);
     }
 
 
