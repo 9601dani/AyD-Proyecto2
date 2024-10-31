@@ -1,7 +1,9 @@
 package com.bugtrackers.ms_user.controllers;
 
 import com.bugtrackers.ms_user.config.GsonConfig;
+import com.bugtrackers.ms_user.dto.request.PageRequest;
 import com.bugtrackers.ms_user.dto.request.RoleRequest;
+import com.bugtrackers.ms_user.dto.response.PageResponse;
 import com.bugtrackers.ms_user.dto.response.RoleResponse;
 import com.bugtrackers.ms_user.models.Role;
 import com.bugtrackers.ms_user.services.RoleService;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.boot.test.mock.mockito.MockBean;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +23,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -68,5 +72,56 @@ public class RoleControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(roleJson));
+    }
+
+    @Test
+    void shouldGetAllPages() throws Exception {
+        List<PageResponse> response = List.of(
+            new PageResponse(1, "name", "path", true),
+            new PageResponse(2, "name", "path", true),
+            new PageResponse(3, "name", "path", true),
+            new PageResponse(4, "name", "path", true)
+        );
+
+        when(this.roleService.getAllPages()).thenReturn(response);
+
+        this.mockMvc.perform(get("/role/find-pages/all"))
+        .andExpect(status().isOk())
+        .andExpect(content().json(gson.toJson(response)));
+    }
+
+    @Test
+    void shouldGetPagesByRole() throws Exception {
+        List<PageResponse> response = List.of(
+            new PageResponse(1, "name", "path", true),
+            new PageResponse(2, "name", "path", true),
+            new PageResponse(3, "name", "path", true),
+            new PageResponse(4, "name", "path", true)
+        );
+
+        when(this.roleService.getPagesByRoleId(1)).thenReturn(response);
+
+        this.mockMvc.perform(get("/role/find-pages/{id}", 1))
+        .andExpect(status().isOk())
+        .andExpect(content().json(gson.toJson(response)));
+    }
+
+    @Test
+    void shouldUpdatePages() throws Exception {
+        List<PageRequest> request = List.of(
+            new PageRequest(1, "name", "path", true),
+            new PageRequest(2, "name", "path", true),
+            new PageRequest(3, "name", "path", true),
+            new PageRequest(4, "name", "path", true),
+            new PageRequest(5, "name", "path", true)
+        );
+
+        when(this.roleService.updatePages(1, request)).thenReturn("Privilegios actualizados.");
+
+        this.mockMvc.perform(put("/role/update/{id}", 1)
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(gson.toJson(request)))
+        .andExpect(status().isOk())
+        .andExpect(content().json("{\"message\":\"Privilegios actualizados.\"}"));
     }
 }

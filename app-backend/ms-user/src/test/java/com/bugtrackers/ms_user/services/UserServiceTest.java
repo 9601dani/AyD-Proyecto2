@@ -96,6 +96,31 @@ public class UserServiceTest {
     }
 
     @Test
+    void testGetPages2() {
+
+        com.bugtrackers.ms_user.models.Module mock = new com.bugtrackers.ms_user.models.Module(2, "module", "/direction", true, LocalDateTime.now(), List.of(
+            new Page(1, "page", "/path", null, true, LocalDateTime.now(), List.of())
+        ));
+        Role role = new Role(1, "role", "description", LocalDateTime.now(), null, List.of());
+        Page page = new Page(1, "name", "path", mock, true, LocalDateTime.now(), List.of(role));
+
+        // mock.setId(1);
+        List<RolePage> mockPages= List.of(
+            new RolePage(1, role, page, true, true, true),
+            new RolePage(2, role, page, true, true, true),
+            new RolePage(3, role, page, true, true, true),
+            new RolePage(4, role, page, true, true, true)
+        );
+
+        when(moduleRepository.findModulesByUserId(1)).thenReturn(mockModules);
+        when(rolePageRepository.findRolePageByUserId(1)).thenReturn(mockPages);
+
+        List<ModuleResponse> modules = userService.getPages(1);
+
+        assertNotNull(modules);
+    }
+
+    @Test
     void testGetById() {
         user.setUserInformation(userInformation);
 

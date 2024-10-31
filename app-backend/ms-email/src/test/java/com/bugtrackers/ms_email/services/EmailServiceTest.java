@@ -1,11 +1,13 @@
 package com.bugtrackers.ms_email.services;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import org.apache.tomcat.util.http.fileupload.ByteArrayOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -40,7 +42,7 @@ public class EmailServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        emailRequest = new EmailRequest("to@gmail.com", "subject", "content", false);
+        emailRequest = new EmailRequest("to@gmail.com", "subject", "<html><body><h1>Hello World</h1></body></html>", false);
     }
 
     @Test
@@ -48,7 +50,20 @@ public class EmailServiceTest {
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
         when(this.mailSender.createMimeMessage()).thenReturn(mimeMessage);
         when(this.helperFactory.create(mimeMessage, true, "UTF-8")).thenReturn(helper);
+        
+        EmailRequest emailRequest = new EmailRequest("to@gmail.com", "subject", "<html><body><h1>Hello World</h1></body></html>", true);
 
+        this.emailService.sendEmail(emailRequest);
+        verify(mailSender, times(1)).send(mimeMessage);
+    }
+
+    @Test
+    void shouldSendEmailWithPDF() throws MessagingException {
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        when(this.mailSender.createMimeMessage()).thenReturn(mimeMessage);
+        when(this.helperFactory.create(mimeMessage, true, "UTF-8")).thenReturn(helper);
+
+        
         this.emailService.sendEmail(emailRequest);
         verify(mailSender, times(1)).send(mimeMessage);
     }
@@ -67,5 +82,14 @@ public class EmailServiceTest {
         String actualMessage = exception.getMessage();
 
         assertEquals(expectedMessage, actualMessage);
+    }
+
+    @Test
+    void testGeneratePdfFromHtml() throws Exception {
+        String htmlContent = "<html><body><h1>Hello World</h1></body></html>";
+
+        ByteArrayOutputStream pdfStream = emailService.generatePdfFromHtml(htmlContent);
+
+        assertNotNull(pdfStream);
     }
 }

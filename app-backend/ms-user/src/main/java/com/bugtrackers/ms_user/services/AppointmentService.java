@@ -277,6 +277,10 @@ public class AppointmentService {
         if (logoOptional.isEmpty()) {
             throw new CompanySettingNotFoundException("No se encontró una configuración.");
         }
+        
+        if(phoneOptional.isEmpty()) {
+            throw new CompanySettingNotFoundException("No se encontró una configuración.");
+        }
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
 
@@ -335,6 +339,11 @@ public class AppointmentService {
         }
 
         Optional<Bill> bOptional = this.billRepository.findByAppointment(aOptional.get());
+
+        if(bOptional.isEmpty()) {
+            throw new UserNotFoundException("Factura no encontrada.");
+        }
+
         Bill bill = bOptional.get();
         return new BillReportResponse(bill.getName(), bill.getNit(), bill.getAddress(), bill.getPrice().doubleValue(),
                 bill.getAdvancement().doubleValue(), bill.getCreatedAt());

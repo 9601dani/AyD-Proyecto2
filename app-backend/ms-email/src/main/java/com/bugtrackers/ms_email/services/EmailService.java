@@ -48,7 +48,7 @@ public class EmailService {
         }
     }
 
-    private ByteArrayOutputStream generatePdfFromHtml(String htmlContent) throws DocumentException, IOException {
+    public ByteArrayOutputStream generatePdfFromHtml(String htmlContent) throws DocumentException, IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
         ITextRenderer renderer = new ITextRenderer();
