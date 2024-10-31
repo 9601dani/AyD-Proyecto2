@@ -147,7 +147,6 @@ export class RolesAndPrivilegesComponent implements OnInit {
     console.log(rolePages);
     this._userService.updateRolePages(this.currentPermissionsRoleId, rolePages).subscribe((data: any) => {
       Swal.fire('Actualizado', 'Los permisos del rol han sido actualizados.', 'success');
-      window.location.reload();
     }, error => {
       Swal.fire('Error!', 'Un error ha ocurrido al actualizar los permisos del rol.', 'error');
       console.log(error);

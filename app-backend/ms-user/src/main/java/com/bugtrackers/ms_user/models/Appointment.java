@@ -36,7 +36,7 @@ public class Appointment {
     @JoinColumn(name = "FK_Resource")
     private Resource resource;
     private BigDecimal total;
-    private String state = "PENDING";
+    private String state = "PENDIENTE";
     private LocalDateTime createdAt = LocalDateTime.now();
     private LocalDateTime startTime;
     private LocalDateTime endTime;

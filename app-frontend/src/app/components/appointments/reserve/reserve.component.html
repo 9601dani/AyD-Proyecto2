@@ -213,12 +213,52 @@
     <h3 class="title is-3">Horario</h3>
     <h5 class="subtitle">Selecciona el horario de tu cita.</h5>
     <p class="help">Por favor da click en el día y la hora que deseas reservar.</p>
-    <button class="button is-primary"
-    [disabled]="this.currentAppointment === null"
-    (click)="saveAppointment()">Reservar</button>
+    <button class="button is-primary" [disabled]="this.currentAppointment === null"
+        (click)="this.currentStep = 'Confirmación'">Siguiente</button>
     <full-calendar [options]="calendarOptions"></full-calendar>
 </ng-template>
 
 <ng-template #confirmTemplate>
-    <h5 class="subtitle">Confirmación</h5>
+    <h3 class="title is-3">Confirmación</h3>
+    <h5 class="help">Para confirmar tu cita por favor ingresa tu tarjeta de crédito o debito en la que se hará un
+        recargo del 10% para confirmar tu cita.</h5>
+    <div class="container">
+        <div class="box">
+            <form [formGroup]="this.cardForm" (ngSubmit)="saveAppointment()">
+                <div class="field">
+                    <label class="label">Nombre del Titular</label>
+                    <div class="control">
+                        <input formControlName="name" class="input" type="text">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Número de Tarjeta</label>
+                    <div class="control">
+                        <input formControlName="number" class="input" type="text">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Fecha de Expiración</label>
+                    <div class="control">
+                        <input formControlName="exp" class="input" type="date">
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Código de Seguridad (CVV)</label>
+                    <div class="control">
+                        <input formControlName="cvv" class="input" type="text" placeholder="123">
+                    </div>
+                </div>
+
+                <div class="field mt-5">
+                    <div class="control">
+                        <button [disabled]="this.cardForm.invalid" class="button is-primary is-fullwidth">Enviar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </ng-template>
