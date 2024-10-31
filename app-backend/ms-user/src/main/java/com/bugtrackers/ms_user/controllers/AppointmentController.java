@@ -11,6 +11,7 @@ import com.bugtrackers.ms_user.services.AppointmentService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @RestController
 @RequestMapping("/appointment")
@@ -53,5 +57,28 @@ public class AppointmentController {
         List<BillReportResponse> response = this.appointmentService.getBill();
         return ResponseEntity.ok(response);
     }
+
+    @PutMapping("/update-state/{id}")
+    public ResponseEntity<HashMap<String, String>> updateAppointmentState(@PathVariable Integer id, @RequestBody String state) {
+        String message = this.appointmentService.updateAppointmentState(id, state);
+        HashMap<String, String> response = new HashMap<>();
+        response.put("message", message);
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/employee/{id}")
+    public ResponseEntity<List<AppointmentResponse>> findByEmployee(@PathVariable Integer id) {
+        List<AppointmentResponse> response = this.appointmentService.findAppointmentsByEmployee(id);
+
+        return ResponseEntity.ok(response);
+    }
+    
+    @GetMapping("/bill/{id}")
+    public ResponseEntity<BillReportResponse> findBillByAppointmentId(@PathVariable Integer id) {
+        BillReportResponse response = this.appointmentService.findBillByAppointmentId(id);
+        return ResponseEntity.ok(response);
+    }
+    
 
 }

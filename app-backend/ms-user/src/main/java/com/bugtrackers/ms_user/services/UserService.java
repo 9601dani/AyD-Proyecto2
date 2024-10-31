@@ -1,6 +1,5 @@
 package com.bugtrackers.ms_user.services;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import com.bugtrackers.ms_user.dto.response.AppointmentResponse;

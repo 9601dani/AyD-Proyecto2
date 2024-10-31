@@ -211,6 +211,8 @@ export class UserService {
 
   getAllPages(): Observable<any>  {
     return this.http.get(`${this.apiRoles}/find-pages/all`);
+  }
+
   getAllAppointments(): Observable<any> {
     return this.http.get(`${this.apiAppointment}`);
   }
@@ -233,5 +235,17 @@ export class UserService {
 
   getBillReport(): Observable<any> {
     return this.http.get(`${this.apiAppointment}/bill`);
+  }
+
+  getBillByAppointmentId(id: number): Observable<any> {
+    return this.http.get(`${this.apiAppointment}/bill/${id}`)
+  }
+
+  updateAppointmentState(id: number, state: string): Observable<any> {
+    return this.http.put(`${this.apiAppointment}/update-state/${id}`, state )
+  }
+
+  getAppointmentsByEmployee(id: number): Observable<any> {
+    return this.http.get(`${this.apiAppointment}/employee/${id}`);
   }
 }

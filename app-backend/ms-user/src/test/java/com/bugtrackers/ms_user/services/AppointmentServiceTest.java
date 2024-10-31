@@ -152,6 +152,7 @@ public class AppointmentServiceTest {
         when(this.companySettingRepository.findByKeyName("direction")).thenReturn(Optional.of(mockSetting));
         mockSetting.setKeyValue("10");
         when(this.companySettingRepository.findByKeyName("tax")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("fee")).thenReturn(Optional.of(mockSetting));
         when(this.billRepository.save(any())).thenReturn(billSaved);
 
         AppointmentResponse expected = new AppointmentResponse(saved);
@@ -181,6 +182,8 @@ public class AppointmentServiceTest {
         when(this.companySettingRepository.findByKeyName("direction")).thenReturn(Optional.of(mockSetting));
         mockSetting.setKeyValue("10");
         when(this.companySettingRepository.findByKeyName("tax")).thenReturn(Optional.of(mockSetting));
+        when(this.companySettingRepository.findByKeyName("fee")).thenReturn(Optional.of(mockSetting));
+
         when(this.billRepository.save(any())).thenReturn(billSaved);
 
         AppointmentResponse expected = new AppointmentResponse(saved);

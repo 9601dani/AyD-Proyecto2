@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CompanyCurrencyPipe } from '../../../pipes/company-currency.pipe';
 import { MatDividerModule } from '@angular/material/divider';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ImagePipe } from '../../../pipes/image.pipe';
 import { NotProfileDirective } from '../../../directives/not-profile.directive';
 import { FullCalendarModule } from '@fullcalendar/angular';
@@ -50,6 +50,7 @@ export class ReserveComponent implements OnInit {
   _router = inject(Router);
   _fb = inject(FormBuilder);
   _localStorageService = inject(LocalStorageService);
+  cardForm!: FormGroup;
   calendarOptions: CalendarOptions = {
     initialView: 'timeGridWeek',
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
@@ -88,6 +89,12 @@ export class ReserveComponent implements OnInit {
 
   ngOnInit(): void {
     this.servicesForm = this._fb.group({});
+    this.cardForm = this._fb.group({
+      name: ['', Validators.required],
+      number: ['', Validators.required],
+      exp: ['', Validators.required],
+      cvv: ['', Validators.required]
+    })
     this.getServices();
     this.getCompanySchedule();
   }

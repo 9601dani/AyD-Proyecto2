@@ -23,6 +23,8 @@ import { RolesAndPrivilegesComponent } from './components/admin/roles-and-privil
 import { CustomReportsComponent } from './components/admin/custom-reports/custom-reports.component';
 import { ShowReportsComponent } from './components/admin/show-reports/show-reports.component';
 import { ReportBillComponent } from './components/admin/report-bill/report-bill.component';
+import { MyScheduleComponent } from './components/appointments/my-schedule/my-schedule.component';
+import { ShowAppointmentsComponent } from './components/appointments/show-appointments/show-appointments.component';
 
 
 export const routes: Routes = [
@@ -74,7 +76,9 @@ export const routes: Routes = [
   {
     path: 'appointments', children: [
       { path: 'reserve', component: ReserveComponent },
-      { path: 'my-appointments', component: MyAppointmentsComponent }
+      { path: 'my-appointments', component: MyAppointmentsComponent },
+      { path: 'my-schedule', component: MyScheduleComponent },
+      { path: 'show-appointments', component: ShowAppointmentsComponent }
     ],
     canActivate: [authGuard]
   },

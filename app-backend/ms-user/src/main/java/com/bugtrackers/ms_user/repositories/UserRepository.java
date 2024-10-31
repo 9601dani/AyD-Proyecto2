@@ -1,13 +1,10 @@
 package com.bugtrackers.ms_user.repositories;
 
-import com.bugtrackers.ms_user.dto.response.PopularityResponse;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.bugtrackers.ms_user.models.User;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

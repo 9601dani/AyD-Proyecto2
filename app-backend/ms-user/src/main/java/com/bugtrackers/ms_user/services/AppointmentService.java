@@ -128,16 +128,24 @@ public class AppointmentService {
     private void createBill(User user, Appointment appointment) {
 
         Optional<CompanySetting> taxOptional = this.companySettingRepository.findByKeyName("tax");
+        Optional<CompanySetting> feeOptional = this.companySettingRepository.findByKeyName("fee");
 
         if (taxOptional.isEmpty()) {
             throw new CompanySettingNotFoundException("No se encontró el porcentaje de impuesto.");
         }
 
+        if (feeOptional.isEmpty()) {
+            throw new CompanySettingNotFoundException("No se encontró el porcentaje adelanto.");
+        }
+
         CompanySetting taxValue = taxOptional.get();
+        CompanySetting feeValue = feeOptional.get();
         Integer taxPorcentage = Integer.valueOf(taxValue.getKeyValue());
+        Integer feePorcentage = Integer.valueOf(feeValue.getKeyValue());
         BigDecimal price = appointment.getTotal();
 
         BigDecimal tax = price.multiply(BigDecimal.valueOf(taxPorcentage).divide(BigDecimal.valueOf(100)));
+        BigDecimal fee = price.multiply(BigDecimal.valueOf(feePorcentage).divide(BigDecimal.valueOf(100)));
 
         Bill bill = new Bill();
         bill.setAppointment(appointment);
@@ -150,6 +158,7 @@ public class AppointmentService {
                 .reduce("", (a, b) -> a + ", " + b);
         bill.setDescription("Por los siguientes servicios: " + services);
         bill.setPrice(appointment.getTotal());
+        bill.setAdvancement(fee);
         bill.setTax(tax);
 
         Bill billSaved = this.billRepository.save(bill);
@@ -194,10 +203,12 @@ public class AppointmentService {
         template = template.replace("USER_NIT", billSaved.getNit());
         template = template.replace("INVOICE_DATE", billSaved.getCreatedAt().format(formatter));
         template = template.replace("INVOICE_NUMBER", billSaved.getId().toString());
-        template = template.replace("SUBTOTAL", currency.getKeyValue() + " " + billSaved.getPrice().subtract(tax).setScale(2, RoundingMode.HALF_UP).toString());
-        template = template.replace("TOTAL", currency.getKeyValue() + " " + billSaved.getPrice().setScale(2, RoundingMode.HALF_UP).toString());
-        template = template.replace("TAX", currency.getKeyValue() + " " + tax.setScale(2, RoundingMode.HALF_UP).toString());
-
+        template = template.replace("SUBTOTAL", currency.getKeyValue() + " "
+                + billSaved.getPrice().subtract(tax).setScale(2, RoundingMode.HALF_UP).toString());
+        template = template.replace("TOTAL",
+                currency.getKeyValue() + " " + billSaved.getPrice().setScale(2, RoundingMode.HALF_UP).toString());
+        template = template.replace("TAX",
+                currency.getKeyValue() + " " + tax.setScale(2, RoundingMode.HALF_UP).toString());
 
         String rows = billSaved.getAppointment().getAppointmentHasServices().stream()
                 .map(AppointmentHasService::getService)
@@ -206,7 +217,8 @@ public class AppointmentService {
                             "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + service.getId() + "</td>" +
                             "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + service.getName() + "</td>" +
                             "<td style=\"padding: 10px; border: 1px solid #ddd;\"> 1 </td>" +
-                            "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + service.getTimeAprox() + " Minutos</td>" +
+                            "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + service.getTimeAprox()
+                            + " Minutos</td>" +
                             "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + currency.getKeyValue() + " "
                             + service.getPrice().setScale(2, RoundingMode.HALF_UP).toString() + "</td>" +
                             "</tr>";
@@ -225,7 +237,7 @@ public class AppointmentService {
     }
 
     public List<BillReportResponse> getBill() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        // DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         List<Object[]> bills = this.appointmentRepository.getBill();
         return bills.stream().map(bill -> new BillReportResponse(
@@ -234,8 +246,99 @@ public class AppointmentService {
                 (String) bill[2],
                 ((BigDecimal) bill[3]).doubleValue(),
                 ((BigDecimal) bill[4]).doubleValue(),
-                ((Timestamp) bill[5]).toLocalDateTime()
-        )).toList();
+                ((Timestamp) bill[5]).toLocalDateTime())).toList();
+    }
+
+    public String updateAppointmentState(Integer id, String state) {
+
+        Optional<Appointment> aOptional = this.appointmentRepository.findById(id);
+
+        if (aOptional.isEmpty()) {
+            throw new UserNotFoundException("No se encontró la cita.");
+        }
+
+        Appointment appointment = aOptional.get();
+        appointment.setState(state);
+        this.appointmentRepository.save(appointment);
+
+        Optional<CompanySetting> templateOptional = this.companySettingRepository.findByKeyName("email_notification");
+        Optional<CompanySetting> companyNameOptional = this.companySettingRepository.findByKeyName("company_name");
+        Optional<CompanySetting> logoOptional = this.companySettingRepository.findByKeyName("company_img");
+        Optional<CompanySetting> phoneOptional = this.companySettingRepository.findByKeyName("phone_number");
+
+        if (templateOptional.isEmpty()) {
+            throw new CompanySettingNotFoundException("No se encontró una configuración.");
+        }
+
+        if (companyNameOptional.isEmpty()) {
+            throw new CompanySettingNotFoundException("No se encontró una configuración.");
+        }
+
+        if (logoOptional.isEmpty()) {
+            throw new CompanySettingNotFoundException("No se encontró una configuración.");
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+
+        CompanySetting billTemplate = templateOptional.get();
+        String template = billTemplate.getKeyValue();
+        template = template.replace("COMPANY_LOGO", logoOptional.get().getKeyValue());
+        template = template.replace("COMPANY_NAME", companyNameOptional.get().getKeyValue());
+        template = template.replace("PHONE_NUMBER", phoneOptional.get().getKeyValue());
+        template = template.replace("USERNAME", appointment.getUser().getUsername());
+        template = template.replace("APPOINTMENT_NO", appointment.getId().toString());
+        template = template.replace("APPOINTMENT_DATE",
+                appointment.getStartTime().format(formatter) + " - " + appointment.getEndTime().format(formatter));
+        template = template.replace("STATE", state);
+
+        String rows = appointment.getAppointmentHasServices().stream()
+                .map(AppointmentHasService::getService)
+                .map(service -> {
+                    return "<tr>" +
+                            "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + service.getId() + "</td>" +
+                            "<td style=\"padding: 10px; border: 1px solid #ddd;\">" + service.getName() + "</td>" +
+                            "</tr>";
+                })
+                .reduce("", (a, b) -> a + b);
+
+        template = template.replace("TABLE_ROWS", rows);
+        EmailRequest request = new EmailRequest(appointment.getUser().getEmail(), "Notificación de actualización.",
+                template, false);
+        this.emailClient.sendEmail(request);
+        return "Cita actualizada con éxito!";
+    }
+
+    public List<AppointmentResponse> findAppointmentsByEmployee(Integer userId) {
+        Optional<User> uOptional = this.userRepository.findById(userId);
+
+        if (uOptional.isEmpty()) {
+            throw new UserNotFoundException("Usuario no encontrado.");
+        }
+
+        Optional<Employee> eOptional = this.employeeRepository.findByUser(uOptional.get());
+
+        if (eOptional.isEmpty()) {
+            throw new EmployeeNotFoundException("Empleado no encontrado.");
+        }
+
+        List<Appointment> appointments = this.appointmentRepository.findByEmployeeAndStateOrState(eOptional.get(),
+                "CONFIRMADA", "FINALIZADA");
+        return appointments.stream()
+                .map(AppointmentResponse::new).toList();
+    }
+
+    public BillReportResponse findBillByAppointmentId(Integer id) {
+        Optional<Appointment> aOptional = this.appointmentRepository.findById(id);
+
+        if (aOptional.isEmpty()) {
+            throw new UserNotFoundException("Cita no encontrada.");
+        }
+
+        Optional<Bill> bOptional = this.billRepository.findByAppointment(aOptional.get());
+        Bill bill = bOptional.get();
+        return new BillReportResponse(bill.getName(), bill.getNit(), bill.getAddress(), bill.getPrice().doubleValue(),
+                bill.getAdvancement().doubleValue(), bill.getCreatedAt());
+
     }
 
 }
